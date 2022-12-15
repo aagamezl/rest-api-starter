@@ -9,9 +9,9 @@ services:
     volumes:
       - "./temp/postgres/data:/var/lib/postgresql/data"
     environment:
-      POSTGRES_DB: database_weekly_assistant
-      POSTGRES_USER: database_weekly_assistant
-      POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje
+      POSTGRES_DB: rest-api-starter           # Database name
+      POSTGRES_USER: rest-api-starter         # Database username
+      POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje  # Database password
 
   rest-api:
     build:
@@ -23,19 +23,16 @@ services:
     ports:
       - "9229:9229"
     environment:
-      NODE_ENV: development
+      NODE_ENV: development                   # Node.js environment
 
-      DATABASE_TYPE: postgres
-      DATABASE_HOST: postgres
-      DATABASE_PORT: 5432
-      DATABASE_NAME: rest-api-starter
-      DATABASE_USERNAME: rest-api-starter
-      DATABASE_PASSWORD: ujt9ack5gbn_TGD4mje
+      DATABASE_TYPE: postgres                 # Database engine
+      DATABASE_HOST: postgres                 # Database hostname
+      DATABASE_PORT: 5432                     # Database port
+      DATABASE_NAME: rest-api-starter         # Database name
+      DATABASE_USERNAME: rest-api-starter     # Database username
+      DATABASE_PASSWORD: ujt9ack5gbn_TGD4mje  # Database password
 
-      TOKEN_SECRET: ERN7kna-hqa2xdu4bva
-      EXPIRES_IN: 3600 # 1 hour
-
-      MJ_APIKEY_PUBLIC: da034565fa2788e60344ca746251c701
-      MJ_APIKEY_PRIVATE: 2f7d38b9890a3afeaf74caf306871311
+      TOKEN_SECRET: ERN7kna-hqa2xdu4bva       # Secret for JWT token generation
+      EXPIRES_IN: 3600 # 1 hour               # JWT token expiration time
     links:
       - postgres
