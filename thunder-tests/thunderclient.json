@@ -1,0 +1,16 @@
+[
+  {
+    "_id": "4943f887-9407-4142-a1ad-50504a8b60c9",
+    "colId": "5eee3c85-fc12-48d8-bbf1-01c322f67445",
+    "containerId": "",
+    "name": "Health Check",
+    "url": "{{baseUrl}}/health",
+    "method": "GET",
+    "sortNum": 10000,
+    "created": "2022-12-12T18:02:37.609Z",
+    "modified": "2022-12-12T18:03:00.181Z",
+    "headers": [],
+    "params": [],
+    "tests": []
+  }
+]

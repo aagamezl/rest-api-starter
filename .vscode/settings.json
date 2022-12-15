@@ -1,0 +1,7 @@
+{
+  "editor.tabSize": 2,
+  "[javascript]": {
+    "editor.tabSize": 2,
+  },
+  "thunder-client.saveToWorkspace": true
+}

@@ -1,0 +1,41 @@
+version: "3.9"
+services:
+  postgres:
+    image: "postgres:15.1-alpine3.17"
+    container_name: rest-api-starter-database
+    restart: on-failure
+    ports:
+      - "5432:5432"
+    volumes:
+      - "./temp/postgres/data:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: database_weekly_assistant
+      POSTGRES_USER: database_weekly_assistant
+      POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje
+
+  rest-api:
+    build:
+      context: ./
+      target: development
+    command: npm run start:dev
+    volumes:
+      - /usr/src/app/node_modules/
+    ports:
+      - "9229:9229"
+    environment:
+      NODE_ENV: development
+
+      DATABASE_TYPE: postgres
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_NAME: rest-api-starter
+      DATABASE_USERNAME: rest-api-starter
+      DATABASE_PASSWORD: ujt9ack5gbn_TGD4mje
+
+      TOKEN_SECRET: ERN7kna-hqa2xdu4bva
+      EXPIRES_IN: 3600 # 1 hour
+
+      MJ_APIKEY_PUBLIC: da034565fa2788e60344ca746251c701
+      MJ_APIKEY_PRIVATE: 2f7d38b9890a3afeaf74caf306871311
+    links:
+      - postgres

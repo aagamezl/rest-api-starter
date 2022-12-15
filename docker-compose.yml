@@ -1,0 +1,18 @@
+version: "3.9"
+services:
+  rest-api:
+    container_name: rest-api-starter
+    restart: on-failure
+    build:
+      context: ./
+      target: production
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - .:/usr/src/app
+    command: npm run start
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      HOSTNAME: 0.0.0.0
