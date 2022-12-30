@@ -11,13 +11,28 @@ export const config = {
     environment: process.env.NODE_ENV ?? 'development',
     version: '1.0.0'
   },
-  database: {
-    type: process.env.DATABASE_TYPE ?? 'postgres',
-    host: process.env.DATABASE_HOST,
-    port: Number(process.env.DATABASE_PORT),
-    name: process.env.DATABASE_NAME,
+  development: {
     username: process.env.DATABASE_USERNAME,
     password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    dialect: process.env.DATABASE_TYPE ?? 'postgres'
+  },
+  production: {
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    dialect: process.env.DATABASE_TYPE ?? 'postgres'
+  },
+  test: {
+    username: process.env.DATABASE_USERNAME,
+    password: process.env.DATABASE_PASSWORD,
+    database: process.env.DATABASE_NAME,
+    host: process.env.DATABASE_HOST,
+    dialect: process.env.DATABASE_TYPE ?? 'postgres'
+  },
+  models: {
     pagination: {
       limit: 20
     }

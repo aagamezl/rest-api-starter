@@ -6,26 +6,25 @@ Node.js REST API Starter using best practices and patterns.
 
 This is a list of the main technologies included in this Starter:
 
-1. [Express](https://expressjs.com/) Fast, unopinionated, minimalist web framework for Node.js.
-2. [Sequealize](https://sequelize.org/) A modern TypeScript and Node.js ORM.
-3. [Postgres](https://www.postgresql.org/) the World's Most Advanced Open Source Relational Database.
-4. [Docker](https://www.docker.com/) An open source containerization platform
-5. [Docker Compose](https://docs.docker.com/compose/) tool for defining and running multi-container Docker applications
-6. [Ava](https://github.com/avajs/ava) Test runner.
-7. [Sinon](https://sinonjs.org/) Mocking library.
-8. [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519) is a compact, URL-safe means of representing
-   claims to be transferred between two parties.
-9. [OpenAPI](https://www.openapis.org/) Language-agnostic interface description for HTTP APIs.
-10. [Best Practices](https://github.com/goldbergyoni/nodebestpractices) Node.js Best Practices.
-11. [Conventional Commits](https://www.conventionalcommits.org/) A specification for adding human and machine readable meaning to commit messages.
-12. [Commitizen](https://commitizen-tools.github.io/commitizen/) Define a standard way of committing rules and communicating it.
-13. [Husky](https://typicode.github.io/husky/) Git hooks made easy woof!.
-14. [Istanbul](https://istanbul.js.org/) JavaScript test coverage made simple.
-15. [Pino](https://getpino.io/) Very low overhead Node.js logger.
-16. [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
-17. [nodemon](https://nodemon.io/) Simple monitor script for use during development.
-18. [Joi](https://joi.dev/) Lets you describe and validate your data using a simple, intuitive, and readable language.
-19. [Thunder Client](https://www.thunderclient.com/) Lightweight Rest API Client for VS Code.
+* [Express](https://expressjs.com/) Fast, unopinionated, minimalist web framework for Node.js.
+* [Sequealize](https://sequelize.org/) A modern TypeScript and Node.js ORM.
+* [Postgres](https://www.postgresql.org/) the World's Most Advanced Open Source Relational Database.
+* [Docker](https://www.docker.com/) An open source containerization platform
+* [Docker Compose](https://docs.docker.com/compose/) tool for defining and running multi-container Docker applications
+* [Ava](https://github.com/avajs/ava) Test runner.
+* [Sinon](https://sinonjs.org/) Mocking library.
+* [JSON Web Token](https://www.rfc-editor.org/rfc/rfc7519) is a compact, URL-safe means of representing claims to be transferred between two parties.
+* [OpenAPI](https://www.openapis.org/) Language-agnostic interface description for HTTP APIs.
+* [Best Practices](https://github.com/goldbergyoni/nodebestpractices) Node.js Best Practices.
+* [Conventional Commits](https://www.conventionalcommits.org/) A specification for adding human and machine readable meaning to commit messages.
+* [Commitizen](https://commitizen-tools.github.io/commitizen/) Define a standard way of committing rules and communicating it.
+* [Husky](https://typicode.github.io/husky/) Git hooks made easy woof!.
+* [Istanbul](https://istanbul.js.org/) JavaScript test coverage made simple.
+* [Pino](https://getpino.io/) Very low overhead Node.js logger.
+* [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
+* [nodemon](https://nodemon.io/) Simple monitor script for use during development.
+* [Joi](https://joi.dev/) Lets you describe and validate your data using a simple, intuitive, and readable language.
+* [Thunder Client](https://www.thunderclient.com/) Lightweight Rest API Client for VS Code.
 
 # Usage
 
@@ -34,9 +33,9 @@ The starter use docker and docker compose to run the application and the databas
 We need to setup the enviroment variables for production or development. For production there are 3 environment variables `NODE_ENV`, `PORT` and `HOSTNAME` in the `docker-compose.yml` file; these variable have default values that you can change according to your needs:
 
 ```yaml
-NODE_ENV: production
-PORT: 3000
-HOSTNAME: 0.0.0.0
+NODE_ENV: production  # Node.js environment
+PORT: 3000            # API running port
+HOSTNAME: 0.0.0.0     # API hostname
 ```
 
 For development you need to setup the `docker-compose.override.yml`, this is a development override docker compose file that define the database container and environment variable for the database and for development in general.
@@ -73,6 +72,31 @@ To run the API and database you need to use the next command in your terminal:
 
 ```shell
 $ sudo docker-compose up -d
+```
+
+# Database Configuration And Administration
+
+## Sequelize
+
+To create the necessary Sequelize database structure we need to setup our 
+environment using the `.sequelizerc` sequelize configuration file. Below you 
+can see default configuration that this starter provide:
+
+```js
+const path = require('node:path')
+
+module.exports = {
+  'config': path.resolve('config', 'index.js'),
+  'models-path': path.resolve('src', 'domains', '**/*.model.js'),
+  'seeders-path': path.resolve('database', 'seeders'),
+  'migrations-path': path.resolve('database', 'migrations')
+}
+```
+
+Not we need to initialize the Sequelize structure with the next command:
+
+```shell
+$ npx sequelize-cli init
 ```
 
 # TODO

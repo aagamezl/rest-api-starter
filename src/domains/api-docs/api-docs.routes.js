@@ -1,7 +1,7 @@
 import express from 'express'
 import swaggerUI from 'swagger-ui-express'
 
-import { openAPI } from './../../open-api/index.js'
+import { openAPI } from '../../open-api/index.js'
 
 export const router = express.Router({
   strict: true

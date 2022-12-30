@@ -5,8 +5,7 @@
   "main": "bin/www/index.js",
   "type": "module",
   "scripts": {
-    "coverage": "nyc --reporter=lcov ava",
-    "coverage:view": "nyc ava",
+    "coverage": "c8 --reporter=html --reporter=text ava",
     "lint": "standard --verbose | snazzy",
     "lint:fix": "standard --fix",
     "prepare": "husky install",
@@ -25,15 +24,16 @@
   "license": "MIT",
   "devDependencies": {
     "ava": "^5.1.0",
+    "c8": "^7.12.0",
     "commitizen": "^4.2.6",
     "cz-conventional-changelog": "^3.3.0",
     "husky": "^8.0.2",
     "nodemon": "^2.0.20",
-    "nyc": "^15.1.0",
     "pino-tee": "^0.3.0",
+    "sequelize-cli": "^6.5.2",
     "sinon": "^15.0.0",
     "snazzy": "^9.0.0",
-    "standard": "^17.0.0"
+    "standard": "^16.0.3"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -42,7 +42,10 @@
     "http-status-codes": "^2.2.0",
     "joi": "^17.7.0",
     "joi-to-swagger": "^6.2.0",
+    "pg": "^8.8.0",
+    "pg-hstore": "^2.3.4",
     "pino": "^8.7.0",
+    "sequelize": "^6.28.0",
     "swagger-ui-express": "^4.6.0"
   }
 }

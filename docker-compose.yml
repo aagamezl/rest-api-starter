@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   rest-api:
-    container_name: rest-api-starter
+    container_name: rest-api-starter          # Container name
     restart: on-failure
     build:
       context: ./
@@ -13,6 +13,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NODE_ENV: production
-      PORT: 3000
-      HOSTNAME: 0.0.0.0
+      NODE_ENV: production                    # Node environment
+      PORT: 3000                              # API running port
+      HOSTNAME: 0.0.0.0                       # API hostname

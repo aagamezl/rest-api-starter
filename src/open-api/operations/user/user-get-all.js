@@ -1,5 +1,5 @@
 import { getAll } from '../queryParameter.js'
-// import { schema } from '../../../domains/user/user.schema.js'
+import { schema } from '../../../domains/user/user.schema.js'
 
 export const userGetAll = {
   get: {
@@ -13,14 +13,14 @@ export const userGetAll = {
       }
     ],
     responses: {
-      // 200: {
-      //   description: 'Users were obtained',
-      //   content: {
-      //     'application/json': {
-      //       schema: schema.responseAll
-      //     }
-      //   }
-      // },
+      200: {
+        description: 'Users were obtained',
+        content: {
+          'application/json': {
+            schema: schema.responseAll
+          }
+        }
+      },
       400: {
         description: 'Bad Request'
       },

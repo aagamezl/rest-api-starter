@@ -2,10 +2,10 @@
 
 import http from 'http'
 
-import { app } from './../../src/app.js'
-import { config } from './../../config/index.js'
-import { errorHandler } from './../../src/utils/errorHandler.js'
-import { logger } from './../../src/utils/logger.js'
+import { app } from '../../src/app.js'
+import { config } from '../../config/index.js'
+import { errorHandler } from '../../src/utils/errorHandler.js'
+import { logger } from '../../src/utils/logger.js'
 
 /**
  * Normalize a port into a number, string, or undefined.
@@ -50,14 +50,10 @@ const onError = (error) => {
 
       process.exit(1)
 
-      break
-
     case 'EADDRINUSE':
       errorHandler.handle(new Error(`${bind} is already in use`))
 
       process.exit(1)
-
-      break
 
     default:
       throw error
@@ -90,7 +86,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 process.on('uncaughtException', error => {
-  errorHandler.handleError(error)
+  errorHandler.handle(error)
 
   setImmediate(() => {
     process.exit(1)
