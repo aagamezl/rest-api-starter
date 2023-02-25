@@ -12,5 +12,24 @@
     "headers": [],
     "params": [],
     "tests": []
+  },
+  {
+    "_id": "919331cf-56e9-4e71-90ee-7f65a4e5827c",
+    "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
+    "containerId": "",
+    "name": "Login",
+    "url": "{{baseUrl}}/users/login",
+    "method": "POST",
+    "sortNum": 10000,
+    "created": "2023-01-21T15:27:06.016Z",
+    "modified": "2023-02-23T20:52:54.417Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"email\": \"jane.doe@gmail.com\",\n  \"password\": \"abcd1234\"\n}",
+      "form": []
+    },
+    "tests": []
   }
 ]

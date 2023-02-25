@@ -1,0 +1,48 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id              String   @id @default(uuid()) @db.Uuid()
+  name            String   @db.VarChar(255)
+  lastname        String   @db.VarChar(255)
+  password        String   @db.VarChar(255)
+  email           String   @unique @db.VarChar(255)
+  age             Int?     @db.SmallInt
+  posts           Post[]
+  role            Role     @default(USER)
+  isAdmin         Boolean  @default(false)
+  favoriteColors  String[] @default(["red", "blue", "green"])
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
+}
+
+model Post {
+  id        String   @id @default(uuid()) @db.Uuid()
+  title     String   @db.VarChar(255)
+  content   String
+  published Boolean  @default(false)
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  String   @db.Uuid()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt @map("updated_at")
+}
+
+model Category {
+  id    Int    @id @default(autoincrement())
+  name  String
+}
+
+enum Role {
+  USER
+  ADMIN
+}

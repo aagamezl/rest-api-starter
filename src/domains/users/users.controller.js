@@ -1,8 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
-import * as model from './user.model'
-import { createController } from './../../utils/domains/base.controller'
-import { getError, logger } from './../../utils'
+import * as model from './users.model.js'
+import { baseController, getError, logger } from '../../utils/index.js'
 
 const login = async (req, res) => {
   try {
@@ -32,4 +31,4 @@ const logout = async (req, res) => {
   }
 }
 
-export const controller = createController(model, { login, logout })
+export const controller = baseController(model, { login, logout })

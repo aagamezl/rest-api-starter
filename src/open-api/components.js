@@ -1,5 +1,5 @@
 import { schema as healthSchema } from '../domains/health/health.schema.js'
-// import { schema as userSchema } from '../domains/user/user.schema.js'
+import { schema as userSchema } from '../domains/users/users.schema.js'
 
 export const components = {
   components: {
@@ -10,8 +10,8 @@ export const components = {
         description: 'User identification number',
         example: 'dd84fbdc-33c6-4948-bb56-34d139bf811f'
       },
-      // User: userSchema.user,
-      // UserInput: userSchema.input,
+      User: userSchema.user,
+      UserInput: userSchema.input,
       HealthCheck: healthSchema,
       ErrorDetails: {
         type: 'object',

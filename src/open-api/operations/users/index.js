@@ -6,7 +6,7 @@ import { userLogin } from './user-login.js'
 import { userLogout } from './user-logout.js'
 import { userUpdate } from './user-update.js'
 
-export const userOperations = {
+export const usersOperations = {
   paths: {
     '/users': {
       ...userGetAll,

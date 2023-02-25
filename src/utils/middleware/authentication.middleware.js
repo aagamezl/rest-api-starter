@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { getToken, isValidToken } from './../authentication/index.js'
+import { getToken, isValidToken } from '../authentication/index.js'
 
 /**
  *

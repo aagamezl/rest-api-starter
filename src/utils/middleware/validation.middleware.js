@@ -1,6 +1,6 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 
-import { SEGMENTS } from './../segments.js'
+import { SEGMENTS } from '../segments.js'
 
 const VALIDATE_OPTIONS = {
   abortEarly: false // include all errors

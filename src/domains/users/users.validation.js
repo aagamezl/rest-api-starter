@@ -1,5 +1,5 @@
-import { makeSchemaOptional, SEGMENTS } from './../../utils/index.js'
-import { userId, userInput, userLogin } from './user.schema'
+import { makeSchemaOptional, SEGMENTS } from '../../utils/index.js'
+import { userId, userInput, userLogin } from './users.schema.js'
 
 export const validations = {
   // POST /users

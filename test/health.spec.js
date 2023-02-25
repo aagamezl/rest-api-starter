@@ -8,8 +8,8 @@ let sandbox
 let sequelizeMock
 
 const dataSourceStub = {
-  authenticate: () => Promise.resolve(true),
-  close: () => Promise.resolve(true)
+  $connect: () => Promise.resolve(true),
+  $disconnect: () => Promise.resolve(true)
 }
 
 test.beforeEach(() => {

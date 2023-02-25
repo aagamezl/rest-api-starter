@@ -1,8 +1,8 @@
-import express from 'express'
+import { Router } from 'express'
 
 import * as controller from './health.controller.js'
 
-export const router = express.Router({
+export const router = Router({
   strict: true
 })
 

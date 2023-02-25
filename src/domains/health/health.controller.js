@@ -6,5 +6,5 @@ import * as model from './health.model.js'
  * @param {Response} res
  */
 export const health = async (req, res) => {
-  res.set('Content-Type', 'application/vnd.health+json').json(await model.check())
+  res.set('Content-Type', 'application/health+json').json(await model.check())
 }

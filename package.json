@@ -5,6 +5,8 @@
   "main": "bin/www/index.js",
   "type": "module",
   "scripts": {
+    "app:init": "npm i && npx prisma init && rm .env",
+    "app:setup": "npx prisma generate && node -e 'import(\"./src/utils/generators/prisma.js\").then(module => module.createValidations())'",
     "coverage": "c8 --reporter=html --reporter=text ava",
     "lint": "standard --verbose | snazzy",
     "lint:fix": "standard --fix",
@@ -12,7 +14,16 @@
     "start": "node bin/www/index.js",
     "start:dev": "nodemon --inspect=0.0.0.0:9229 bin/www/index.js",
     "test": "ava",
-    "test:watch": "ava --watch"
+    "test:watch": "ava --watch",
+    "migrate:create": "prisma migrate dev --create-only",
+    "migrate:generate": "prisma migrate dev",
+    "migrate:seed": "node -e 'import(\"./src/utils/generators/prisma.js\").then(module => console.log(module.seed()))' > prisma/seed.js",
+    "migrate:seed:run": "npm run prima:generate && prisma db seed",
+    "migrate:run": "prisma migrate dev",
+    "migrate:reset": "npx prisma migrate reset"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   },
   "keywords": [
     "rest",
@@ -30,22 +41,24 @@
     "husky": "^8.0.2",
     "nodemon": "^2.0.20",
     "pino-tee": "^0.3.0",
-    "sequelize-cli": "^6.5.2",
+    "prisma": "^4.8.1",
     "sinon": "^15.0.0",
     "snazzy": "^9.0.0",
     "standard": "^16.0.3"
   },
   "dependencies": {
+    "@devnetic/utils": "^2.1.0",
+    "@prisma/client": "^4.8.1",
     "cors": "^2.8.5",
     "express": "^4.18.2",
     "helmet": "^6.0.1",
     "http-status-codes": "^2.2.0",
     "joi": "^17.7.0",
     "joi-to-swagger": "^6.2.0",
+    "jsonwebtoken": "^9.0.0",
     "pg": "^8.8.0",
     "pg-hstore": "^2.3.4",
     "pino": "^8.7.0",
-    "sequelize": "^6.28.0",
     "swagger-ui-express": "^4.6.0"
   }
 }

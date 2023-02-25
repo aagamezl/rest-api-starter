@@ -1,3 +1,6 @@
+import { dataSource } from '../../data-source.js'
+// import { user as User } from './users.entity.js'
+
 /**
  *
  * @param {object} payload
@@ -20,6 +23,8 @@ export const deleteById = async (id) => {
  * @returns {Promise<>}
  */
 export const getAll = async (requestData) => {
+  // return dataSource.manager(User).findAll()
+  return dataSource.manager({}).findAll()
 }
 
 /**
@@ -29,6 +34,14 @@ export const getAll = async (requestData) => {
  * @returns
  */
 export const getById = async (id, requestData) => {
+}
+
+export const login = async (requestData) => {
+  console.log(requestData)
+
+  return {
+    ok: true
+  }
 }
 
 /**

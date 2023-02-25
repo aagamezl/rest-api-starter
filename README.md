@@ -76,28 +76,114 @@ $ sudo docker-compose up -d
 
 # Database Configuration And Administration
 
-## Sequelize
+## Prisma
 
-To create the necessary Sequelize database structure we need to setup our 
-environment using the `.sequelizerc` sequelize configuration file. Below you 
-can see default configuration that this starter provide:
+This API starter use [Prisma](https://www.prisma.io/) ORM to manage the access to the database.  The first thing to do is to create the project setup, and the starter have a npm script to perform this task and any other project setup actions.
 
-```js
-const path = require('node:path')
+```shell
+$ npm run app:setup
+```
 
-module.exports = {
-  'config': path.resolve('config', 'index.js'),
-  'models-path': path.resolve('src', 'domains', '**/*.model.js'),
-  'seeders-path': path.resolve('database', 'seeders'),
-  'migrations-path': path.resolve('database', 'migrations')
+This will create a directory called prisma with a file called `schema.prisma`, and in this file is where we will define the structure of the tables that will make up the database of our API.
+
+```prisma file=prisma/schema.prisma highlight=2
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 ```
 
-Not we need to initialize the Sequelize structure with the next command:
+You now need to adjust the connection URL to point to your own database, the url is [set via an environment variable](https://www.prisma.io/docs/guides/development-environment/environment-variables).  In our development environment this url must be defined in the `docker-compose.override.yml` file and in our production environments we must define it in the server or execution environment of our API.
+
+```yaml file=docker-compose.override.yml
+environment:
+  NODE_ENV: development
+  DATABASE_URL: "PROVIDER://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA"
+  TOKEN_SECRET: XXXXXXXXXXXXXXXXXXX
+  EXPIRES_IN: 3600
+```
+
+The [format of the connection URL](https://www.prisma.io/docs/reference/database-reference/connection-urls) for your database depends on the database you use. For PostgreSQL, it looks as follows (the parts spelled all-uppercased are _placeholders_ for your specific connection details):
+
+```no-lines
+PROVIDER://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA
+```
+
+Here's a short explanation of each component:
+
+- `USER`: The name of your database user
+- `PASSWORD`: The password for your database user
+- `HOST`: The name of your host name (for the local environment, it is `localhost`)
+- `PORT`: The port where your database server is running (typically `5432` for PostgreSQL)
+- `DATABASE`: The name of the [database](https://www.postgresql.org/docs/12/manage-ag-overview.html)
+- `SCHEMA`: The name of the [schema](https://www.postgresql.org/docs/12/ddl-schemas.html) inside the database
+
+## Entities
+
+The data model definition part of the [Prisma schema](https://www.prisma.io/docs/concepts/components/prisma-schema) defines your application models (also called Prisma models). We define our entities using the schema file; the schema file is written in Prisma Schema Language (PSL). Models:
+
+- Represent the entities of your application domain.
+- Map to the tables (relational databases like PostgreSQL) or collections (MongoDB) in your database.
+- Form the foundation of the queries available in the generated [Prisma Client API](https://www.prisma.io/docs/concepts/components/prisma-client).
+- When used with TypeScript, Prisma Client provides generated type definitions for your models and any [variations](https://www.prisma.io/docs/concepts/components/prisma-client/advanced-type-safety/operating-against-partial-structures-of-model-types) of them to make database access entirely type safe.
+
+The following schema describes a `User` entity:
+
+```prisma file=prisma/schema.prisma highlight=2
+model User {
+  id      String   @id @default(uuid()) @db.Uuid()
+  email   String   @unique
+  name    String?
+  role    Role     @default(USER)
+  posts   Post[]
+  profile Profile?
+}
+```
+
+## Migrations
+
+Database migrations are a controlled set of changes that modify and evolve the structure of your database schema. Migrations help you transition your database schema from one state to another. For example, within a migration you can create or remove tables and columns, split fields in a table, or add types and constraints to your database.
+
+Prisma Migrate generates [a history of .sql migration files](https://www.prisma.io/docs/concepts/components/prisma-migrate/migration-histories), and plays a role in both [development and deployment](https://www.prisma.io/docs/concepts/components/prisma-migrate/migrate-development-production).
+
+## Running Migrations
+
+After creating or modifying an entity, and creating the corresponding migration, it is time to run the migration to create or modify the table associated with the entity.
+
+To run the migrations we will use the next command:
 
 ```shell
-$ npx sequelize-cli init
+$ npm run migrate:run
 ```
+
+## Reset The Development Database
+
+You can also reset the database yourself to undo manual changes or db push experiments by running:
+
+```shell
+$ npm run migrate:reset
+```
+
+---
+> **NOTE:**
+> `migrate reset` is a development command and should never be used in a production environment.
+---
+
+This command:
+
+1. Drops the database/schema¹ if possible, or performs a soft reset if the environment does not allow deleting databases/schemas¹
+2. Creates a new database/schema¹ with the same name if the database/schema¹ was dropped
+3. Applies all migrations
+4. Runs seed scripts
+
+> ¹ For MySQL and MongoDB this refers to the database, for PostgreSQL and SQL Server to the schema, and for SQLite to the database file.
 
 # TODO
 
@@ -109,8 +195,7 @@ Initially I will do this by creating separate branches for each implementation, 
 
 1. Add support for Fastify (other libraries like Restify?).
 2. Add support for TypeScript.
-3. Add support for Prisma.
-4. Add support for TypeORM.
-5. Add support for other Relational Database Engines.
-6. Add Support for NoSQL Database Engines.
-7. CLI to config the starter.
+3. Add support for TypeORM.
+4. Add support for other `Relational Database Engines` (providing different `docker-compose.override.yml` files).
+5. Add Support for `NoSQL Database Engines` (providing different `docker-compose.override.yml` files and different `ORMs`).
+6. CLI to config the starter.

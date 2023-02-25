@@ -6,6 +6,7 @@ import { dataSource } from '../../data-source.js'
 import { config } from '../../../config/index.js'
 import { formatBytes } from '../../utils/formatBytes.js'
 import { getCpuLoad } from '../../utils/getCpuLoad.js'
+import { COMPONENT_TYPES } from './componentTypes.js'
 
 const SERVICE_IDS = {
   base: randomUUID(),
@@ -37,7 +38,37 @@ export const check = async () => {
     checks: {
       ...await server(),
       ...await database()
+    },
+    links: {
+      about: `${config.server.hostname}`
     }
+  }
+}
+
+const database = async () => {
+  let status = 'pass'
+  const dbInstance = dataSource.getInstance()
+  let connectionTime = Date.now()
+
+  try {
+    await dbInstance.$connect()
+
+    connectionTime = Date.now() - connectionTime
+  } catch (error) {
+    status = 'error'
+  } finally {
+    dbInstance.$disconnect()
+  }
+
+  return {
+    'postgres:database': [{
+      componentId: SERVICE_IDS.database,
+      componentType: COMPONENT_TYPES.datastore,
+      observedValue: connectionTime,
+      observedUnit: 'ms',
+      status,
+      time: new Date()
+    }]
   }
 }
 
@@ -48,13 +79,12 @@ const getCpuUtilization = async () => {
   return {
     'cpu:utilization': [{
       componentId: SERVICE_IDS.cpu,
+      componentType: COMPONENT_TYPES.system,
       node: 1,
-      componentType: 'system',
       observedValue: cpuAverage,
       observedUnit: 'percent',
       status: 'warn',
-      time: '2018-01-17T03:36:48Z',
-      output: ''
+      time: new Date()
     }]
   }
 }
@@ -68,34 +98,12 @@ const getMemoryUtilization = () => {
   return {
     'memory:utilization': [{
       componentId: SERVICE_IDS.memory,
+      componentType: COMPONENT_TYPES.system,
       node: 1,
-      componentType: 'system',
       observedValue: value,
       observedUnit: unit,
       status,
-      time: '2018-01-17T03:36:48Z',
-      output: ''
-    }]
-  }
-}
-
-const database = async () => {
-  let status = 'pass'
-  const sequelize = dataSource.getInstance()
-
-  try {
-    await sequelize.authenticate()
-  } catch (error) {
-    status = 'error'
-  } finally {
-    sequelize.close()
-  }
-
-  return {
-    'api:database': [{
-      componentId: SERVICE_IDS.database,
-      status,
-      time: Date.now()
+      time: new Date()
     }]
   }
 }
@@ -103,12 +111,12 @@ const database = async () => {
 const server = async () => {
   return {
     uptime: [{
-      componentType: 'system',
       componentId: SERVICE_IDS.server,
+      componentType: COMPONENT_TYPES.system,
       observedValue: os.uptime(),
       observedUnit: 's',
       status: 'pass',
-      time: Date.now()
+      time: new Date()
     }],
     ...await getCpuUtilization(),
     ...getMemoryUtilization()

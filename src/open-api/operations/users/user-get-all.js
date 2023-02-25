@@ -1,5 +1,5 @@
 import { getAll } from '../queryParameter.js'
-import { schema } from '../../../domains/user/user.schema.js'
+import { schema } from '../../../domains/users/users.schema.js'
 
 export const userGetAll = {
   get: {

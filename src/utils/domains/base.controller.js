@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { errorHandler, queryParser } from '..'
-import { getError } from './getError'
+import { errorHandler/* , queryParser */ } from '../index.js'
+import { getError } from './getError.js'
 
 /**
  * Base Controller
@@ -34,7 +34,7 @@ import { getError } from './getError'
  * @param {object} additionalMethods
  * @returns {Controller}
  */
-export const createController = (model, additionalMethods = {}) => {
+export const baseController = (model, methods = {}) => {
   const create = async (req, res) => {
     try {
       const entity = await model.create(req.body)
@@ -69,11 +69,11 @@ export const createController = (model, additionalMethods = {}) => {
 
   const getAll = async (req, res) => {
     try {
-      const requestData = queryParser(req.url)
+      // const requestData = queryParser(req.url)
 
-      const groceries = await model.getAll(requestData)
+      const result = await model.getAll(/* requestData */)
 
-      res.json(groceries)
+      res.json(result)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -85,8 +85,8 @@ export const createController = (model, additionalMethods = {}) => {
 
   const getById = async (req, res) => {
     try {
-      const requestData = queryParser(req.url)
-      const grocery = await model.getById(req.params.id, requestData)
+      // const requestData = queryParser(req.url)
+      const grocery = await model.getById(req.params.id/* , requestData */)
 
       if (!grocery) {
         return res.sendStatus(StatusCodes.NOT_FOUND)
@@ -122,6 +122,6 @@ export const createController = (model, additionalMethods = {}) => {
     getAll,
     getById,
     update,
-    ...additionalMethods
+    ...methods
   }
 }
