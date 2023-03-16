@@ -31,5 +31,66 @@
       "form": []
     },
     "tests": []
+  },
+  {
+    "_id": "1bd26e1f-9ed8-46e3-b5d5-26fada2c6d83",
+    "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
+    "containerId": "",
+    "name": "Find All Users",
+    "url": "{{baseUrl}}/users",
+    "method": "GET",
+    "sortNum": 20000,
+    "created": "2023-03-12T18:44:04.755Z",
+    "modified": "2023-03-12T19:38:16.257Z",
+    "headers": [],
+    "params": [],
+    "tests": [
+      {
+        "type": "set-env-var",
+        "custom": "json[0].id",
+        "action": "setto",
+        "value": "{{USER_ID}}"
+      }
+    ]
+  },
+  {
+    "_id": "49aa399d-2b02-44b5-a644-8e1d4b2c1b38",
+    "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
+    "containerId": "",
+    "name": "Create User",
+    "url": "{{baseUrl}}/users",
+    "method": "POST",
+    "sortNum": 30000,
+    "created": "2023-03-12T18:44:40.016Z",
+    "modified": "2023-03-12T19:43:07.620Z",
+    "headers": [],
+    "params": [],
+    "body": {
+      "type": "json",
+      "raw": "{\n  \"name\": \"John\",\n  \"lastname\": \"Doe\",\n  \"password\": \"abcd1234\",\n  \"age\": 34,\n  \"email\": \"john@email.com\"\n}",
+      "form": []
+    },
+    "tests": [
+      {
+        "type": "set-env-var",
+        "custom": "json.id",
+        "action": "setto",
+        "value": "{{USER_ID}}"
+      }
+    ]
+  },
+  {
+    "_id": "9d20c1c8-a6fd-4e89-8577-3e64958260b1",
+    "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
+    "containerId": "",
+    "name": "Delete User By ID",
+    "url": "{{baseUrl}}/users/{{USER_ID}}",
+    "method": "DELETE",
+    "sortNum": 30000,
+    "created": "2023-03-12T19:33:52.881Z",
+    "modified": "2023-03-12T19:41:34.152Z",
+    "headers": [],
+    "params": [],
+    "tests": []
   }
 ]

@@ -1,5 +1,11 @@
 import { dataSource } from '../../data-source.js'
 // import { user as User } from './users.entity.js'
+import { createHashValue } from '../../utils/authentication/index.js'
+// import { getPagination, scalarEnumToFields } from '../../utils/index.js'
+// import { createQueryCondition } from '../../utils/query/createQueryCondition.js'
+// import { findAndCountAll } from '../../utils/query/findAndCountAll.js'
+
+const { user: entity } = dataSource.getInstance()
 
 /**
  *
@@ -7,6 +13,19 @@ import { dataSource } from '../../data-source.js'
  * @returns {Promise<object>}
  */
 export const create = async (payload) => {
+  const password = createHashValue(payload.password)
+
+  const user = await entity.create({
+    data: {
+      ...payload,
+      password
+    }
+  })
+
+  // The password is not meant to be returned
+  delete user.password
+
+  return await user
 }
 
 /**
@@ -15,7 +34,28 @@ export const create = async (payload) => {
  * @returns {Promise<object>}
  */
 export const deleteById = async (id) => {
+  return await entity.delete({
+    where: {
+      id
+    }
+  })
 }
+
+// Exclude keys from user
+// const excludeFields = (entity, keys) => {
+//   // for (const key of keys) {
+//   //   delete user[key]
+//   // }
+
+//   // return user
+//   return Object.keys(entity).reduce((result, key) => {
+//     if (!keys.include(key)) {
+//       result[key] = entity[key]
+//     }
+
+//     return result
+//   }, {})
+// }
 
 /**
  *
@@ -23,8 +63,19 @@ export const deleteById = async (id) => {
  * @returns {Promise<>}
  */
 export const getAll = async (requestData) => {
-  // return dataSource.manager(User).findAll()
-  return dataSource.manager({}).findAll()
+  const users = await dataSource.manager('user').findAll(requestData)
+  // return dataSource.manager(dataSource.getInstance().user).findAll()
+  // return dataSource.manager('user').findAll()
+  // const query = createQueryCondition('user', requestData)
+
+  // query.select = excludeFields(
+  //   query.select ?? scalarEnumToFields(UserScalarFieldEnum),
+  //   ['password']
+  // )
+
+  // return await findAndCountAll(entity, query)
+
+  return users
 }
 
 /**

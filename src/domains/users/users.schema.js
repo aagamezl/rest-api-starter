@@ -1,11 +1,13 @@
 import joi from 'joi'
 import joiToSwagger from 'joi-to-swagger'
 
+import { getBaseResponse } from '../../utils/docs/getBaseResponse.js'
+
 export const userId = joi.object({
   id: joi.string().guid({ version: 'uuidv4' })
 })
 
-export const userInput = joi.object({
+export const user = joi.object({
   name: joi.string().required(),
   lastname: joi.string().required(),
   password: joi.string().required(),
@@ -16,21 +18,14 @@ export const userInput = joi.object({
     content: joi.string().required(),
     published: joi.boolean().default(false).required(),
     authorId: joi.string().required()
-  }).unknown(false)),
-  role: joi.string().valid('USER', 'ADMIN').default('USER').required(),
-  isAdmin: joi.boolean().default(false).required(),
-  favoriteColors: joi.array().items(joi.string()).default(['red', 'blue', 'green']).required()
+  }).unknown(false))
 }).unknown(false)
 
-const userSchema = joiToSwagger(userId.concat(userInput)).swagger
+export const userSchema = joiToSwagger(userId.concat(user)).swagger
+export const userInput = joiToSwagger(user).swagger
+export const responseAll = getBaseResponse(userSchema)
 
-export const userLogin = joi.object({
-  email: joi.string().email({ minDomainSegments: 2 }).required(),
-  password: joi.string().required().min(8).max(36)
-}).unknown(false)
-
-export const schema = {
-  user: userSchema,
-  input: joiToSwagger(userInput).swagger,
-  login: joiToSwagger(userLogin).swagger
-}
+// export const schema = {
+//   user: userSchema,
+//   input: joiToSwagger(userInput).swagger
+// }

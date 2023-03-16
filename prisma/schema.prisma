@@ -19,9 +19,9 @@ model User {
   email           String   @unique @db.VarChar(255)
   age             Int?     @db.SmallInt
   posts           Post[]
-  role            Role     @default(USER)
-  isAdmin         Boolean  @default(false)
-  favoriteColors  String[] @default(["red", "blue", "green"])
+  // role            Role     @default(USER)
+  // isAdmin         Boolean  @default(false)
+  // favoriteColors  String[] @default(["red", "blue", "green"])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt()
 }

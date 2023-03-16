@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { errorHandler/* , queryParser */ } from '../index.js'
+import { errorHandler, queryParser } from '../index.js'
 import { getError } from './getError.js'
 
 /**
@@ -69,11 +69,11 @@ export const baseController = (model, methods = {}) => {
 
   const getAll = async (req, res) => {
     try {
-      // const requestData = queryParser(req.url)
+      const requestData = queryParser(req.url)
 
-      const result = await model.getAll(/* requestData */)
+      const [count, items] = await model.getAll(requestData)
 
-      res.json(result)
+      res.json({ count, items })
     } catch (error) {
       errorHandler.handle(error)
 

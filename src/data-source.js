@@ -1,23 +1,29 @@
 import { PrismaClient } from '@prisma/client'
 
-let dbInstance
+// let dbInstance
 
 /**
  *
- * @returns {Sequelize}
+ * @returns {PrismaClient}
  */
 const getInstance = () => {
-  if (dbInstance === undefined) {
-    dbInstance = new PrismaClient()
-  }
+  // if (dbInstance === undefined) {
+  //   dbInstance = new PrismaClient()
+  // }
 
-  return dbInstance
+  // return dbInstance
+  return new PrismaClient()
 }
 
-const manager = (Model) => {
+/**
+ *
+ * @param {string} modelName
+ * @returns
+ */
+const manager = (modelName) => {
   return {
     findAll: () => {
-      return Model.findAll()
+      return getInstance()[modelName].findMany()
     },
     findByPk: () => {
 
