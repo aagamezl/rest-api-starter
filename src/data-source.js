@@ -1,6 +1,13 @@
-import { PrismaClient } from '@prisma/client'
+import { Prisma, PrismaClient } from '@prisma/client'
 
-// let dbInstance
+import {
+  createQueryCondition,
+  excludeFields,
+  getPagination,
+  scalarEnumToFields
+} from './utils/index.js'
+
+const dbInstance = new PrismaClient()
 
 /**
  *
@@ -21,9 +28,30 @@ const getInstance = () => {
  * @returns
  */
 const manager = (modelName) => {
+  const entity = dbInstance[modelName]
+
   return {
-    findAll: () => {
-      return getInstance()[modelName].findMany()
+    /**
+     *
+     * @param {RequestData} requestData
+     * @param {Array<string>} excludedFields
+     * @returns
+     */
+    findAll: (requestData, excludedFields) => {
+      const query = createQueryCondition(modelName, requestData)
+      const { offset, limit } = getPagination(requestData.queryData.page)
+
+      query.skip = offset
+      query.take = limit
+      query.select = excludeFields(
+        query.select ?? scalarEnumToFields(Prisma[`${entity.name}ScalarFieldEnum`]),
+        excludedFields
+      )
+
+      return dbInstance.$transaction([
+        entity.count(),
+        entity.findMany(query)
+      ])
     },
     findByPk: () => {
 

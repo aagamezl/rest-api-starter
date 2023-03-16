@@ -37,13 +37,24 @@
     "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
     "containerId": "",
     "name": "Find All Users",
-    "url": "{{baseUrl}}/users",
+    "url": "{{baseUrl}}/users?page[number]=3&page[size]=1",
     "method": "GET",
     "sortNum": 20000,
     "created": "2023-03-12T18:44:04.755Z",
-    "modified": "2023-03-12T19:38:16.257Z",
+    "modified": "2023-03-16T23:49:51.689Z",
     "headers": [],
-    "params": [],
+    "params": [
+      {
+        "name": "page[number]",
+        "value": "3",
+        "isPath": false
+      },
+      {
+        "name": "page[size]",
+        "value": "1",
+        "isPath": false
+      }
+    ],
     "tests": [
       {
         "type": "set-env-var",

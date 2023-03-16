@@ -41,29 +41,13 @@ export const deleteById = async (id) => {
   })
 }
 
-// Exclude keys from user
-// const excludeFields = (entity, keys) => {
-//   // for (const key of keys) {
-//   //   delete user[key]
-//   // }
-
-//   // return user
-//   return Object.keys(entity).reduce((result, key) => {
-//     if (!keys.include(key)) {
-//       result[key] = entity[key]
-//     }
-
-//     return result
-//   }, {})
-// }
-
 /**
  *
  * @param {RequestData} requestData
  * @returns {Promise<>}
  */
 export const getAll = async (requestData) => {
-  const users = await dataSource.manager('user').findAll(requestData)
+  const users = await dataSource.manager('user').findAll(requestData, ['password'])
   // return dataSource.manager(dataSource.getInstance().user).findAll()
   // return dataSource.manager('user').findAll()
   // const query = createQueryCondition('user', requestData)

@@ -1,4 +1,5 @@
 export * from './createQueryCondition.js'
+export * from './excludeFields.js'
 export * from './findAndCountAll.js'
 export * from './getPagination.js'
 export * from './queryParser.js'
