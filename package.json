@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "app:init": "npm i && npx prisma init && rm .env",
-    "app:setup": "npx prisma generate && node -e 'import(\"./src/utils/generators/prisma.js\").then(module => module.createValidations())'",
+    "app:setup": "npx prisma generate",
     "coverage": "c8 --reporter=html --reporter=text ava",
     "lint": "standard --verbose | snazzy",
     "lint:fix": "standard --fix",

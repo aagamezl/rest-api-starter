@@ -7,8 +7,8 @@ export const userId = joi.object({
   id: joi.string().guid({ version: 'uuidv4' })
 })
 
-export const input = joi.object({
-  firstname: joi.string().required(),
+export const user = joi.object({
+  name: joi.string().required(),
   lastname: joi.string().required(),
   password: joi.string().required(),
   email: joi.string().required(),
@@ -21,22 +21,6 @@ export const input = joi.object({
   }).unknown(false))
 }).unknown(false)
 
-export const user = joi.object({
-  firstname: joi.string().required(),
-  lastname: joi.string().required(),
-  password: joi.string().required(),
-  email: joi.string().required(),
-  age: joi.number().optional(),
-  posts: joi.array().items(joi.object({
-    title: joi.string().required(),
-    content: joi.string().required(),
-    published: joi.boolean().default(false).required(),
-    authorId: joi.string().required()
-  }).unknown(false)),
-  createdAt: joi.date().required(),
-  updatedAt: joi.date().required()
-}).unknown(false)
-
 export const userSchema = joiToSwagger(userId.concat(user)).swagger
-export const userInput = joiToSwagger(input).swagger
+export const userInput = joiToSwagger(user).swagger
 export const responseAll = getBaseResponse(userSchema)

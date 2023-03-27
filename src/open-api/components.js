@@ -1,10 +1,11 @@
 import { schema as healthSchema } from '../domains/health/health.schema.js'
-import { loginSchema } from '../domains/users/users.schema.extended.js'
-// import { schema as userSchema } from '../domains/users/users.schema.js'
+import { loginSchema } from '../domains/users/users.schema-extended.js'
 import { userInput, userSchema } from '../domains/users/users.schema.js'
+import { authenticationHeader } from './operations/authentication.js'
 
 export const components = {
   components: {
+    ...authenticationHeader,
     schemas: {
       id: {
         type: 'string',
@@ -12,8 +13,6 @@ export const components = {
         description: 'User identification number',
         example: 'dd84fbdc-33c6-4948-bb56-34d139bf811f'
       },
-      // User: userSchema.user,
-      // UserInput: userSchema.input,
       User: userSchema,
       UserInput: userInput,
       UserLogin: loginSchema,

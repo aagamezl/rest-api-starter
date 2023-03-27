@@ -1,10 +1,11 @@
-// Exclude keys from user
+/**
+ * Exclude keys from user
+ *
+ * @param {Record<string, unknown>} entity
+ * @param {string[]} keys
+ * @returns {Record<string, unknown>}
+ */
 export const excludeFields = (entity, keys) => {
-  // for (const key of keys) {
-  //   delete user[key]
-  // }
-
-  // return user
   return Object.keys(entity).reduce((result, key) => {
     if (!keys.includes(key)) {
       result[key] = entity[key]

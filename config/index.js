@@ -34,5 +34,9 @@ export const config = {
     pagination: {
       limit: 20
     }
+  },
+  schema: {
+    user: ['createdAt', 'updatedAt'],
+    post: ['createdAt', 'updatedAt']
   }
 }

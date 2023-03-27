@@ -1,13 +1,19 @@
 import { StatusCodes } from 'http-status-codes'
 
-import * as model from './users.model.js'
+import { model } from './users.model.js'
 import { baseController, getError, logger } from '../../utils/index.js'
 
 const login = async (req, res) => {
   try {
-    const { token, username, email } = await model.login(req.body)
+    const user = await model.login(req.body)
 
-    return res.json({ token: token, username: username, email: email })
+    if (!user) {
+      return res.sendStatus(StatusCodes.NOT_FOUND)
+    }
+
+    const { token, username, email } = user
+
+    return res.json({ token, username, email })
   } catch (error) {
     logger.error(error)
 

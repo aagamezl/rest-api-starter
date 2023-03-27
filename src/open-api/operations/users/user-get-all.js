@@ -17,7 +17,6 @@ export const userGetAll = {
         description: 'Users were obtained',
         content: {
           'application/json': {
-            // schema: schema.responseAll
             schema: responseAll
           }
         }

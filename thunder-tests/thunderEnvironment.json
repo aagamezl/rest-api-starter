@@ -13,7 +13,15 @@
       },
       {
         "name": "USER_ID",
-        "value": "13bf05fc-aeec-480d-ba97-ff01c9191664"
+        "value": "7fa7412e-423d-4301-924e-6fd263ba2cd7"
+      },
+      {
+        "name": "POST_ID",
+        "value": "2e9251c2-9650-49e6-806e-be9478589b1d"
+      },
+      {
+        "name": "AUTH_TOKEN",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiam9obkBlbWFpbC5jb20iLCJpYXQiOjE2Nzk5MzAzNzcsImV4cCI6MTY3OTkzMzk3N30.70vgTq6TDkH9ohDOWoesYCIkgEkwokA_rtX7fCGjzHs"
       }
     ]
   }

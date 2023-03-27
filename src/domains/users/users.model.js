@@ -1,25 +1,22 @@
+import { config } from '../../../config/index.js'
 import { dataSource } from '../../data-source.js'
-// import { user as User } from './users.entity.js'
-import { createHashValue } from '../../utils/authentication/index.js'
-// import { getPagination, scalarEnumToFields } from '../../utils/index.js'
-// import { createQueryCondition } from '../../utils/query/createQueryCondition.js'
-// import { findAndCountAll } from '../../utils/query/findAndCountAll.js'
+import { createHashValue, generateToken } from '../../utils/authentication/index.js'
 
-const { user: entity } = dataSource.getInstance()
+import { baseModel } from '../../utils/domains/base.model.js'
+
+// const { user: entity } = dataSource.getInstance()
 
 /**
  *
- * @param {object} payload
+ * @param {Object.<string, unknown>} payload
  * @returns {Promise<object>}
  */
 export const create = async (payload) => {
   const password = createHashValue(payload.password)
 
-  const user = await entity.create({
-    data: {
-      ...payload,
-      password
-    }
+  const user = await dataSource.manager('user').create({
+    ...payload,
+    password
   })
 
   // The password is not meant to be returned
@@ -28,62 +25,87 @@ export const create = async (payload) => {
   return await user
 }
 
+// /**
+//  *
+//  * @param {string} id
+//  * @returns {Promise<Object.<string, unknown>>}
+//  */
+// export const deleteById = (id) => {
+//   return dataSource.manager('user').deleteById(id)
+// }
+
+// /**
+//  *
+//  * @param {import('../../utils/index.js').RequestData} requestData
+//  * @returns {Promise<import('../../data-source.js').FindAllResponse>}
+//  */
+// export const getAll = (requestData) => {
+//   return dataSource.manager('user').findAndCountAll(requestData, ['password'])
+// }
+
+// /**
+//  *
+//  * @param {import('../../utils/index.js').RequestData} requestData
+//  * @returns {Promise.<Object.<string, unknown>}
+//  */
+// export const getById = (requestData) => {
+//   return dataSource.manager('user').findByPk(requestData, ['password'])
+// }
+
 /**
  *
- * @param {string} id
- * @returns {Promise<object>}
+ * @param {Object.<string, string>} payload
+ * @returns
  */
-export const deleteById = async (id) => {
-  return await entity.delete({
-    where: {
-      id
-    }
+export const login = async ({ email, password }) => {
+  const user = await dataSource.manager('user').findOne({
+    email,
+    password: createHashValue(password)
   })
-}
 
-/**
- *
- * @param {RequestData} requestData
- * @returns {Promise<>}
- */
-export const getAll = async (requestData) => {
-  const users = await dataSource.manager('user').findAll(requestData, ['password'])
-  // return dataSource.manager(dataSource.getInstance().user).findAll()
-  // return dataSource.manager('user').findAll()
-  // const query = createQueryCondition('user', requestData)
-
-  // query.select = excludeFields(
-  //   query.select ?? scalarEnumToFields(UserScalarFieldEnum),
-  //   ['password']
-  // )
-
-  // return await findAndCountAll(entity, query)
-
-  return users
-}
-
-/**
- *
- * @param {string} id
- * @param {RequestData} requestData
- * @returns
- */
-export const getById = async (id, requestData) => {
-}
-
-export const login = async (requestData) => {
-  console.log(requestData)
-
-  return {
-    ok: true
+  if (!user) {
+    return
   }
+
+  const token = await generateToken(
+    user.email,
+    config.authentication.secret,
+    config.authentication.expiresIn
+  )
+
+  if (!token) {
+    throw new Error('Error signing JWT token.')
+  }
+
+  const userData = {
+    token: token,
+    username: `${user.firstname} ${user.lastname}`,
+    email: user.email
+  }
+
+  // Save token in list of valid tokens
+  await await dataSource.manager('authToken').create({ token })
+
+  return userData
 }
 
 /**
  *
  * @param {string} id
- * @param {Promise<UpdatePayload<Grocery>>} payload
- * @returns
+ * @param {Object.<string, unknown>} payload
+ * @returns {Promise.<Object.<string, unknown>}
  */
 export const update = async (id, payload) => {
+  if (payload.password) {
+    payload.password = createHashValue(payload.password)
+  }
+
+  const user = await dataSource.manager('user').update(id, payload)
+
+  // The password is not meant to be returned
+  delete user.password
+
+  return user
 }
+
+export const model = baseModel('user', { create, login, update })

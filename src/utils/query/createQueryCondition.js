@@ -11,8 +11,6 @@ export const createQueryCondition = (entity, requestData) => {
     queryCondition.select = {}
 
     Object.entries(requestData.queryData.fields).reduce((query, [relation, fields]) => {
-      // console.log(query, relation, fields)
-
       if (entity === relation) {
         query.select = getFieldsQuery(fields)
       } else {

@@ -7,7 +7,3 @@ export const userLogin = joi.object({
 }).unknown(false)
 
 export const loginSchema = joiToSwagger(userLogin).swagger
-
-// export const schema = {
-//   login: joiToSwagger(userLogin).swagger
-// }

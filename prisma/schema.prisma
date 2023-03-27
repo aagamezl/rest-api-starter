@@ -11,17 +11,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model AuthToken {
+  id          String   @id @default(uuid()) @db.Uuid()
+  token       String   @unique @db.VarChar()
+  createdAt   DateTime @default(now()) @map("created_at")
+}
+
 model User {
   id              String   @id @default(uuid()) @db.Uuid()
-  name            String   @db.VarChar(255)
+  firstname       String   @db.VarChar(255)
   lastname        String   @db.VarChar(255)
   password        String   @db.VarChar(255)
   email           String   @unique @db.VarChar(255)
   age             Int?     @db.SmallInt
   posts           Post[]
-  // role            Role     @default(USER)
-  // isAdmin         Boolean  @default(false)
-  // favoriteColors  String[] @default(["red", "blue", "green"])
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt()
 }
@@ -34,15 +37,5 @@ model Post {
   author    User     @relation(fields: [authorId], references: [id])
   authorId  String   @db.Uuid()
   createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt @map("updated_at")
-}
-
-model Category {
-  id    Int    @id @default(autoincrement())
-  name  String
-}
-
-enum Role {
-  USER
-  ADMIN
+  updatedAt DateTime @updatedAt()
 }

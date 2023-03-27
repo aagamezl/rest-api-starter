@@ -3,6 +3,8 @@ import { StatusCodes } from 'http-status-codes'
 import { errorHandler, queryParser } from '../index.js'
 import { getError } from './getError.js'
 
+const CONTENT_TYPE = 'application/vnd.api+json'
+
 /**
  * Base Controller
  *
@@ -17,19 +19,6 @@ import { getError } from './getError.js'
  */
 
 /**
- * Base Model
- *
- * @typedef Model
- * @type {object}
- *
- * @property {(payload: Payload) => Promise<AbstractBaseEntity>} create
- * @property {(id: string) => Promise<DeleteResult>} deleteById
- * @property {(requestData: RequestData) => Promise<GetAllResponse>} getAll
- * @property {(id: string, requestData: RequestData) => Promise<AbstractBaseEntity>} getById
- * @property {(id: string, payload: UpdatePayload<TEntity>) => Promise<AbstractBaseEntity>} update
- */
-
-/**
  * @param {Model} model
  * @param {object} additionalMethods
  * @returns {Controller}
@@ -39,7 +28,7 @@ export const baseController = (model, methods = {}) => {
     try {
       const entity = await model.create(req.body)
 
-      res.status(StatusCodes.CREATED).json(entity)
+      res.set('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).json(entity)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -51,13 +40,13 @@ export const baseController = (model, methods = {}) => {
 
   const deleteById = async (req, res) => {
     try {
-      const { affected } = await model.deleteById(req.params.id)
+      const deleted = await model.deleteById(req.params.id)
 
-      if (affected === 0) {
+      if (!deleted) {
         return res.sendStatus(StatusCodes.NOT_FOUND)
       }
 
-      res.sendStatus(StatusCodes.NO_CONTENT)
+      res.set('Content-Type', CONTENT_TYPE).sendStatus(StatusCodes.NO_CONTENT)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -71,9 +60,9 @@ export const baseController = (model, methods = {}) => {
     try {
       const requestData = queryParser(req.url)
 
-      const [count, items] = await model.getAll(requestData)
+      const records = await model.getAll(requestData)
 
-      res.json({ count, items })
+      res.set('Content-Type', CONTENT_TYPE).json(records)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -85,14 +74,14 @@ export const baseController = (model, methods = {}) => {
 
   const getById = async (req, res) => {
     try {
-      // const requestData = queryParser(req.url)
-      const grocery = await model.getById(req.params.id/* , requestData */)
+      const requestData = queryParser(req.url)
+      const record = await model.getById(requestData)
 
-      if (!grocery) {
+      if (!record) {
         return res.sendStatus(StatusCodes.NOT_FOUND)
       }
 
-      res.json(grocery)
+      res.set('Content-Type', CONTENT_TYPE).json(record)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -106,7 +95,7 @@ export const baseController = (model, methods = {}) => {
     try {
       const grocery = await model.update(req.params.id, req.body)
 
-      res.json(grocery)
+      res.set('Content-Type', CONTENT_TYPE).json(grocery)
     } catch (error) {
       errorHandler.handle(error)
 

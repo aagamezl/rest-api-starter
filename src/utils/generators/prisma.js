@@ -1,9 +1,9 @@
 // import { readFile, writeFile } from 'node:fs/promises'
-import { copyFileSync, writeFileSync } from 'node:fs'
-import { join, dirname } from 'node:path'
+// import { copyFileSync, writeFileSync } from 'node:fs'
+// import { join, dirname } from 'node:path'
 
 import { Prisma } from '@prisma/client'
-import { plural } from '@devnetic/utils'
+// import { plural } from '@devnetic/utils'
 
 export const seed = () => {
   const code = [
@@ -25,46 +25,69 @@ export const seed = () => {
   return code.join('\n')
 }
 
-export const createValidations = (schema = Prisma.dmmf.datamodel) => {
-  const validations = generateSchema(schema)
+export const createValidations = (schema = Prisma.dmmf.datamodel, schemaFields = []) => {
+  const validations = generateSchema(schema, schemaFields)
 
-  for (const [name, validation] of Object.entries(validations)) {
+  return Object.entries(validations).reduce((result, [name, validation]) => {
     const modelName = name.toLowerCase()
-    const domain = plural(modelName)
-    const fileName = join(process.cwd(), 'src/domains', domain, `${domain}.schema.js`)
 
     const data = [
       'import joi from \'joi\'',
       'import joiToSwagger from \'joi-to-swagger\'\n',
-      // 'import { getBaseResponse } from \'../../utils/docs/getBaseResponse.js\'\n',
+      'import { getBaseResponse } from \'../../utils/docs/getBaseResponse.js\'\n',
       `export const ${modelName}Id = ${validation.id}\n`,
-      `export const ${modelName}Input = ${validation.input}\n`,
-      `const ${modelName}Schema = joiToSwagger(${modelName}Id.concat(${modelName}Input)).swagger\n`,
-      'export const schema = {',
-      `  ${modelName}: ${modelName}Schema,`,
-      `  input: joiToSwagger(${modelName}Input).swagger,`,
-      // `  responseAll: getBaseResponse(${name}Schema)`,
-      '}',
+      `export const ${modelName} = ${validation.input}\n`,
+      `export const ${modelName}Schema = joiToSwagger(${modelName}Id.concat(${modelName})).swagger`,
+      `export const ${modelName}Input = joiToSwagger(${modelName}).swagger`,
+      `export const responseAll = getBaseResponse(${modelName}Schema)`,
       '' // for StandardJS
     ]
 
-    try {
-      console.info(`Backing up current ${name} schema`)
+    result.push({
+      data,
+      name
+    })
 
-      copyFileSync(fileName, join(dirname(fileName), `${domain}.schema-backup.js`))
-    } catch (error) {
-      console.error(error.message)
-    }
+    return result
+  }, [])
 
-    try {
-      console.info(`Creating ${name} schema`)
+  // for (const [name, validation] of Object.entries(validations)) {
+  //   const modelName = name.toLowerCase()
+  //   const domain = plural(modelName)
+  //   const fileName = join(process.cwd(), 'src/domains', domain, `${domain}.schema.js`)
 
-      // mkdirSync(dirname(fileName), { recursive: true })
-      writeFileSync(fileName, data.join('\n'))
-    } catch (error) {
-      console.error(error.message)
-    }
-  }
+  //   const data = [
+  //     'import joi from \'joi\'',
+  //     'import joiToSwagger from \'joi-to-swagger\'\n',
+  //     // 'import { getBaseResponse } from \'../../utils/docs/getBaseResponse.js\'\n',
+  //     `export const ${modelName}Id = ${validation.id}\n`,
+  //     `export const ${modelName}Input = ${validation.input}\n`,
+  //     `const ${modelName}Schema = joiToSwagger(${modelName}Id.concat(${modelName}Input)).swagger\n`,
+  //     'export const schema = {',
+  //     `  ${modelName}: ${modelName}Schema,`,
+  //     `  input: joiToSwagger(${modelName}Input).swagger,`,
+  //     // `  responseAll: getBaseResponse(${name}Schema)`,
+  //     '}',
+  //     '' // for StandardJS
+  //   ]
+
+  //   try {
+  //     console.info(`Backing up current ${name} schema`)
+
+  //     copyFileSync(fileName, join(dirname(fileName), `${domain}.schema-backup.js`))
+  //   } catch (error) {
+  //     console.error(error.message)
+  //   }
+
+  //   try {
+  //     console.info(`Creating ${name} schema`)
+
+  //     // mkdirSync(dirname(fileName), { recursive: true })
+  //     writeFileSync(fileName, data.join('\n'))
+  //   } catch (error) {
+  //     console.error(error.message)
+  //   }
+  // }
 }
 
 /**
@@ -72,13 +95,29 @@ export const createValidations = (schema = Prisma.dmmf.datamodel) => {
  * @param {string} model
  * @returns {object}
  */
-export const generateSchema = (schema) => {
+export const generateSchema = (schema, schemaFields = []) => {
+  console.log(schemaFields)
+
   const models = schema.models.reduce((validation, model) => {
     const schema = parseModel(model)
 
+    // const modelSchema = schema.input.map(field => field.code)
+    // const input = modelSchema
+    //   .filter(item => !schemaFields[model.name.toLowerCase()].includes(item.field))
+    const modelSchema = schema.input.reduce((result, item) => {
+      (result.schema ??= []).push(item.code)
+
+      if (!(schemaFields[model.name.toLowerCase()] ?? []).includes(item.field)) {
+        (result.input ??= []).push(item.code)
+      }
+
+      return result
+    }, {})
+
     validation[model.name] = {
       id: schema.id,
-      input: `joi.object({\n  ${schema.input.join(',\n  ')}\n}).unknown(false)`
+      // input: `joi.object({\n  ${schema.input.map(field => field.code).join(',\n  ')}\n}).unknown(false)`
+      ...modelSchema
     }
 
     return validation
@@ -110,12 +149,13 @@ const getType = (field) => {
 }
 
 const parseDefault = (value, type) => {
-  if (!Array.isArray(value)) {
-    if (type === 'string') {
-      return parseString(value)
-    }
+  const defaultTypes = {
+    string: parseString(value),
+    date: parseDate(value)
+  }
 
-    return value
+  if (!Array.isArray(value)) {
+    return defaultTypes[type] ?? value
   }
 
   return `[${value.reduce((result, item) => {
@@ -127,6 +167,8 @@ const parseDefault = (value, type) => {
     return result
   }, []).join(', ')}]`
 }
+
+const parseDate = (value) => 'new Date()'
 
 const parseEnum = (field) => {
   const { subtype } = getType(field)
@@ -158,6 +200,19 @@ const parseField = (field) => {
 }
 
 const parseId = (field) => {
+  // const { type } = getType(field)
+  // const code = [`joi.${type}()`]
+  const code = parseIdCode(field)
+
+  // if (type === 'string') {
+  //   code.push('guid({ version: \'uuidv4\' })')
+  // }
+
+  // return `joi.object({\n  id: ${code.join('.')}\n})`
+  return `joi.object({\n  id: ${code}\n})`
+}
+
+const parseIdCode = (field) => {
   const { type } = getType(field)
   const code = [`joi.${type}()`]
 
@@ -165,7 +220,9 @@ const parseId = (field) => {
     code.push('guid({ version: \'uuidv4\' })')
   }
 
-  return `joi.object({\n  id: ${code.join('.')}\n})`
+  code.push('required()')
+
+  return code.join('.')
 }
 
 const parseModel = (model) => {
@@ -177,6 +234,10 @@ const parseModel = (model) => {
       if (field.isId) {
         result.id = schema
 
+        result.input.push({
+          field: field.name,
+          code: `${field.name}: ${parseIdCode(field)}`
+        })
         return result
       }
 
@@ -185,7 +246,11 @@ const parseModel = (model) => {
         return result
       }
 
-      result.input.push(`${field.name}: ${schema}`)
+      // result.input.push(`${field.name}: ${schema}`)
+      result.input.push({
+        field: field.name,
+        code: `${field.name}: ${schema}`
+      })
 
       return result
     }, { input: [] })
@@ -203,12 +268,14 @@ const parseRelatedTypes = (models, enums) => {
   const enumRegex = /\[Enum:(\w+)\]/gm
   const objectRegex = /\[Object:(\w+)\]/gm
 
-  return Object.entries(models).reduce((result, [model, { id, input }]) => {
-    Array.from(input.matchAll(enumRegex)).forEach(([, name]) => {
+  return Object.entries(models).reduce((result, [model, { id, input, schema }]) => {
+    // Array.from(input.matchAll(enumRegex)).forEach(([, name]) => {
+    Array.from(input.join('\n').matchAll(enumRegex)).forEach(([, name]) => {
       input = input.replaceAll(`[Enum:${name}]`, enums[name].map(parseString).join(', '))
     })
 
-    Array.from(input.matchAll(objectRegex)).forEach(([, name]) => {
+    // Array.from(input.matchAll(objectRegex)).forEach(([, name]) => {
+    Array.from(input.join('\n').matchAll(objectRegex)).forEach(([, name]) => {
       input = input.replaceAll(`[Object:${name}]`, models[name].input.replaceAll(/ {2}(\w+)/gm, '    $1').replace('})', '  })'))
     })
 
@@ -259,10 +326,10 @@ const parseString = (value) => `'${value}'`
  * @param {string} [skippedFields=['created']]
  * @return {boolean}
  */
-const shouldParseField = (field, skippedFields = ['created']) => {
-  if (field.isUpdatedAt) {
-    return false
-  }
+const shouldParseField = (field, skippedFields = [/* 'created' */]) => {
+  // if (field.isUpdatedAt) {
+  //   return false
+  // }
 
   return !skippedFields.find(value => field.name.includes(value))
 }
