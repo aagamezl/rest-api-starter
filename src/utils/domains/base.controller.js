@@ -1,6 +1,6 @@
 import { StatusCodes } from 'http-status-codes'
 
-import { errorHandler, queryParser } from '../index.js'
+import { errorHandler, requestParser } from '../index.js'
 import { getError } from './getError.js'
 
 const CONTENT_TYPE = 'application/vnd.api+json'
@@ -19,7 +19,7 @@ const CONTENT_TYPE = 'application/vnd.api+json'
  */
 
 /**
- * @param {Model} model
+ * @param {import('./base.model.js').Model} model
  * @param {object} additionalMethods
  * @returns {Controller}
  */
@@ -58,8 +58,7 @@ export const baseController = (model, methods = {}) => {
 
   const getAll = async (req, res) => {
     try {
-      const requestData = queryParser(req.url)
-
+      const requestData = requestParser(req.url)
       const records = await model.getAll(requestData)
 
       res.set('Content-Type', CONTENT_TYPE).json(records)
@@ -74,7 +73,7 @@ export const baseController = (model, methods = {}) => {
 
   const getById = async (req, res) => {
     try {
-      const requestData = queryParser(req.url)
+      const requestData = requestParser(req.url)
       const record = await model.getById(requestData)
 
       if (!record) {

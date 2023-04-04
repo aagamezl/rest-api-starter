@@ -54,7 +54,7 @@ const jsonApiQueryParser = new JsonApiQueryParserClass()
  * @param {string} url
  * @returns {RequestData}
  */
-export const queryParser = (url) => {
+export const requestParser = (url) => {
   const requestData = jsonApiQueryParser.parseRequest(url)
 
   const relationshipType = haveRelationships(

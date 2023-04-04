@@ -1,10 +1,10 @@
 import { makeSchemaOptional, SEGMENTS } from '../../utils/index.js'
-import { userId, user, userLogin } from './index.js'
+import { userId, input, userLogin } from './index.js'
 
 export const validations = {
   // POST /users
   create: {
-    [SEGMENTS.BODY]: user
+    [SEGMENTS.BODY]: input
   },
   // DELETE /users/:id
   delete: {
@@ -21,6 +21,6 @@ export const validations = {
   // PATCH /users/:id
   update: {
     [SEGMENTS.PARAMS]: userId,
-    [SEGMENTS.BODY]: makeSchemaOptional(user)
+    [SEGMENTS.BODY]: makeSchemaOptional(input)
   }
 }

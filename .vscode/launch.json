@@ -43,7 +43,7 @@
         "${file}"
       ],
       "outputCapture": "std",
-      "console": "integratedTerminal", // optional
+      // "console": "integratedTerminal", // optional
       "skipFiles": [
         "<node_internals>/**/*.js"
       ]

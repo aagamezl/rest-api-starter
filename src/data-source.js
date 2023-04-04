@@ -1,11 +1,4 @@
-import { Prisma, PrismaClient } from '@prisma/client'
-
-import {
-  createQueryCondition,
-  excludeFields,
-  getPagination,
-  scalarEnumToFields
-} from './utils/index.js'
+import { PrismaClient } from '@prisma/client'
 
 /**
  * Represent the Request Data for an JSON API URL
@@ -22,130 +15,151 @@ const dbInstance = new PrismaClient()
  *
  * @returns {PrismaClient}
  */
-const getInstance = () => {
-  return new PrismaClient()
-}
+// const getInstance = () => {
+//   // return new PrismaClient()
+//   return dbInstance
+// }
+
+// const dbInstance = getInstance()
 
 /**
  *
  * @param {string} modelName
  * @returns
  */
-const manager = (modelName) => {
-  const entity = dbInstance[modelName]
+// export const dataSource = {
+//   create: (modelName, payload) => {
+//     // const dbInstance = getInstance()
 
-  return {
-    /**
-     *
-     * @param {Object.<string, unknown>} payload
-     * @returns
-     */
-    create: (payload) => {
-      return entity.create({
-        data: {
-          ...payload
-        }
-      })
-    },
+//     return dataSource.getInstance().user.create({
+//       data: {
+//         ...payload
+//       }
+//     })
+//   },
 
-    /**
-     *
-     * @param {string} id
-     * @returns {Promise<Object.<string, unknown>>}
-     */
-    deleteById: (id) => {
-      return entity.delete({
-        where: {
-          id
-        }
-      })
-    },
+//   /**
+//    *
+//    * @returns {PrismaClient}
+//    */
+//   getInstance: () => {
+//     // return new PrismaClient()
+//     return dbInstance
+//   }
+// }
 
-    /**
-     *
-     * @param {import('./utils/index.js').RequestData} requestData
-     * @param {string[]} excludedFields
-     * @returns {Promise.<FindAllResponse>}
-     */
-    findAll: async (requestData, excludedFields) => {
-      const query = createQueryCondition(modelName, requestData)
-      const { number, size } = getPagination(requestData.queryData.page)
-
-      query.skip = number
-      query.take = size
-      query.select = excludeFields(
-        query.select ?? scalarEnumToFields(Prisma[`${entity.name}ScalarFieldEnum`]),
-        excludedFields
-      )
-
-      return entity.findMany(query)
-    },
-
-    /**
-     *
-     * @param {import('./utils/index.js').RequestData} requestData
-     * @param {string[]} excludedFields
-     * @returns {Promise.<Object.<string, unknown>}
-     */
-    findByPk: (requestData, excludedFields = []) => {
-      const query = createQueryCondition(modelName, requestData)
-
-      query.select = excludeFields(
-        query.select ?? scalarEnumToFields(Prisma[`${entity.name}ScalarFieldEnum`]),
-        excludedFields
-      )
-
-      query.where = {
-        id: requestData.identifier
+export const dataSource = {
+  /**
+   *
+   * @param {string} modelName
+   * @param {Object.<string, unknown>} payload
+   * @returns
+   */
+  create: (modelName, payload) => {
+    return dataSource.getInstance()[modelName].create({
+      data: {
+        ...payload
       }
+    })
+  },
 
-      return entity.findUnique(query)
-    },
+  /**
+   *
+   * @param {string} modelName
+   * @param {string} id
+   * @returns {Promise<Object.<string, unknown>>}
+   */
+  deleteById: (modelName, id) => {
+    return dataSource.getInstance()[modelName].delete({
+      where: {
+        id
+      }
+    })
+  },
 
-    findOne: (query) => {
-      return entity.findFirstOrThrow({
-        where: {
-          ...query
-        }
-      })
-    },
+  /**
+   *
+   * @param {string} modelName
+   * @param {import('./utils/index.js').Query} query
+   * @returns {Promise.<FindAllResponse>}
+   */
+  findAll: async (modelName, query) => {
+    return dataSource.getInstance()[modelName].findMany(query)
+  },
 
-    findOrCreate: () => {
-    },
+  /**
+   *
+   * @param {string} modelName
+   * @param {import('./utils/index.js').Query} query
+   * @returns {Promise.<Object.<string, unknown>}
+   */
+  findAndCountAll: async (modelName, query) => {
+    const dbInstance = dataSource.getInstance()
+    const entity = dbInstance[modelName]
 
-    findAndCountAll: async (requestData, excludedFields) => {
-      const query = createQueryCondition(modelName, requestData)
-      const { number, size } = getPagination(requestData.queryData.page)
+    const [count, items] = await dbInstance.$transaction([
+      entity.count(),
+      entity.findMany(query)
+    ])
 
-      query.skip = number
-      query.take = size
-      query.select = excludeFields(
-        query.select ?? scalarEnumToFields(Prisma[`${entity.name}ScalarFieldEnum`]),
-        excludedFields
-      )
+    return { count, items }
+  },
 
-      const [count, items] = await dbInstance.$transaction([
-        entity.count(),
-        entity.findMany(query)
-      ])
+  /**
+   *
+   * @param {string} modelName
+   * @param {import('./utils/index.js').Query} query
+   * @returns {Promise.<Object.<string, unknown>}
+   */
+  findOne: (modelName, query) => {
+    return dataSource.getInstance()[modelName].findFirst({
+      where: {
+        ...query
+      }
+    })
+  },
 
-      return { count, items }
-    },
+  /**
+   *
+   * @param {string} modelName
+   * @param {import('./utils/index.js').Query} query
+   * @returns {Promise.<Object.<string, unknown>}
+   */
+  findUnique: (modelName, query) => {
+    return dataSource.getInstance()[modelName].findUnique(query)
+  },
 
-    update: (id, payload) => {
-      return entity.update({
-        where: {
-          id
-        },
-        data: {
-          ...payload
-        }
-      })
-    }
+  findOrCreate: () => {
+  },
+
+  /**
+   *
+   * @returns {PrismaClient}
+   */
+  getInstance: () => {
+    return dbInstance
+  },
+
+  /**
+   *
+   * @param {string} modelName
+   * @param {string} id
+   * @param {Object.<string, unknown>} payload
+   * @returns
+   */
+  update: (modelName, id, payload) => {
+    return dataSource.getInstance()[modelName].update({
+      where: {
+        id
+      },
+      data: {
+        ...payload
+      }
+    })
   }
 }
 
-export const dataSource = {
-  manager,
-  getInstance
-}
+// export const dataSource = {
+//   manager,
+//   getInstance
+// }

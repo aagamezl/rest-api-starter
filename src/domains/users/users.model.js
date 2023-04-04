@@ -3,18 +3,28 @@ import { dataSource } from '../../data-source.js'
 import { createHashValue, generateToken } from '../../utils/authentication/index.js'
 
 import { baseModel } from '../../utils/domains/base.model.js'
+import { queryBuilder } from '../../utils/index.js'
 
-// const { user: entity } = dataSource.getInstance()
+/**
+ * User Data
+ *
+ * @typedef UserData
+ * @type {object}
+ *
+ * @property {string} token
+ * @property {string} username
+ * @property {string} email
+ */
 
 /**
  *
  * @param {Object.<string, unknown>} payload
- * @returns {Promise<object>}
+ * @returns {Promise<Object.<string, unknown>>}
  */
 export const create = async (payload) => {
   const password = createHashValue(payload.password)
 
-  const user = await dataSource.manager('user').create({
+  const user = await dataSource.create('user', {
     ...payload,
     password
   })
@@ -25,40 +35,24 @@ export const create = async (payload) => {
   return await user
 }
 
-// /**
-//  *
-//  * @param {string} id
-//  * @returns {Promise<Object.<string, unknown>>}
-//  */
-// export const deleteById = (id) => {
-//   return dataSource.manager('user').deleteById(id)
-// }
+/**
+ *
+ * @param {import('../../utils/index.js').RequestData} requestData
+ * @returns {Promise<import('../../data-source.js').FindAllResponse>}
+ */
+const getAll = (requestData) => {
+  const query = queryBuilder(requestData, ['password'])
 
-// /**
-//  *
-//  * @param {import('../../utils/index.js').RequestData} requestData
-//  * @returns {Promise<import('../../data-source.js').FindAllResponse>}
-//  */
-// export const getAll = (requestData) => {
-//   return dataSource.manager('user').findAndCountAll(requestData, ['password'])
-// }
-
-// /**
-//  *
-//  * @param {import('../../utils/index.js').RequestData} requestData
-//  * @returns {Promise.<Object.<string, unknown>}
-//  */
-// export const getById = (requestData) => {
-//   return dataSource.manager('user').findByPk(requestData, ['password'])
-// }
+  return dataSource.findAndCountAll('user', query)
+}
 
 /**
  *
  * @param {Object.<string, string>} payload
- * @returns
+ * @returns {Promise<UserData>}
  */
 export const login = async ({ email, password }) => {
-  const user = await dataSource.manager('user').findOne({
+  const user = await dataSource.findOne('user', {
     email,
     password: createHashValue(password)
   })
@@ -78,13 +72,13 @@ export const login = async ({ email, password }) => {
   }
 
   const userData = {
-    token: token,
+    token,
     username: `${user.firstname} ${user.lastname}`,
     email: user.email
   }
 
   // Save token in list of valid tokens
-  await await dataSource.manager('authToken').create({ token })
+  await dataSource.create('authToken', { token })
 
   return userData
 }
@@ -93,14 +87,14 @@ export const login = async ({ email, password }) => {
  *
  * @param {string} id
  * @param {Object.<string, unknown>} payload
- * @returns {Promise.<Object.<string, unknown>}
+ * @returns {Promise.<Object.<string, unknown>>}
  */
 export const update = async (id, payload) => {
   if (payload.password) {
     payload.password = createHashValue(payload.password)
   }
 
-  const user = await dataSource.manager('user').update(id, payload)
+  const user = await dataSource.update('user', id, payload)
 
   // The password is not meant to be returned
   delete user.password
@@ -108,4 +102,4 @@ export const update = async (id, payload) => {
   return user
 }
 
-export const model = baseModel('user', { create, login, update })
+export const model = baseModel('user', { create, getAll, login, update })

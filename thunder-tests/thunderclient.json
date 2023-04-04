@@ -22,12 +22,12 @@
     "method": "POST",
     "sortNum": 10000,
     "created": "2023-01-21T15:27:06.016Z",
-    "modified": "2023-03-27T15:19:41.059Z",
+    "modified": "2023-04-02T14:58:42.257Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"email\": \"john@email.com\",\n  \"password\": \"abcd1234\"\n}",
+      "raw": "{\n  \"email\": \"john.doe@email.com\",\n  \"password\": \"abcd1234\"\n}",
       "form": []
     },
     "tests": [
@@ -44,11 +44,11 @@
     "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
     "containerId": "",
     "name": "Find All Users",
-    "url": "{{baseUrl}}/users?fields[user]=id,firstname,lastname&fields[posts]=title,content",
+    "url": "{{baseUrl}}/users?fields[user]=id,firstname,lastname&fields[posts]=title,content&sort=-age,firstname",
     "method": "GET",
     "sortNum": 20000,
     "created": "2023-03-12T18:44:04.755Z",
-    "modified": "2023-03-27T15:28:22.929Z",
+    "modified": "2023-04-02T15:16:07.839Z",
     "headers": [],
     "params": [
       {
@@ -59,6 +59,11 @@
       {
         "name": "fields[posts]",
         "value": "title,content",
+        "isPath": false
+      },
+      {
+        "name": "sort",
+        "value": "-age,firstname",
         "isPath": false
       }
     ],
@@ -84,12 +89,12 @@
     "method": "POST",
     "sortNum": 30000,
     "created": "2023-03-12T18:44:40.016Z",
-    "modified": "2023-03-27T15:06:18.139Z",
+    "modified": "2023-04-02T13:27:13.962Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"firstname\": \"John\",\n  \"lastname\": \"Doe\",\n  \"password\": \"abcd1234\",\n  \"age\": 34,\n  \"email\": \"john.doe@email.com\"\n}",
+      "raw": "{\n  \"firstname\": \"Jane\",\n  \"lastname\": \"Doe\",\n  \"password\": \"abcd1234\",\n  \"age\": 34,\n  \"email\": \"jane.doe@email.com\"\n}",
       "form": []
     },
     "tests": [
@@ -120,16 +125,16 @@
     "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
     "containerId": "",
     "name": "Get User By ID",
-    "url": "{{baseUrl}}/users/{{USER_ID}}?fields[user]=id,name,lastname&fields[posts]=title,content",
+    "url": "{{baseUrl}}/users/{{USER_ID}}?fields[user]=id,firstname,lastname&fields[posts]=title,content",
     "method": "GET",
     "sortNum": 40000,
     "created": "2023-03-19T13:08:35.593Z",
-    "modified": "2023-03-27T12:10:28.619Z",
+    "modified": "2023-04-02T13:35:42.062Z",
     "headers": [],
     "params": [
       {
         "name": "fields[user]",
-        "value": "id,name,lastname",
+        "value": "id,firstname,lastname",
         "isPath": false
       },
       {
@@ -138,6 +143,10 @@
         "isPath": false
       }
     ],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{AUTH_TOKEN}}"
+    },
     "tests": []
   },
   {
@@ -149,13 +158,17 @@
     "method": "PATCH",
     "sortNum": 30000,
     "created": "2023-03-19T13:52:34.911Z",
-    "modified": "2023-03-27T14:46:11.344Z",
+    "modified": "2023-04-02T13:16:15.189Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\n  \"email\": \"john.doe@email.com\"\n}",
+      "raw": "{\n  \"email\": \"john.doe1@email.com\"\n}",
       "form": []
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{AUTH_TOKEN}}"
     },
     "tests": [
       {

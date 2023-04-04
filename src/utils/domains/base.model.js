@@ -1,4 +1,5 @@
 import { dataSource } from '../../data-source.js'
+import { queryBuilder } from '../query/queryBuilder.js'
 
 /**
  * Base Model
@@ -8,8 +9,8 @@ import { dataSource } from '../../data-source.js'
  *
  * @property {(payload: Object.<string, unknown>) => Promise.<AbstractBaseEntity>} create
  * @property {(id: string) => Promise.<Object.<string, unknown>>} deleteById
- * @property {(requestData: import('../query/queryParser.js').RequestData) => Promise.<GetAllResponse>} getAll
- * @property {(id: string, requestData: import('../query/queryParser.js').RequestData) => Promise.<AbstractBaseEntity>} getById
+ * @property {(requestData: import('../query/requestParser.js').RequestData) => Promise.<GetAllResponse>} getAll
+ * @property {(id: string, requestData: import('../query/requestParser.js').RequestData) => Promise.<AbstractBaseEntity>} getById
  * @property {(id: string, payload: UpdatePayload.<TEntity>) => Promise.<AbstractBaseEntity>} update
  */
 
@@ -26,7 +27,7 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise<object>}
    */
   const create = async (payload) => {
-    const user = await dataSource.manager(modelName).create(payload)
+    const user = await dataSource.create(modelName, payload)
 
     // The password is not meant to be returned
     delete user.password
@@ -40,7 +41,7 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise<Object.<string, unknown>>}
    */
   const deleteById = (id) => {
-    return dataSource.manager(modelName).deleteById(id)
+    return dataSource.deleteById(modelName, id)
   }
 
   /**
@@ -49,7 +50,9 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise<import('../../data-source.js').FindAllResponse>}
    */
   const getAll = (requestData) => {
-    return dataSource.manager(modelName).findAndCountAll(requestData, ['password'])
+    const query = queryBuilder(requestData)
+
+    return dataSource.findAndCountAll(modelName, query)
   }
 
   /**
@@ -58,7 +61,9 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise.<Object.<string, unknown>}
    */
   const getById = (requestData) => {
-    return dataSource.manager(modelName).findByPk(requestData)
+    const query = queryBuilder(requestData, ['password'])
+
+    return dataSource.findUnique(modelName, query)
   }
 
   /**
