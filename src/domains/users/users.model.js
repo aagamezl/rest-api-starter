@@ -24,7 +24,8 @@ import { queryBuilder } from '../../utils/index.js'
 export const create = async (payload) => {
   const password = createHashValue(payload.password)
 
-  const user = await dataSource.create('user', {
+  // const user = await dataSource.create('user', {
+  const user = await dataSource.manager('user').create({
     ...payload,
     password
   })
@@ -43,7 +44,18 @@ export const create = async (payload) => {
 const getAll = (requestData) => {
   const query = queryBuilder(requestData, ['password'])
 
-  return dataSource.findAndCountAll('user', query)
+  return dataSource.manager('user').findAndCountAll(query)
+}
+
+/**
+ *
+ * @param {import('../../utils/index.js').RequestData} requestData
+ * @returns {Promise.<Object.<string, unknown>}
+ */
+const getById = (requestData) => {
+  const query = queryBuilder(requestData, ['password'])
+
+  return dataSource.manager('user').findUnique(query)
 }
 
 /**
@@ -52,7 +64,7 @@ const getAll = (requestData) => {
  * @returns {Promise<UserData>}
  */
 export const login = async ({ email, password }) => {
-  const user = await dataSource.findOne('user', {
+  const user = await dataSource.manager('user').findOne({
     email,
     password: createHashValue(password)
   })
@@ -78,7 +90,7 @@ export const login = async ({ email, password }) => {
   }
 
   // Save token in list of valid tokens
-  await dataSource.create('authToken', { token })
+  await dataSource.manager('authToken').create({ token })
 
   return userData
 }
@@ -94,7 +106,7 @@ export const update = async (id, payload) => {
     payload.password = createHashValue(payload.password)
   }
 
-  const user = await dataSource.update('user', id, payload)
+  const user = await dataSource.manager('user').update(id, payload)
 
   // The password is not meant to be returned
   delete user.password
@@ -102,4 +114,4 @@ export const update = async (id, payload) => {
   return user
 }
 
-export const model = baseModel('user', { create, getAll, login, update })
+export const model = baseModel('user', { create, getAll, getById, login, update })

@@ -44,11 +44,11 @@
     "colId": "19b07d0c-57a3-4135-8de0-5293f9639280",
     "containerId": "",
     "name": "Find All Users",
-    "url": "{{baseUrl}}/users?fields[user]=id,firstname,lastname&fields[posts]=title,content&sort=-age,firstname",
+    "url": "{{baseUrl}}/users?fields[user]=id,firstname,lastname&fields[posts]=title,content&sort=-age,firstname&page[offset]=0&page[limit]=10",
     "method": "GET",
     "sortNum": 20000,
     "created": "2023-03-12T18:44:04.755Z",
-    "modified": "2023-04-02T15:16:07.839Z",
+    "modified": "2023-04-04T23:14:21.465Z",
     "headers": [],
     "params": [
       {
@@ -64,6 +64,16 @@
       {
         "name": "sort",
         "value": "-age,firstname",
+        "isPath": false
+      },
+      {
+        "name": "page[offset]",
+        "value": "0",
+        "isPath": false
+      },
+      {
+        "name": "page[limit]",
+        "value": "10",
         "isPath": false
       }
     ],

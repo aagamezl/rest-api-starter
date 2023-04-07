@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken'
 import sinon from 'sinon'
 import test from 'ava'
 
-import { dataSource } from '../../src/data-source.js'
-import { createHashValue } from '../../src/utils/authentication/createHashValue.js'
-import { model } from '../../src/domains/users/users.model.js'
-import { createPrismaStub } from '../stubs/createStub.js'
+import { dataSource } from '../src/data-source.js'
+import { createHashValue } from '../src/utils/authentication/createHashValue.js'
+import { model } from '../src/domains/users/users.model.js'
+import { createPrismaStub } from './stubs/createStub.js'
 
 let sandbox
 let dataSourceMock
@@ -50,26 +50,6 @@ test.afterEach(() => {
 })
 
 test('should create an user', async t => {
-  const expected = {
-    ...userWithoutPassword
-  }
-
-  const prismaStub = createPrismaStub('user')
-  dataSourceMock.expects('getInstance').once().returns(prismaStub)
-
-  sandbox.mock(prismaStub.user).expects('create').once().withArgs({
-    data: {
-      ...payload,
-      password: createHashValue(payload.password)
-    }
-  }).resolves(userWithoutPassword)
-
-  const result = await model.create(payload)
-
-  t.deepEqual(result, expected)
-})
-
-test('should find create an user', async t => {
   const expected = {
     ...userWithoutPassword
   }
@@ -166,23 +146,80 @@ test('should get an user by id', async t => {
     orderBy: []
   }
 
-  const expected = {
-    ...userWithoutPassword
-  }
+  // const expected = {
+  //   ...userWithoutPassword
+  // }
 
-  sandbox.mock(prismaStub.user).expects('findUnique').once().withArgs(query).resolves(expected)
+  sandbox.mock(prismaStub.user).expects('findUnique').once().withArgs(query).resolves(user)
 
   const result = await model.getById(requestData)
+
+  t.deepEqual(result, userWithoutPassword)
+})
+
+test('should update an user by id', async t => {
+  const prismaStub = createPrismaStub()
+  dataSourceMock.expects('getInstance').once().returns(prismaStub)
+
+  const payload = {
+    firstname: 'Susan'
+  }
+
+  const expected = {
+    ...userWithoutPassword,
+    ...payload
+  }
+
+  sandbox.mock(prismaStub.user).expects('update').once()
+    .withArgs({
+      where: {
+        id
+      },
+      data: {
+        ...payload
+      }
+    }).resolves(expected)
+
+  const result = await model.update(id, payload)
 
   t.deepEqual(result, expected)
 })
 
-test('should login an user', async t => {
-  const userPrismaStub = createPrismaStub('user')
-  const authTokenPrismaStub = createPrismaStub('authToken')
-  dataSourceMock.expects('getInstance').twice()
-    .onFirstCall().returns(userPrismaStub)
-    .onSecondCall().returns(authTokenPrismaStub)
+test('should fails login on unexisting user', async t => {
+  const prismaStub = createPrismaStub()
+  dataSourceMock.expects('getInstance').once().returns(prismaStub)
+
+  sandbox.mock(prismaStub.user).expects('findFirst').once().withArgs({
+    where: {
+      email: payload.email,
+      password: createHashValue(payload.password)
+    }
+  }).resolves(undefined)
+
+  const userData = await model.login({
+    email: payload.email,
+    password: payload.password
+  })
+
+  t.deepEqual(userData, undefined)
+})
+
+test('should login an existing user', async t => {
+  const prismaStub = createPrismaStub()
+  dataSourceMock.expects('getInstance').twice().returns(prismaStub)
+
+  sandbox.mock(prismaStub.user).expects('findFirst').once().withArgs({
+    where: {
+      email: payload.email,
+      password: createHashValue(payload.password)
+    }
+  }).resolves(user)
+
+  sandbox.mock(prismaStub.authToken).expects('create').once().withArgs({
+    data: {
+      token
+    }
+  })
 
   const tokenMock = sinon.mock(jwt)
   tokenMock.expects('sign').yields(null, token)
@@ -192,19 +229,6 @@ test('should login an user', async t => {
     username: `${user.firstname} ${user.lastname}`,
     email: user.email
   }
-
-  sandbox.mock(userPrismaStub.user).expects('findFirst').once().withArgs({
-    where: {
-      email: payload.email,
-      password: createHashValue(payload.password)
-    }
-  }).resolves(user)
-
-  sandbox.mock(authTokenPrismaStub.authToken).expects('create').once().withArgs({
-    data: {
-      token
-    }
-  })
 
   const userData = await model.login({
     email: payload.email,

@@ -9,7 +9,7 @@ import { PrismaClient } from '@prisma/client'
  * @property {Object.<string, unknown>} items - Indicates items returned according the the request data.
  */
 
-const dbInstance = new PrismaClient()
+// const dbInstance = new PrismaClient()
 
 /**
  *
@@ -48,114 +48,226 @@ const dbInstance = new PrismaClient()
 //   }
 // }
 
+// export const dataSource = {
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {Object.<string, unknown>} payload
+//    * @returns
+//    */
+//   create: (modelName, payload) => {
+//     return dataSource.getInstance()[modelName].create({
+//       data: {
+//         ...payload
+//       }
+//     })
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {string} id
+//    * @returns {Promise<Object.<string, unknown>>}
+//    */
+//   deleteById: (modelName, id) => {
+//     return dataSource.getInstance()[modelName].delete({
+//       where: {
+//         id
+//       }
+//     })
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {import('./utils/index.js').Query} query
+//    * @returns {Promise.<FindAllResponse>}
+//    */
+//   findAll: async (modelName, query) => {
+//     return dataSource.getInstance()[modelName].findMany(query)
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {import('./utils/index.js').Query} query
+//    * @returns {Promise.<Object.<string, unknown>}
+//    */
+//   findAndCountAll: async (modelName, query) => {
+//     const dbInstance = dataSource.getInstance()
+//     const entity = dbInstance[modelName]
+
+//     const [count, items] = await dbInstance.$transaction([
+//       entity.count(),
+//       entity.findMany(query)
+//     ])
+
+//     return { count, items }
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {import('./utils/index.js').Query} query
+//    * @returns {Promise.<Object.<string, unknown>}
+//    */
+//   findOne: (modelName, query) => {
+//     return dataSource.getInstance()[modelName].findFirst({
+//       where: {
+//         ...query
+//       }
+//     })
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {import('./utils/index.js').Query} query
+//    * @returns {Promise.<Object.<string, unknown>}
+//    */
+//   findUnique: (modelName, query) => {
+//     return dataSource.getInstance()[modelName].findUnique(query)
+//   },
+
+//   findOrCreate: () => {
+//   },
+
+//   /**
+//    *
+//    * @returns {PrismaClient}
+//    */
+//   getInstance: () => {
+//     return dbInstance
+//   },
+
+//   /**
+//    *
+//    * @param {string} modelName
+//    * @param {string} id
+//    * @param {Object.<string, unknown>} payload
+//    * @returns
+//    */
+//   update: (modelName, id, payload) => {
+//     return dataSource.getInstance()[modelName].update({
+//       where: {
+//         id
+//       },
+//       data: {
+//         ...payload
+//       }
+//     })
+//   }
+// }
+
 export const dataSource = {
-  /**
-   *
-   * @param {string} modelName
-   * @param {Object.<string, unknown>} payload
-   * @returns
-   */
-  create: (modelName, payload) => {
-    return dataSource.getInstance()[modelName].create({
-      data: {
-        ...payload
-      }
-    })
-  },
-
-  /**
-   *
-   * @param {string} modelName
-   * @param {string} id
-   * @returns {Promise<Object.<string, unknown>>}
-   */
-  deleteById: (modelName, id) => {
-    return dataSource.getInstance()[modelName].delete({
-      where: {
-        id
-      }
-    })
-  },
-
-  /**
-   *
-   * @param {string} modelName
-   * @param {import('./utils/index.js').Query} query
-   * @returns {Promise.<FindAllResponse>}
-   */
-  findAll: async (modelName, query) => {
-    return dataSource.getInstance()[modelName].findMany(query)
-  },
-
-  /**
-   *
-   * @param {string} modelName
-   * @param {import('./utils/index.js').Query} query
-   * @returns {Promise.<Object.<string, unknown>}
-   */
-  findAndCountAll: async (modelName, query) => {
-    const dbInstance = dataSource.getInstance()
-    const entity = dbInstance[modelName]
-
-    const [count, items] = await dbInstance.$transaction([
-      entity.count(),
-      entity.findMany(query)
-    ])
-
-    return { count, items }
-  },
-
-  /**
-   *
-   * @param {string} modelName
-   * @param {import('./utils/index.js').Query} query
-   * @returns {Promise.<Object.<string, unknown>}
-   */
-  findOne: (modelName, query) => {
-    return dataSource.getInstance()[modelName].findFirst({
-      where: {
-        ...query
-      }
-    })
-  },
-
-  /**
-   *
-   * @param {string} modelName
-   * @param {import('./utils/index.js').Query} query
-   * @returns {Promise.<Object.<string, unknown>}
-   */
-  findUnique: (modelName, query) => {
-    return dataSource.getInstance()[modelName].findUnique(query)
-  },
-
-  findOrCreate: () => {
-  },
-
   /**
    *
    * @returns {PrismaClient}
    */
   getInstance: () => {
-    return dbInstance
+    return new PrismaClient()
   },
+  manager: (modelName) => {
+    const dbInstance = dataSource.getInstance()
 
-  /**
-   *
-   * @param {string} modelName
-   * @param {string} id
-   * @param {Object.<string, unknown>} payload
-   * @returns
-   */
-  update: (modelName, id, payload) => {
-    return dataSource.getInstance()[modelName].update({
-      where: {
-        id
+    return {
+      /**
+       *
+       * @param {string} modelName
+       * @param {Object.<string, unknown>} payload
+       * @returns
+       */
+      create: (payload) => {
+        return dbInstance[modelName].create({
+          data: {
+            ...payload
+          }
+        })
       },
-      data: {
-        ...payload
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {string} id
+       * @returns {Promise<Object.<string, unknown>>}
+       */
+      deleteById: (id) => {
+        return dbInstance[modelName].delete({
+          where: {
+            id
+          }
+        })
+      },
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {import('./utils/index.js').Query} query
+       * @returns {Promise.<FindAllResponse>}
+       */
+      findAll: async (query) => {
+        return dbInstance[modelName].findMany(query)
+      },
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {import('./utils/index.js').Query} query
+       * @returns {Promise.<Object.<string, unknown>}
+       */
+      findAndCountAll: async (query) => {
+        const entity = dbInstance[modelName]
+
+        const [count, items] = await dbInstance.$transaction([
+          entity.count(),
+          entity.findMany(query)
+        ])
+
+        return { count, items }
+      },
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {import('./utils/index.js').Query} query
+       * @returns {Promise.<Object.<string, unknown>}
+       */
+      findOne: (query) => {
+        return dbInstance[modelName].findFirst({
+          where: {
+            ...query
+          }
+        })
+      },
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {import('./utils/index.js').Query} query
+       * @returns {Promise.<Object.<string, unknown>}
+       */
+      findUnique: (query) => {
+        return dbInstance[modelName].findUnique(query)
+      },
+
+      /**
+       *
+       * @param {string} modelName
+       * @param {string} id
+       * @param {Object.<string, unknown>} payload
+       * @returns
+       */
+      update: (id, payload) => {
+        return dbInstance[modelName].update({
+          where: {
+            id
+          },
+          data: {
+            ...payload
+          }
+        })
       }
-    })
+    }
   }
 }
 

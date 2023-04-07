@@ -73,7 +73,7 @@ export const queryBuilder = (requestData, excludedFields = []) => {
 
   const modelName = singular(requestData.resourceType)
   const query = createQueryCondition(modelName, requestData)
-  const { number, size } = getPagination(requestData.queryData.page)
+  const { offset, limit } = getPagination(requestData.queryData.page)
 
   query.select = excludeFields(
     query.select ?? scalarEnumToFields(Prisma[`${capitalize(modelName)}ScalarFieldEnum`]),
@@ -85,8 +85,8 @@ export const queryBuilder = (requestData, excludedFields = []) => {
       id: requestData.identifier
     }
   } else {
-    query.skip = number
-    query.take = size
+    query.skip = offset
+    query.take = limit
   }
 
   query.orderBy = requestData.queryData.sort.reduce((orderBy, field) => {

@@ -27,7 +27,7 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise<object>}
    */
   const create = async (payload) => {
-    const user = await dataSource.create(modelName, payload)
+    const user = await dataSource.manager(modelName).create(payload)
 
     // The password is not meant to be returned
     delete user.password
@@ -41,7 +41,7 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise<Object.<string, unknown>>}
    */
   const deleteById = (id) => {
-    return dataSource.deleteById(modelName, id)
+    return dataSource.manager(modelName).deleteById(id)
   }
 
   /**
@@ -52,7 +52,7 @@ export const baseModel = (modelName, methods) => {
   const getAll = (requestData) => {
     const query = queryBuilder(requestData)
 
-    return dataSource.findAndCountAll(modelName, query)
+    return dataSource.manager(modelName).findAndCountAll(query)
   }
 
   /**
@@ -61,9 +61,9 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise.<Object.<string, unknown>}
    */
   const getById = (requestData) => {
-    const query = queryBuilder(requestData, ['password'])
+    const query = queryBuilder(requestData)
 
-    return dataSource.findUnique(modelName, query)
+    return dataSource.manager(modelName).findUnique(query)
   }
 
   /**
@@ -73,7 +73,7 @@ export const baseModel = (modelName, methods) => {
    * @returns {Promise.<Object.<string, unknown>}
    */
   const update = async (id, payload) => {
-    return dataSource.manager('user').update(id, payload)
+    return dataSource.manager(modelName).update(id, payload)
   }
 
   return {
