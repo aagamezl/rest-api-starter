@@ -167,6 +167,7 @@ export const dataSource = {
   getInstance: () => {
     return new PrismaClient()
   },
+
   manager: (modelName) => {
     const dbInstance = dataSource.getInstance()
 

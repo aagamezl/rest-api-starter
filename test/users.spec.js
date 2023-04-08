@@ -3,7 +3,7 @@ import sinon from 'sinon'
 import test from 'ava'
 
 import { dataSource } from '../src/data-source.js'
-import { createHashValue } from '../src/utils/authentication/createHashValue.js'
+import { createHashValue } from '../src/utils/authentication/index.js'
 import { model } from '../src/domains/users/users.model.js'
 import { createPrismaStub } from './stubs/createStub.js'
 
@@ -161,13 +161,13 @@ test('should update an user by id', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
-  const payload = {
+  const updatePayload = {
     firstname: 'Susan'
   }
 
   const expected = {
     ...userWithoutPassword,
-    ...payload
+    ...updatePayload
   }
 
   sandbox.mock(prismaStub.user).expects('update').once()
@@ -176,16 +176,44 @@ test('should update an user by id', async t => {
         id
       },
       data: {
-        ...payload
+        ...updatePayload
       }
     }).resolves(expected)
 
-  const result = await model.update(id, payload)
+  const result = await model.update(id, updatePayload)
 
   t.deepEqual(result, expected)
 })
 
-test('should fails login on unexisting user', async t => {
+test('should update an user with password by id', async t => {
+  const updateData = {
+    firstname: 'Susan',
+    password: 'dcba4321'
+  }
+  const expected = {
+    ...updateData
+  }
+
+  const prismaStub = createPrismaStub()
+  dataSourceMock.expects('getInstance').once().returns(prismaStub)
+
+  sandbox.mock(prismaStub.user).expects('update').once()
+    .withArgs({
+      where: {
+        id
+      },
+      data: {
+        ...updateData,
+        password: createHashValue(updateData.password)
+      }
+    }).resolves(expected)
+
+  const result = await model.update(id, updateData)
+
+  t.deepEqual(result, expected)
+})
+
+test.serial('should fails login on unexisting user', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
@@ -204,7 +232,34 @@ test('should fails login on unexisting user', async t => {
   t.deepEqual(userData, undefined)
 })
 
-test('should login an existing user', async t => {
+test.serial('should fails login on jwt sign error', async t => {
+  const prismaStub = createPrismaStub()
+  dataSourceMock.expects('getInstance').once().returns(prismaStub)
+
+  sandbox.mock(prismaStub.user).expects('findFirst').once().withArgs({
+    where: {
+      email: payload.email,
+      password: createHashValue(payload.password)
+    }
+  }).resolves(user)
+
+  const tokenMock = sandbox.mock(jwt)
+  tokenMock.expects('sign').yields(new Error())
+
+  const error = await t.throwsAsync(async () => {
+    await model.login({
+      email: payload.email,
+      password: payload.password
+    })
+
+    tokenMock.verify()
+    tokenMock.restore()
+  }, { instanceOf: Error })
+
+  t.is(error.message, 'Error signing JWT token.')
+})
+
+test.serial('should login an existing user', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').twice().returns(prismaStub)
 
@@ -221,7 +276,7 @@ test('should login an existing user', async t => {
     }
   })
 
-  const tokenMock = sinon.mock(jwt)
+  const tokenMock = sandbox.mock(jwt)
   tokenMock.expects('sign').yields(null, token)
 
   const expected = {
@@ -236,4 +291,7 @@ test('should login an existing user', async t => {
   })
 
   t.deepEqual(userData, expected)
+
+  tokenMock.verify()
+  tokenMock.restore()
 })

@@ -73,26 +73,26 @@ export const login = async ({ email, password }) => {
     return
   }
 
-  const token = await generateToken(
-    user.email,
-    config.authentication.secret,
-    config.authentication.expiresIn
-  )
+  try {
+    const token = await generateToken(
+      user.email,
+      config.authentication.secret,
+      config.authentication.expiresIn
+    )
 
-  if (!token) {
+    const userData = {
+      token,
+      username: `${user.firstname} ${user.lastname}`,
+      email: user.email
+    }
+
+    // Save token in list of valid tokens
+    await dataSource.manager('authToken').create({ token })
+
+    return userData
+  } catch (error) {
     throw new Error('Error signing JWT token.')
   }
-
-  const userData = {
-    token,
-    username: `${user.firstname} ${user.lastname}`,
-    email: user.email
-  }
-
-  // Save token in list of valid tokens
-  await dataSource.manager('authToken').create({ token })
-
-  return userData
 }
 
 /**
