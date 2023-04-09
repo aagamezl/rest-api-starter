@@ -5,6 +5,16 @@
   "version": "0.2.0",
   "configurations": [
     {
+      "name": "Attach by Process ID",
+      "processId": "${command:PickProcess}",
+      "request": "attach",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "type": "node"
+    },
+
+    {
       "name": "Docker: Attach to Node",
       "type": "node",
       "request": "attach",
@@ -33,7 +43,7 @@
         "${file}"
       ],
       "outputCapture": "std",
-      "console": "integratedTerminal", // optional
+      // "console": "integratedTerminal", // optional
       "skipFiles": [
         "<node_internals>/**/*.js"
       ]

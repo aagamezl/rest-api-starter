@@ -1,6 +1,6 @@
 import { healthOperations } from './operations/health/index.js'
 import { mergeOperationPaths } from '../utils/docs/mergeOperationPaths.js'
-import { userOperations } from './operations/user/index.js'
+import { usersOperations } from './operations/users/index.js'
 
 import { info } from './info.js'
 import { servers } from './servers.js'
@@ -13,7 +13,7 @@ export const openAPI = {
   ...components,
   ...tags,
   ...mergeOperationPaths([ // merge operations paths
-    userOperations,
+    usersOperations,
     healthOperations
   ])
 }

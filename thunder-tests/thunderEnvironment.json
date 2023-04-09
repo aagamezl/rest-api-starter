@@ -10,6 +10,18 @@
       {
         "name": "baseUrl",
         "value": "http://localhost:3000"
+      },
+      {
+        "name": "USER_ID",
+        "value": "7fa7412e-423d-4301-924e-6fd263ba2cd7"
+      },
+      {
+        "name": "POST_ID",
+        "value": "2e9251c2-9650-49e6-806e-be9478589b1d"
+      },
+      {
+        "name": "AUTH_TOKEN",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiam9obi5kb2VAZW1haWwuY29tIiwiaWF0IjoxNjgwNjMyNzAxLCJleHAiOjE2ODA2MzYzMDF9.kexAMcMUtqA3jn2L4cskYPTfUAgCgoEysOJItHgnZu0"
       }
     ]
   }

@@ -1,39 +1,42 @@
-FROM node:18.12.1-alpine3.16 as base
+FROM node:18.13.0-alpine3.17 as base
 
 # Create Directory for the Container
 WORKDIR /usr/src/app
 
-# RUN chown -Rh node:node /usr/src/app
-
-# USER node
-
+# Copy package.json and package-lock.json
 COPY package*.json /
-EXPOSE 3001
+
+# Expose API Port
+EXPOSE 3000
 
 # ---------------------- START DEVELOPMENT CONFIGURATION -----------------------
 FROM base as development
-ENV NODE_ENV=development
+ENV NODE_ENV development
+
+# Copy all other source code to work directory
+COPY --chown=node:node . .
 
 # Run npm and install modules
 RUN npm i
 
-# Copy all other source code to work directory
-COPY . /
+USER node
 
-# Run start command
+# Run start development command
 CMD ["npm", "run", "start:dev"]
 # ----------------------- END DEVELOPMENT CONFIGURATION ------------------------
 
 # ----------------------- START PRODUCTION CONFIGURATION -----------------------
 FROM base as production
-ENV NODE_ENV=production
-
-# Run npm and install production modules
-RUN npm ci
+ENV NODE_ENV production
 
 # Copy all other source code to work directory
-COPY . /
+COPY --chown=node:node . .
 
-# Run start command
+# Run npm and install production modules
+RUN npm ci --only=production
+
+USER node
+
+# Run start production command
 CMD ["node", "bin/www/index.js"]
 # ------------------------ END PRODUCTION CONFIGURATION ------------------------

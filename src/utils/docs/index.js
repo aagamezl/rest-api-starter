@@ -1,2 +1,2 @@
-export * from './getBaseResponse'
-export * from './mergeOperationPaths'
+export * from './getBaseResponse.js'
+export * from './mergeOperationPaths.js'

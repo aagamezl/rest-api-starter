@@ -1,5 +1,17 @@
 import { randomBytes } from 'node:crypto'
 
+import { parseDatabaseUrl } from '../src/utils/parseDatabaseUrl.js'
+
+const {
+  provider,
+  username,
+  password,
+  host,
+  port,
+  name,
+  schema
+} = parseDatabaseUrl(process.env.DATABASE_URL)
+
 export const config = {
   authentication: {
     secret: process.env.TOKEN_SECRET ?? randomBytes(20).toString('hex'),
@@ -12,14 +24,19 @@ export const config = {
     version: '1.0.0'
   },
   database: {
-    type: process.env.DATABASE_TYPE ?? 'postgres',
-    host: process.env.DATABASE_HOST,
-    port: Number(process.env.DATABASE_PORT),
-    name: process.env.DATABASE_NAME,
-    username: process.env.DATABASE_USERNAME,
-    password: process.env.DATABASE_PASSWORD,
+    username,
+    password,
+    name,
+    schema,
+    port,
+    host,
+    provider,
     pagination: {
       limit: 20
     }
+  },
+  schema: {
+    user: ['createdAt', 'updatedAt'],
+    post: ['createdAt', 'updatedAt']
   }
 }
