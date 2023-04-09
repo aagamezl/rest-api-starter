@@ -1,3 +1,5 @@
+import os from 'node:os'
+
 import test from 'ava'
 import sinon from 'sinon'
 
@@ -22,6 +24,9 @@ test('should returns the server status', async t => {
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
   sandbox.mock(prismaStub).expects('$connect').resolves(true)
 
+  const totalmem = 1024
+  sandbox.mock(os).expects('totalmem').once().returns(totalmem)
+
   const response = await model.check()
 
   t.true(typeof response === 'object')
@@ -29,10 +34,11 @@ test('should returns the server status', async t => {
   t.true(response.status !== undefined)
   t.true(response.version !== undefined)
 
-  t.true(typeof response.status === 'string')
-  t.true(typeof response.version === 'string')
+  t.is(typeof response.status, 'string')
+  t.is(typeof response.version, 'string')
 
-  t.true(response.status === 'pass')
+  t.is(response.status, 'pass')
+  t.is(response.checks['memory:utilization'][0].status, 'warn')
 })
 
 test('should returns the server status with database not connected', async t => {
@@ -47,9 +53,9 @@ test('should returns the server status with database not connected', async t => 
   t.true(response.status !== undefined)
   t.true(response.version !== undefined)
 
-  t.true(typeof response.status === 'string')
-  t.true(typeof response.version === 'string')
+  t.is(typeof response.status, 'string')
+  t.is(typeof response.version, 'string')
 
-  t.true(response.status === 'pass')
-  t.true(response.checks['postgres:database'][0].status === 'error')
+  t.is(response.status, 'pass')
+  t.is(response.checks['postgres:database'][0].status, 'error')
 })

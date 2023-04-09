@@ -6,7 +6,7 @@ import { baseModel } from '../../utils/domains/base.model.js'
 import { queryBuilder } from '../../utils/index.js'
 
 /**
- * User Data
+ * UserData
  *
  * @typedef UserData
  * @type {object}
@@ -24,7 +24,6 @@ import { queryBuilder } from '../../utils/index.js'
 export const create = async (payload) => {
   const password = createHashValue(payload.password)
 
-  // const user = await dataSource.create('user', {
   const user = await dataSource.manager('user').create({
     ...payload,
     password
@@ -61,7 +60,7 @@ const getById = (requestData) => {
 /**
  *
  * @param {Object.<string, string>} payload
- * @returns {Promise<UserData>}
+ * @returns {Promise.<UserData>}
  */
 export const login = async ({ email, password }) => {
   const user = await dataSource.manager('user').findOne({

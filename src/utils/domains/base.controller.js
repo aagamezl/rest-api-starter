@@ -6,11 +6,10 @@ import { getError } from './getError.js'
 const CONTENT_TYPE = 'application/vnd.api+json'
 
 /**
- * Base Controller
+ * BaseController
  *
- * @typedef Controller
+ * @typedef BaseController
  * @type {object}
- * @property {(req: Request, res: Response) => void} create
  * @property {(req: Request, res: Response) => void} create
  * @property {(req: Request, res: Response) => void} deleteById
  * @property {(req: Request, res: Response) => void} getAll
@@ -20,8 +19,8 @@ const CONTENT_TYPE = 'application/vnd.api+json'
 
 /**
  * @param {import('./base.model.js').Model} model
- * @param {object} additionalMethods
- * @returns {Controller}
+ * @param {Object.<string, Function>} methods
+ * @returns {BaseController}
  */
 export const baseController = (model, methods = {}) => {
   const create = async (req, res) => {

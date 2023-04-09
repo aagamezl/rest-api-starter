@@ -7,11 +7,11 @@ import { queryBuilder } from '../query/queryBuilder.js'
  * @typedef Model
  * @type {object}
  *
- * @property {(payload: Object.<string, unknown>) => Promise.<AbstractBaseEntity>} create
+ * @property {(payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>} create
  * @property {(id: string) => Promise.<Object.<string, unknown>>} deleteById
  * @property {(requestData: import('../query/requestParser.js').RequestData) => Promise.<GetAllResponse>} getAll
- * @property {(id: string, requestData: import('../query/requestParser.js').RequestData) => Promise.<AbstractBaseEntity>} getById
- * @property {(id: string, payload: UpdatePayload.<TEntity>) => Promise.<AbstractBaseEntity>} update
+ * @property {(id: string, requestData: import('../query/requestParser.js').RequestData) => Promise.<Object.<string, unknown>>} getById
+ * @property {(id: string, payload: UpdatePayload.<TEntity>) => Promise.<Object.<string, unknown>>} update
  */
 
 /**
@@ -20,11 +20,11 @@ import { queryBuilder } from '../query/queryBuilder.js'
  * @param {Object.<string, Function>} methods
  * @return {Model}
  */
-export const baseModel = (modelName, methods) => {
+export const baseModel = (modelName, methods = {}) => {
   /**
    *
    * @param {Object.<string, unknown>} payload
-   * @returns {Promise<object>}
+   * @returns {Promise.<Object.<string, unknown>>}
    */
   const create = async (payload) => {
     const user = await dataSource.manager(modelName).create(payload)
