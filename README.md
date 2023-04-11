@@ -25,7 +25,7 @@ This is a list of the main technologies included in this Starter:
 * [Conventional Commits](https://www.conventionalcommits.org/) A specification for adding human and machine readable meaning to commit messages.
 * [Commitizen](https://commitizen-tools.github.io/commitizen/) Define a standard way of committing rules and communicating it.
 * [Husky](https://typicode.github.io/husky/) Git hooks made easy woof!.
-* [Istanbul](https://istanbul.js.org/) JavaScript test coverage made simple.
+* [c8](https://github.com/bcoe/c8) Code-coverage using [Node.js' built in functionality](https://nodejs.org/dist/latest-v10.x/docs/api/cli.html#cli_node_v8_coverage_dir) that's compatible with [Istanbul's reporters](https://istanbul.js.org/docs/advanced/alternative-reporters/).
 * [Pino](https://getpino.io/) Very low overhead Node.js logger.
 * [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
 * [nodemon](https://nodemon.io/) Simple monitor script for use during development.
