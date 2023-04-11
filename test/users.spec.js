@@ -11,9 +11,10 @@ let sandbox
 let dataSourceMock
 
 const id = 'a4986d92-3455-4d5e-a211-284577cd708e'
-
+const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiamFuZS5kb2VAZ21haWwuY29tIiwiaWF0IjoxNjY3NTUyMjA4LCJleHAiOjE2Njc1NTU4MDh9.c_bNCjeDzVClQ3GJ4dXHkEpEkDPmAU8bPBLQoZJkYho'
 const createdAt = new Date()
 const updatedAt = new Date()
+
 const payload = {
   firstname: 'Jane',
   lastname: 'Doe',
@@ -38,8 +39,6 @@ const userWithoutPassword = {
   updatedAt
 }
 
-const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiamFuZS5kb2VAZ21haWwuY29tIiwiaWF0IjoxNjY3NTUyMjA4LCJleHAiOjE2Njc1NTU4MDh9.c_bNCjeDzVClQ3GJ4dXHkEpEkDPmAU8bPBLQoZJkYho'
-
 test.beforeEach(() => {
   sandbox = sinon.createSandbox()
   dataSourceMock = sandbox.mock(dataSource)
@@ -54,7 +53,7 @@ test('should create an user', async t => {
     ...userWithoutPassword
   }
 
-  const prismaStub = createPrismaStub('user')
+  const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
   sandbox.mock(prismaStub.user).expects('create').once().withArgs({
@@ -70,7 +69,7 @@ test('should create an user', async t => {
 })
 
 test('should delete an user by id', async t => {
-  const prismaStub = createPrismaStub('user')
+  const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
   sandbox.mock(prismaStub.user).expects('delete').once().withArgs({
@@ -94,7 +93,7 @@ test('should find all users', async t => {
   const countResult = Promise.resolve(count)
   const findResult = Promise.resolve(items)
 
-  const prismaStub = createPrismaStub('user')
+  const prismaStub = createPrismaStub()
 
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
@@ -117,7 +116,7 @@ test('should find all users', async t => {
 })
 
 test('should get an user by id', async t => {
-  const prismaStub = createPrismaStub('user')
+  const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
   const requestData = {
@@ -141,14 +140,9 @@ test('should get an user by id', async t => {
       updatedAt: true
     },
     where: {
-      id: 'a4986d92-3455-4d5e-a211-284577cd708e'
-    },
-    orderBy: []
+      id
+    }
   }
-
-  // const expected = {
-  //   ...userWithoutPassword
-  // }
 
   sandbox.mock(prismaStub.user).expects('findUnique').once().withArgs(query).resolves(user)
 

@@ -27,12 +27,7 @@ export const baseModel = (modelName, methods = {}) => {
    * @returns {Promise.<Object.<string, unknown>>}
    */
   const create = async (payload) => {
-    const user = await dataSource.manager(modelName).create(payload)
-
-    // The password is not meant to be returned
-    delete user.password
-
-    return await user
+    return dataSource.manager(modelName).create(payload)
   }
 
   /**

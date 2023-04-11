@@ -1,5 +1,11 @@
 # REST API Starter
 
+[![Node.js CI](https://github.com/aagamezl/rest-api-starter/actions/workflows/node.js.yml/badge.svg)](https://github.com/aagamezl/rest-api-starter/actions/workflows/node.js.yml)
+[![Coverage Status](https://coveralls.io/repos/github/aagamezl/rest-api-starter/badge.svg?branch=master)](https://coveralls.io/github/aagamezl/rest-api-starter?branch=master)
+[![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat-square)](https://github.com/feross/standard)
+![GitHub issues](https://img.shields.io/github/issues-raw/aagamezl/rest-api-starter)
+![GitHub](https://img.shields.io/github/license/aagamezl/rest-api-starter)
+
 Node.js REST API Starter using best practices and patterns.
 
 ## Included Technologies
@@ -7,7 +13,7 @@ Node.js REST API Starter using best practices and patterns.
 This is a list of the main technologies included in this Starter:
 
 * [Express](https://expressjs.com/) Fast, unopinionated, minimalist web framework for Node.js.
-* [Sequealize](https://sequelize.org/) A modern TypeScript and Node.js ORM.
+* [Prisma](https://www.prisma.io/) Next-generation Node.js and TypeScript ORM.
 * [Postgres](https://www.postgresql.org/) the World's Most Advanced Open Source Relational Database.
 * [Docker](https://www.docker.com/) An open source containerization platform
 * [Docker Compose](https://docs.docker.com/compose/) tool for defining and running multi-container Docker applications
@@ -19,7 +25,7 @@ This is a list of the main technologies included in this Starter:
 * [Conventional Commits](https://www.conventionalcommits.org/) A specification for adding human and machine readable meaning to commit messages.
 * [Commitizen](https://commitizen-tools.github.io/commitizen/) Define a standard way of committing rules and communicating it.
 * [Husky](https://typicode.github.io/husky/) Git hooks made easy woof!.
-* [Istanbul](https://istanbul.js.org/) JavaScript test coverage made simple.
+* [c8](https://github.com/bcoe/c8) Code-coverage using [Node.js' built in functionality](https://nodejs.org/dist/latest-v10.x/docs/api/cli.html#cli_node_v8_coverage_dir) that's compatible with [Istanbul's reporters](https://istanbul.js.org/docs/advanced/alternative-reporters/).
 * [Pino](https://getpino.io/) Very low overhead Node.js logger.
 * [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
 * [nodemon](https://nodemon.io/) Simple monitor script for use during development.

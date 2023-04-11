@@ -89,19 +89,21 @@ export const queryBuilder = (requestData, excludedFields = []) => {
     query.take = limit
   }
 
-  query.orderBy = requestData.queryData.sort.reduce((orderBy, field) => {
-    if (field.startsWith('-')) {
-      orderBy.push({
-        [field.slice(1)]: 'desc'
-      })
-    } else {
-      orderBy.push({
-        [field]: 'asc'
-      })
-    }
+  if (requestData.queryData.sort.length > 0) {
+    query.orderBy = requestData.queryData.sort.reduce((orderBy, field) => {
+      if (field.startsWith('-')) {
+        orderBy.push({
+          [field.slice(1)]: 'desc'
+        })
+      } else {
+        orderBy.push({
+          [field]: 'asc'
+        })
+      }
 
-    return orderBy
-  }, [])
+      return orderBy
+    }, [])
+  }
 
   return query
 }
