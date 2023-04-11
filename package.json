@@ -7,7 +7,8 @@
   "scripts": {
     "app:init": "npm i && npx prisma init && rm .env",
     "app:setup": "npx prisma generate",
-    "coverage": "c8 --reporter=html --reporter=text ava",
+    "coverage:view": "c8 --reporter=html --reporter=text ava",
+    "coverage": "c8 --reporter=lcov ava",
     "lint": "standard --verbose | snazzy",
     "lint:fix": "standard --fix",
     "prepare": "husky install",

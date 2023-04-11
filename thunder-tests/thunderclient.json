@@ -198,9 +198,13 @@
     "method": "GET",
     "sortNum": 10000,
     "created": "2023-03-27T11:50:44.687Z",
-    "modified": "2023-03-27T12:03:37.806Z",
+    "modified": "2023-04-11T18:01:48.469Z",
     "headers": [],
     "params": [],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{AUTH_TOKEN}}"
+    },
     "tests": [
       {
         "type": "set-env-var",
@@ -219,13 +223,17 @@
     "method": "POST",
     "sortNum": 5000,
     "created": "2023-03-27T11:56:32.206Z",
-    "modified": "2023-03-27T12:02:53.851Z",
+    "modified": "2023-04-11T18:22:16.581Z",
     "headers": [],
     "params": [],
     "body": {
       "type": "json",
-      "raw": "{\r\n  \"title\": \"First post\",\r\n  \"content\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\r\n  \"published\": true,\r\n  \"authorId\": \"{{USER_ID}}\"\r\n}",
+      "raw": "{\n  \"title\": \"First post\",\n  \"content\": \"Lorem ipsum dolor sit amet, consectetur adipiscing elit.\",\n  \"published\": true,\n  \"authorId\": \"{{USER_ID}}\"\n}",
       "form": []
+    },
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{AUTH_TOKEN}}"
     },
     "tests": [
       {
@@ -245,7 +253,7 @@
     "method": "GET",
     "sortNum": 20000,
     "created": "2023-03-27T12:04:14.360Z",
-    "modified": "2023-03-27T12:08:18.617Z",
+    "modified": "2023-04-11T18:26:14.635Z",
     "headers": [],
     "params": [
       {
@@ -254,6 +262,10 @@
         "isPath": false
       }
     ],
+    "auth": {
+      "type": "bearer",
+      "bearer": "{{AUTH_TOKEN}}"
+    },
     "tests": []
   }
 ]

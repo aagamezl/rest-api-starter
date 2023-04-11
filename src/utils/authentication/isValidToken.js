@@ -4,8 +4,7 @@ import { verifyToken } from './verifyToken.js'
 
 export const isValidToken = async (token) => {
   // Check if the token exists in the active token list
-  // const authToken = await dataSource.manager('authToken').findOne({
-  const authToken = await dataSource.findOne('authToken', {
+  const authToken = await dataSource.manager('authToken').findOne({
     token
   })
 

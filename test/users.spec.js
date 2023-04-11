@@ -142,8 +142,7 @@ test('should get an user by id', async t => {
     },
     where: {
       id: 'a4986d92-3455-4d5e-a211-284577cd708e'
-    },
-    orderBy: []
+    }
   }
 
   // const expected = {
