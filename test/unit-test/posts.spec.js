@@ -1,9 +1,9 @@
 import sinon from 'sinon'
 import test from 'ava'
 
-import { dataSource } from '../src/data-source.js'
-import { model } from '../src/domains/posts/posts.model.js'
-import { createPrismaStub } from './stubs/createStub.js'
+import { dataSource } from '../../src/data-source.js'
+import { model } from '../../src/domains/posts/posts.model.js'
+import { createPrismaStub } from '../stubs/index.js'
 
 let sandbox
 let dataSourceMock

@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken'
 import sinon from 'sinon'
 import test from 'ava'
 
-import { dataSource } from '../src/data-source.js'
-import { createHashValue } from '../src/utils/authentication/index.js'
-import { model } from '../src/domains/users/users.model.js'
-import { createPrismaStub } from './stubs/createStub.js'
+import { dataSource } from '../../src/data-source.js'
+import { createHashValue } from '../../src/utils/authentication/index.js'
+import { model } from '../../src/domains/users/users.model.js'
+import { createPrismaStub } from '../stubs/createPrismaStub.js'
 
 let sandbox
 let dataSourceMock
@@ -49,6 +49,7 @@ test.afterEach(() => {
 })
 
 test('should create an user', async t => {
+  // Inicio Preparar el test
   const expected = {
     ...userWithoutPassword
   }
@@ -62,9 +63,13 @@ test('should create an user', async t => {
       password: createHashValue(payload.password)
     }
   }).resolves(user)
+  // Fin Prepara el test
 
+  // Inicio Ejecutar
   const result = await model.create(payload)
+  // Fin Ejecutar
 
+  // Compobrar los resultados
   t.deepEqual(result, expected)
 })
 

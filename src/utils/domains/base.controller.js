@@ -45,7 +45,7 @@ export const baseController = (model, methods = {}) => {
         return res.sendStatus(StatusCodes.NOT_FOUND)
       }
 
-      res.set('Content-Type', CONTENT_TYPE).sendStatus(StatusCodes.NO_CONTENT)
+      res.sendStatus(StatusCodes.NO_CONTENT)
     } catch (error) {
       errorHandler.handle(error)
 
