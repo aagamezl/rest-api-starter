@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes'
 import { errorHandler, requestParser } from '../index.js'
 import { getError } from './getError.js'
 
-const CONTENT_TYPE = 'application/vnd.api+json'
+export const CONTENT_TYPE = 'application/vnd.api+json'
 
 /**
  * BaseController
@@ -91,9 +91,9 @@ export const baseController = (model, methods = {}) => {
 
   const update = async (req, res) => {
     try {
-      const grocery = await model.update(req.params.id, req.body)
+      const record = await model.update(req.params.id, req.body)
 
-      res.set('Content-Type', CONTENT_TYPE).json(grocery)
+      res.set('Content-Type', CONTENT_TYPE).json(record)
     } catch (error) {
       errorHandler.handle(error)
 

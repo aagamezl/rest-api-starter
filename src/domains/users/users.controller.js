@@ -1,7 +1,12 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { model } from './users.model.js'
-import { baseController, getError, logger } from '../../utils/index.js'
+import {
+  CONTENT_TYPE,
+  baseController,
+  getError,
+  logger
+} from '../../utils/index.js'
 
 const login = async (req, res) => {
   try {
@@ -13,7 +18,7 @@ const login = async (req, res) => {
 
     const { token, username, email } = user
 
-    return res.json({ token, username, email })
+    return res.set('Content-Type', CONTENT_TYPE).json({ token, username, email })
   } catch (error) {
     logger.error(error)
 
