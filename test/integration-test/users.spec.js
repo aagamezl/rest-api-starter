@@ -6,7 +6,7 @@ import request from 'supertest'
 import { app } from '../../src/index.js'
 import { dataSource } from '../../src/data-source.js'
 import { createHashValue } from '../../src/utils/authentication/index.js'
-import { createManagerStub, createPrismaStub } from '../stubs/index.js'
+import { createManagerStub } from '../stubs/index.js'
 import { StatusCodes } from 'http-status-codes'
 
 sinon.config = {
@@ -59,6 +59,10 @@ test.afterEach(() => {
   sandbox.restore()
 })
 
+// test('pass', t => {
+//   t.pass()
+// })
+
 test('should create an user using endpoint', async t => {
   const managerMock = createManagerStub()
   dataSourceMock
@@ -89,17 +93,33 @@ test('should create an user using endpoint', async t => {
   t.true(body.updatedAt !== undefined)
 })
 
-test('should delete an user by id', async t => {
-  const prismaStub = createPrismaStub()
+test('should fails create an user using endpoint', async t => {
   const managerMock = createManagerStub()
-
-  dataSourceMock.expects('getInstance').once().returns(prismaStub)
-
-  sandbox.mock(prismaStub.authToken)
-    .expects('findUnique')
+  dataSourceMock
+    .expects('manager')
     .once()
-    .withArgs({ token })
-    .resolves({ token })
+    .withArgs('user')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('create')
+    .once()
+    .withArgs({
+      ...payload,
+      password
+    })
+    .rejects(new Error(''))
+
+  const { headers, status } = await request(app)
+    .post('/users')
+    .send(payload)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+})
+
+test('should delete an user by id', async t => {
+  const managerMock = createManagerStub()
 
   dataSourceMock
     .expects('manager')
@@ -134,8 +154,44 @@ test('should delete an user by id', async t => {
   t.is(status, StatusCodes.NO_CONTENT)
 })
 
+test('should fails delete an user by id', async t => {
+  const managerMock = createManagerStub()
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('deleteById')
+    .once()
+    .withArgs(id)
+    .rejects(new Error(''))
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  const { headers, status } = await request(app)
+    .delete(`/users/${id}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+})
+
 test('should find all users', async t => {
-  const prismaStub = createPrismaStub()
   const managerMock = createManagerStub()
 
   const query = {
@@ -156,14 +212,6 @@ test('should find all users', async t => {
     count: 2,
     items: [user, user]
   }
-
-  dataSourceMock.expects('getInstance').once().returns(prismaStub)
-
-  sandbox.mock(prismaStub.authToken)
-    .expects('findUnique')
-    .once()
-    .withArgs({ token })
-    .resolves({ token })
 
   dataSourceMock
     .expects('manager')
@@ -198,6 +246,57 @@ test('should find all users', async t => {
   t.is(status, StatusCodes.OK)
   t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
   t.deepEqual(body, expected)
+})
+
+test('should fails find all users', async t => {
+  const managerMock = createManagerStub()
+
+  const query = {
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      age: true,
+      createdAt: true,
+      updatedAt: true
+    },
+    skip: 0,
+    take: 20
+  }
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  sandbox.mock(managerMock)
+    .expects('findAndCountAll')
+    .once()
+    .withArgs(query)
+    .rejects(new Error(''))
+
+  const { headers, status } = await request(app)
+    .get('/users')
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
 })
 
 test('should get an user by id', async t => {
@@ -350,4 +449,35 @@ test('should login an existing user', async t => {
   t.is(status, StatusCodes.OK)
   t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
   t.deepEqual(body, userData)
+})
+
+test('should fails login an unexisting user', async t => {
+  const managerMock = createManagerStub()
+
+  const loginPayload = {
+    email: payload.email,
+    password: payload.password
+  }
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({
+      email: user.email,
+      password
+    })
+    .resolves(null)
+
+  const { headers, status } = await request(app)
+    .post('/users/login')
+    .send(loginPayload)
+
+  t.is(status, StatusCodes.NOT_FOUND)
+  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
 })

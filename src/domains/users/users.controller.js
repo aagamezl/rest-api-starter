@@ -13,7 +13,7 @@ const login = async (req, res) => {
     const user = await model.login(req.body)
 
     if (!user) {
-      return res.sendStatus(StatusCodes.NOT_FOUND)
+      return res.set('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).end()
     }
 
     const { token, username, email } = user

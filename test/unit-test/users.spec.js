@@ -212,7 +212,7 @@ test('should update an user with password by id', async t => {
   t.deepEqual(result, expected)
 })
 
-test.serial('should fails login on unexisting user', async t => {
+test.serial('should fails login an unexisting user', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
