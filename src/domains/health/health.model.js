@@ -32,7 +32,7 @@ const base = () => {
   }
 }
 
-export const check = async () => {
+const check = async () => {
   return {
     ...base(),
     checks: {
@@ -121,4 +121,8 @@ const server = async () => {
     ...await getCpuUtilization(),
     ...getMemoryUtilization()
   }
+}
+
+export const model = {
+  check
 }

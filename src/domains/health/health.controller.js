@@ -1,4 +1,6 @@
-import * as model from './health.model.js'
+import { model } from './health.model.js'
+
+export const HEALTH_CONTENT_TYPE = 'application/health+json; charset=utf-8'
 
 /**
  * GET / status

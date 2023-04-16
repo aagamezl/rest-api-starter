@@ -3,9 +3,9 @@ import os from 'node:os'
 import test from 'ava'
 import sinon from 'sinon'
 
-import * as model from '../src/domains/health/health.model.js'
-import { dataSource } from '../src/data-source.js'
-import { createPrismaStub } from './stubs/createStub.js'
+import { model } from '../../src/domains/health/health.model.js'
+import { dataSource } from '../../src/data-source.js'
+import { createPrismaStub } from '../stubs/index.js'
 
 let sandbox
 let dataSourceMock

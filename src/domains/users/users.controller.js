@@ -1,25 +1,30 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { model } from './users.model.js'
-import { baseController, getError, logger } from '../../utils/index.js'
+import {
+  CONTENT_TYPE,
+  baseController,
+  getError,
+  logger
+} from '../../utils/index.js'
 
 const login = async (req, res) => {
   try {
     const user = await model.login(req.body)
 
     if (!user) {
-      return res.sendStatus(StatusCodes.NOT_FOUND)
+      return res.set('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).end()
     }
 
     const { token, username, email } = user
 
-    return res.json({ token, username, email })
+    return res.set('Content-Type', CONTENT_TYPE).json({ token, username, email })
   } catch (error) {
     logger.error(error)
 
     const returnError = getError(error)
 
-    res.status(returnError.status).json(returnError)
+    res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
   }
 }
 
@@ -33,7 +38,7 @@ const logout = async (req, res) => {
 
     const returnError = getError(error)
 
-    res.status(returnError.status).json(returnError)
+    res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
   }
 }
 

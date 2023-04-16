@@ -69,10 +69,10 @@ export const dataSource = {
        * @param {string} id
        * @returns {Promise<Object.<string, unknown>>}
        */
-      deleteById: (id) => {
+      delete: (query) => {
         return dbInstance[modelName].delete({
           where: {
-            id
+            ...query
           }
         })
       },

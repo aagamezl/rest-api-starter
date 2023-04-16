@@ -1,6 +1,6 @@
 import { config } from '../../../config/index.js'
 import { dataSource } from '../../data-source.js'
-import { createHashValue, generateToken } from '../../utils/authentication/index.js'
+import { createHashValue, generateToken, getToken } from '../../utils/authentication/index.js'
 
 import { baseModel } from '../../utils/domains/base.model.js'
 import { queryBuilder } from '../../utils/index.js'
@@ -21,7 +21,7 @@ import { queryBuilder } from '../../utils/index.js'
  * @param {Object.<string, unknown>} payload
  * @returns {Promise<Object.<string, unknown>>}
  */
-export const create = async (payload) => {
+const create = async (payload) => {
   const password = createHashValue(payload.password)
 
   const user = await dataSource.manager('user').create({
@@ -62,7 +62,7 @@ const getById = (requestData) => {
  * @param {Object.<string, string>} payload
  * @returns {Promise.<UserData>}
  */
-export const login = async ({ email, password }) => {
+const login = async ({ email, password }) => {
   const user = await dataSource.manager('user').findOne({
     email,
     password: createHashValue(password)
@@ -72,26 +72,28 @@ export const login = async ({ email, password }) => {
     return
   }
 
-  try {
-    const token = await generateToken(
-      user.email,
-      config.authentication.secret,
-      config.authentication.expiresIn
-    )
+  const token = await generateToken(
+    user.email,
+    config.authentication.secret,
+    config.authentication.expiresIn
+  )
 
-    const userData = {
-      token,
-      username: `${user.firstname} ${user.lastname}`,
-      email: user.email
-    }
-
-    // Save token in list of valid tokens
-    await dataSource.manager('authToken').create({ token })
-
-    return userData
-  } catch (error) {
-    throw new Error('Error signing JWT token.')
+  const userData = {
+    token,
+    username: `${user.firstname} ${user.lastname}`,
+    email: user.email
   }
+
+  // Save token in list of valid tokens
+  await dataSource.manager('authToken').create({ token })
+
+  return userData
+}
+
+const logout = async (authorization) => {
+  const token = getToken(authorization)
+
+  return await dataSource.manager('authToken').delete({ token })
 }
 
 /**
@@ -100,7 +102,7 @@ export const login = async ({ email, password }) => {
  * @param {Object.<string, unknown>} payload
  * @returns {Promise.<Object.<string, unknown>>}
  */
-export const update = async (id, payload) => {
+const update = async (id, payload) => {
   if (payload.password) {
     payload.password = createHashValue(payload.password)
   }
@@ -113,4 +115,4 @@ export const update = async (id, payload) => {
   return user
 }
 
-export const model = baseModel('user', { create, getAll, getById, login, update })
+export const model = baseModel('user', { create, getAll, getById, login, logout, update })

@@ -15,7 +15,7 @@ router.post('/users/login', validate(validations.login), controller.login)
 
 router.post('/users/logout', authenticate, controller.logout)
 
-router.get('/users', /* authenticate, */ controller.getAll)
+router.get('/users', authenticate, controller.getAll)
 
 router.get('/users/:id', [authenticate, validate(validations.getById)], controller.getById)
 
