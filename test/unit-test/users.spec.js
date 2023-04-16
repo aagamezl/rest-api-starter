@@ -9,6 +9,7 @@ import { createPrismaStub } from '../stubs/createPrismaStub.js'
 
 let sandbox
 let dataSourceMock
+let authTokenMock
 
 const id = 'a4986d92-3455-4d5e-a211-284577cd708e'
 const token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJkYXRhIjoiamFuZS5kb2VAZ21haWwuY29tIiwiaWF0IjoxNjY3NTUyMjA4LCJleHAiOjE2Njc1NTU4MDh9.c_bNCjeDzVClQ3GJ4dXHkEpEkDPmAU8bPBLQoZJkYho'
@@ -41,7 +42,9 @@ const userWithoutPassword = {
 
 test.beforeEach(() => {
   sandbox = sinon.createSandbox()
+
   dataSourceMock = sandbox.mock(dataSource)
+  authTokenMock = sandbox.mock(jwt)
 })
 
 test.afterEach(() => {
@@ -83,7 +86,7 @@ test('should delete an user by id', async t => {
     }
   }).resolves(user)
 
-  const expected = await model.deleteById(id)
+  const expected = await model.delete({ id })
 
   t.deepEqual(user, expected)
 })
@@ -212,7 +215,7 @@ test('should update an user with password by id', async t => {
   t.deepEqual(result, expected)
 })
 
-test.serial('should fails login an unexisting user', async t => {
+test('should fails login an unexisting user', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
@@ -231,7 +234,7 @@ test.serial('should fails login an unexisting user', async t => {
   t.deepEqual(userData, undefined)
 })
 
-test.serial('should fails login on jwt sign error', async t => {
+test('should fails login on jwt sign error', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
 
@@ -242,23 +245,19 @@ test.serial('should fails login on jwt sign error', async t => {
     }
   }).resolves(user)
 
-  const tokenMock = sandbox.mock(jwt)
-  tokenMock.expects('sign').yields(new Error())
+  authTokenMock.expects('sign').yields(new Error(t.title))
 
   const error = await t.throwsAsync(async () => {
     await model.login({
       email: payload.email,
       password: payload.password
     })
-
-    tokenMock.verify()
-    tokenMock.restore()
   }, { instanceOf: Error })
 
-  t.is(error.message, 'Error signing JWT token.')
+  t.is(error.message, t.title)
 })
 
-test.serial('should login an existing user', async t => {
+test('should login an existing user', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').twice().returns(prismaStub)
 
@@ -275,8 +274,7 @@ test.serial('should login an existing user', async t => {
     }
   })
 
-  const tokenMock = sandbox.mock(jwt)
-  tokenMock.expects('sign').yields(null, token)
+  authTokenMock.expects('sign').yields(null, token)
 
   const expected = {
     token,
@@ -290,7 +288,4 @@ test.serial('should login an existing user', async t => {
   })
 
   t.deepEqual(userData, expected)
-
-  tokenMock.verify()
-  tokenMock.restore()
 })

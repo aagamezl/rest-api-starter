@@ -1,11 +1,11 @@
 export const createManagerStub = () => {
   return {
-    create: (payload) => {},
-    deleteById: (id) => {},
-    findAll: async (query) => { },
-    findAndCountAll: async (query) => {},
-    findOne: (query) => {},
-    findUnique: (query) => {},
-    update: (id, payload) => {}
+    create (payload) {},
+    delete (query) {},
+    async findAll (query) { },
+    async findAndCountAll (query) {},
+    findOne (query) {},
+    findUnique (query) {},
+    update (id, payload) {}
   }
 }

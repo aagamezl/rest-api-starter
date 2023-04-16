@@ -65,7 +65,7 @@ test('should delete a post by id', async t => {
     }
   }).resolves(post)
 
-  const expected = await model.deleteById(id)
+  const expected = await model.delete({ id })
 
   t.deepEqual(post, expected)
 })

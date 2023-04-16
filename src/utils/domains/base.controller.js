@@ -39,7 +39,7 @@ export const baseController = (model, methods = {}) => {
 
   const deleteById = async (req, res) => {
     try {
-      await model.deleteById(req.params.id)
+      await model.delete({ id: req.params.id })
 
       res.sendStatus(StatusCodes.NO_CONTENT)
     } catch (error) {
@@ -72,7 +72,7 @@ export const baseController = (model, methods = {}) => {
       const record = await model.getById(requestData)
 
       if (!record) {
-        return res.sendStatus(StatusCodes.NOT_FOUND)
+        return res.set('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).end()
       }
 
       res.set('Content-Type', CONTENT_TYPE).json(record)
@@ -81,7 +81,7 @@ export const baseController = (model, methods = {}) => {
 
       const returnError = getError(error)
 
-      res.status(returnError.status).json(returnError)
+      res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
     }
   }
 
@@ -95,7 +95,7 @@ export const baseController = (model, methods = {}) => {
 
       const returnError = getError(error)
 
-      res.status(returnError.status).json(returnError)
+      res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
     }
   }
 

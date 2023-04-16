@@ -2,12 +2,13 @@ import jwt from 'jsonwebtoken'
 import sinon from 'sinon'
 import test from 'ava'
 import request from 'supertest'
+import { StatusCodes } from 'http-status-codes'
 
 import { app } from '../../src/index.js'
 import { dataSource } from '../../src/data-source.js'
 import { createHashValue } from '../../src/utils/authentication/index.js'
 import { createManagerStub } from '../stubs/index.js'
-import { StatusCodes } from 'http-status-codes'
+import { CONTENT_TYPE } from '../../src/utils/index.js'
 
 sinon.config = {
   useFakeTimers: false
@@ -59,10 +60,6 @@ test.afterEach(() => {
   sandbox.restore()
 })
 
-// test('pass', t => {
-//   t.pass()
-// })
-
 test('should create an user using endpoint', async t => {
   const managerMock = createManagerStub()
   dataSourceMock
@@ -85,7 +82,7 @@ test('should create an user using endpoint', async t => {
     .send(payload)
 
   t.is(status, StatusCodes.CREATED)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
   t.is(body.firstname, user.firstname)
   t.is(body.email, user.email)
   t.true(body.password === undefined)
@@ -108,14 +105,15 @@ test('should fails create an user using endpoint', async t => {
       ...payload,
       password
     })
-    .rejects(new Error(''))
+    .rejects(new Error(t.title))
 
-  const { headers, status } = await request(app)
+  const { body, headers, status } = await request(app)
     .post('/users')
     .send(payload)
 
   t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, t.title)
 })
 
 test('should delete an user by id', async t => {
@@ -134,9 +132,9 @@ test('should delete an user by id', async t => {
     .returns(managerMock)
 
   sandbox.mock(managerMock)
-    .expects('deleteById')
+    .expects('delete')
     .once()
-    .withArgs(id)
+    .withArgs({ id })
     .resolves(user)
 
   sandbox.mock(managerMock)
@@ -176,19 +174,20 @@ test('should fails delete an user by id', async t => {
     .returns(managerMock)
 
   sandbox.mock(managerMock)
-    .expects('deleteById')
+    .expects('delete')
     .once()
-    .withArgs(id)
-    .rejects(new Error(''))
+    .withArgs({ id })
+    .rejects(new Error(t.title))
 
   authTokenMock.expects('verify').yields(null, token)
 
-  const { headers, status } = await request(app)
+  const { body, headers, status } = await request(app)
     .delete(`/users/${id}`)
     .set('Authorization', `Bearer ${token}`)
 
   t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, t.title)
 })
 
 test('should find all users', async t => {
@@ -244,7 +243,7 @@ test('should find all users', async t => {
     .set('Authorization', `Bearer ${token}`)
 
   t.is(status, StatusCodes.OK)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
   t.deepEqual(body, expected)
 })
 
@@ -289,14 +288,15 @@ test('should fails find all users', async t => {
     .expects('findAndCountAll')
     .once()
     .withArgs(query)
-    .rejects(new Error(''))
+    .rejects(new Error(t.title))
 
-  const { headers, status } = await request(app)
+  const { body, headers, status } = await request(app)
     .get('/users')
     .set('Authorization', `Bearer ${token}`)
 
   t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, t.title)
 })
 
 test('should get an user by id', async t => {
@@ -346,8 +346,109 @@ test('should get an user by id', async t => {
     .set('Authorization', `Bearer ${token}`)
 
   t.is(status, StatusCodes.OK)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
   t.deepEqual(body, user)
+})
+
+test('should returns not found when get a unexisting user by id', async t => {
+  const managerMock = createManagerStub()
+
+  const query = {
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      age: true,
+      createdAt: true,
+      updatedAt: true
+    },
+    where: { id }
+  }
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  sandbox.mock(managerMock)
+    .expects('findUnique')
+    .once()
+    .withArgs(query)
+    .resolves(null)
+
+  const { headers, status } = await request(app)
+    .get(`/users/${id}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.NOT_FOUND)
+  t.is(headers['content-type'], CONTENT_TYPE)
+})
+
+test('should fails get an user by id', async t => {
+  const managerMock = createManagerStub()
+
+  const query = {
+    select: {
+      id: true,
+      firstname: true,
+      lastname: true,
+      email: true,
+      age: true,
+      createdAt: true,
+      updatedAt: true
+    },
+    where: { id }
+  }
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  sandbox.mock(managerMock)
+    .expects('findUnique')
+    .once()
+    .withArgs(query)
+    .rejects(new Error(t.title))
+
+  const { body, headers, status } = await request(app)
+    .get(`/users/${id}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, t.title)
 })
 
 test('should update an user by id', async t => {
@@ -396,8 +497,54 @@ test('should update an user by id', async t => {
     .set('Authorization', `Bearer ${token}`)
 
   t.is(status, StatusCodes.OK)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
   t.deepEqual(body, expected)
+})
+
+test('should fails update an user by id', async t => {
+  const managerMock = createManagerStub()
+
+  const updatePayload = {
+    firstname: 'Susan'
+  }
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  sandbox.mock(managerMock)
+    .expects('update')
+    .once()
+    .withArgs(
+      id,
+      updatePayload
+    )
+    .rejects(new Error(t.title))
+
+  const { body, headers, status } = await request(app)
+    .patch(`/users/${id}`)
+    .send(updatePayload)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.deepEqual(body.details, t.title)
 })
 
 test('should login an existing user', async t => {
@@ -429,11 +576,6 @@ test('should login an existing user', async t => {
     .returns(managerMock)
 
   sandbox.mock(managerMock)
-    .expects('create')
-    .once()
-    .withArgs({ token })
-
-  sandbox.mock(managerMock)
     .expects('findOne')
     .once()
     .withArgs({
@@ -442,12 +584,17 @@ test('should login an existing user', async t => {
     })
     .resolves(user)
 
+  sandbox.mock(managerMock)
+    .expects('create')
+    .once()
+    .withArgs({ token })
+
   const { body, headers, status } = await request(app)
     .post('/users/login')
     .send(loginPayload)
 
   t.is(status, StatusCodes.OK)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
   t.deepEqual(body, userData)
 })
 
@@ -479,5 +626,171 @@ test('should fails login an unexisting user', async t => {
     .send(loginPayload)
 
   t.is(status, StatusCodes.NOT_FOUND)
-  t.is(headers['content-type'], 'application/vnd.api+json; charset=utf-8')
+  t.is(headers['content-type'], CONTENT_TYPE)
+})
+
+test('should fails login an unexpected reason', async t => {
+  const managerMock = createManagerStub()
+
+  const loginPayload = {
+    email: payload.email,
+    password: payload.password
+  }
+
+  authTokenMock.expects('sign').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('user')
+    .returns(managerMock)
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({
+      email: user.email,
+      password
+    })
+    .resolves(user)
+
+  sandbox.mock(managerMock)
+    .expects('create')
+    .once()
+    .withArgs({ token })
+    .rejects(new Error(t.title))
+
+  const { body, headers, status } = await request(app)
+    .post('/users/login')
+    .send(loginPayload)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.deepEqual(body.details, t.title)
+})
+
+test('should logout an existing user', async t => {
+  const managerMock = createManagerStub()
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .twice()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  sandbox.mock(managerMock)
+    .expects('delete')
+    .once()
+    .withArgs({ token })
+
+  const { status } = await request(app)
+    .post('/users/logout')
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.NO_CONTENT)
+})
+
+test('should fails logout an existing user', async t => {
+  const managerMock = createManagerStub()
+
+  authTokenMock.expects('verify').yields(null, token)
+
+  dataSourceMock
+    .expects('manager')
+    .twice()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  sandbox.mock(managerMock)
+    .expects('delete')
+    .once()
+    .withArgs({ token })
+    .rejects(new Error(t.title))
+
+  const { body, headers, status } = await request(app)
+    .post('/users/logout')
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.INTERNAL_SERVER_ERROR)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, t.title)
+})
+
+test('should fails request when nonexistent token provided', async t => {
+  const managerMock = createManagerStub()
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves(null)
+
+  const { body, headers, status } = await request(app)
+    .delete(`/users/${id}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.FORBIDDEN)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, 'The authentication token doesn\'t exist')
+})
+
+test('should fails request when invalid token provided', async t => {
+  const managerMock = createManagerStub()
+
+  dataSourceMock
+    .expects('manager')
+    .once()
+    .withArgs('authToken')
+    .returns(managerMock)
+
+  sandbox.mock(managerMock)
+    .expects('findOne')
+    .once()
+    .withArgs({ token })
+    .resolves({ token })
+
+  authTokenMock.expects('verify').yields(new Error('jwt expired'))
+
+  const { body, headers, status } = await request(app)
+    .delete(`/users/${id}`)
+    .set('Authorization', `Bearer ${token}`)
+
+  t.is(status, StatusCodes.FORBIDDEN)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, 'jwt expired')
+})
+
+test('should fails request when no token provided', async t => {
+  const { body, headers, status } = await request(app)
+    .delete(`/users/${id}`)
+
+  t.is(status, StatusCodes.FORBIDDEN)
+  t.is(headers['content-type'], CONTENT_TYPE)
+  t.is(body.details, 'No Bearer token was found')
 })

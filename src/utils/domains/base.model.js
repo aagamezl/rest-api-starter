@@ -21,62 +21,56 @@ import { queryBuilder } from '../query/queryBuilder.js'
  * @return {Model}
  */
 export const baseModel = (modelName, methods = {}) => {
-  /**
-   *
-   * @param {Object.<string, unknown>} payload
-   * @returns {Promise.<Object.<string, unknown>>}
-   */
-  const create = async (payload) => {
-    return dataSource.manager(modelName).create(payload)
-  }
-
-  /**
-   *
-   * @param {string} id
-   * @returns {Promise<Object.<string, unknown>>}
-   */
-  const deleteById = (id) => {
-    return dataSource.manager(modelName).deleteById(id)
-  }
-
-  /**
-   *
-   * @param {import('../../utils/index.js').RequestData} requestData
-   * @returns {Promise<import('../../data-source.js').FindAllResponse>}
-   */
-  const getAll = (requestData) => {
-    const query = queryBuilder(requestData)
-
-    return dataSource.manager(modelName).findAndCountAll(query)
-  }
-
-  /**
-   *
-   * @param {import('../../utils/index.js').RequestData} requestData
-   * @returns {Promise.<Object.<string, unknown>}
-   */
-  const getById = (requestData) => {
-    const query = queryBuilder(requestData)
-
-    return dataSource.manager(modelName).findUnique(query)
-  }
-
-  /**
-   *
-   * @param {string} id
-   * @param {Object.<string, unknown>} payload
-   * @returns {Promise.<Object.<string, unknown>}
-   */
-  const update = async (id, payload) => {
-    return dataSource.manager(modelName).update(id, payload)
-  }
-
   return {
-    create,
-    deleteById,
-    getAll,
-    getById,
-    update,
+    /**
+     *
+     * @param {Object.<string, unknown>} payload
+     * @returns {Promise.<Object.<string, unknown>>}
+     */
+    async create (payload) {
+      return dataSource.manager(modelName).create(payload)
+    },
+
+    /**
+     *
+     * @param {string} id
+     * @returns {Promise<Object.<string, unknown>>}
+     */
+    delete (query) {
+      return dataSource.manager(modelName).delete(query)
+    },
+
+    /**
+     *
+     * @param {import('../../utils/index.js').RequestData} requestData
+     * @returns {Promise<import('../../data-source.js').FindAllResponse>}
+     */
+    getAll (requestData) {
+      const query = queryBuilder(requestData)
+
+      return dataSource.manager(modelName).findAndCountAll(query)
+    },
+
+    /**
+     *
+     * @param {import('../../utils/index.js').RequestData} requestData
+     * @returns {Promise.<Object.<string, unknown>}
+     */
+    getById (requestData) {
+      const query = queryBuilder(requestData)
+
+      return dataSource.manager(modelName).findUnique(query)
+    },
+
+    /**
+     *
+     * @param {string} id
+     * @param {Object.<string, unknown>} payload
+     * @returns {Promise.<Object.<string, unknown>}
+     */
+    update (id, payload) {
+      return dataSource.manager(modelName).update(id, payload)
+    },
     ...methods
   }
 }

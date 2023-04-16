@@ -8,6 +8,10 @@ export const isValidToken = async (token) => {
     token
   })
 
+  if (!authToken) {
+    throw new Error('The authentication token doesn\'t exist')
+  }
+
   // Check if the token has not expired
   const verifiedToken = await verifyToken(authToken.token, config.authentication.secret)
 

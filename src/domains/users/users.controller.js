@@ -24,7 +24,7 @@ const login = async (req, res) => {
 
     const returnError = getError(error)
 
-    res.status(returnError.status).json(returnError)
+    res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
   }
 }
 
@@ -38,7 +38,7 @@ const logout = async (req, res) => {
 
     const returnError = getError(error)
 
-    res.status(returnError.status).json(returnError)
+    res.set('Content-Type', CONTENT_TYPE).status(returnError.status).json(returnError)
   }
 }
 
