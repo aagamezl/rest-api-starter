@@ -7,10 +7,12 @@
   "scripts": {
     "app:init": "npm i && npx prisma init && rm .env",
     "app:setup": "npx prisma generate",
+    "build:types": "tsc -p tsconfig.build.types.json",
     "coverage:view": "c8 --reporter=html --reporter=text ava",
     "coverage": "c8 --reporter=lcov ava",
     "lint": "standard --verbose | snazzy",
     "lint:fix": "standard --fix",
+    "lint:types": "tsc",
     "prepare": "husky install",
     "start": "node bin/www/index.js",
     "start:dev": "nodemon --inspect=0.0.0.0:9229 bin/www/index.js",

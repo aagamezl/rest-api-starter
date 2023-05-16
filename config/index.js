@@ -23,6 +23,10 @@ export const config = {
     environment: process.env.NODE_ENV ?? 'development',
     version: '1.0.0'
   },
+  health: {
+    avgTime: Number(process.env.HEALTH_AVG_TIME ?? 1000),
+    delay: Number(process.env.HEALTH_DELAY ?? 100)
+  },
   database: {
     username,
     password,

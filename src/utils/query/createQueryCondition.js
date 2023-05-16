@@ -1,15 +1,15 @@
+// @ts-check
+
 /**
  *
  * @param {string} entity
- * @param {object} requestData
- * @returns
+ * @param {import('./requestParser.js').RequestData} requestData
+ * @returns {import('./queryBuilder').Query}
  */
 export const createQueryCondition = (entity, requestData) => {
   const queryCondition = {}
 
   if (haveData(requestData.queryData.fields)) {
-    queryCondition.select = {}
-
     Object.entries(requestData.queryData.fields).reduce((query, [relation, fields]) => {
       if (entity === relation) {
         query.select = getFieldsQuery(fields)
@@ -26,6 +26,11 @@ export const createQueryCondition = (entity, requestData) => {
   return queryCondition
 }
 
+/**
+ *
+ * @param {string[]} fields
+ * @returns {import('./queryBuilder.js').Select}
+ */
 const getFieldsQuery = (fields) => {
   return fields.reduce((result, field) => {
     result[field] = true
@@ -34,4 +39,9 @@ const getFieldsQuery = (fields) => {
   }, { id: true })
 }
 
+/**
+ *
+ * @param {Object.<string, unknown>} target
+ * @returns {boolean}
+ */
 const haveData = (target) => Object.keys(target).length > 0

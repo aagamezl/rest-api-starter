@@ -2,10 +2,10 @@ import jwt from 'jsonwebtoken'
 import sinon from 'sinon'
 import test from 'ava'
 
-import { dataSource } from '../../src/data-source.js'
 import { createHashValue } from '../../src/utils/authentication/index.js'
-import { model } from '../../src/domains/users/users.model.js'
 import { createPrismaStub } from '../stubs/createPrismaStub.js'
+import { dataSource } from '../../src/data-source.js'
+import { model } from '../../src/domains/users/users.model.js'
 
 let sandbox
 let dataSourceMock

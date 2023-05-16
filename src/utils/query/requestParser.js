@@ -1,8 +1,10 @@
+// @ts-check
 /** @module myModule */
 
-import JsonApiQueryParserClass from 'jsonapi-query-parser'
+// import JsonApiQueryParserClass from 'jsonapi-query-parser'
+import { parseRequest } from './jsonApiParser.js'
 
-const jsonApiQueryParser = new JsonApiQueryParserClass()
+// const jsonApiQueryParser = new JsonApiQueryParserClass()
 
 /**
  * The complete OpenAPI Operation.
@@ -21,8 +23,8 @@ const jsonApiQueryParser = new JsonApiQueryParserClass()
  * An object representing page information.
  *
  * @typedef {Object} Page
- * @property {number} number - The total number of record to retrieve.
- * @property {number} page   - The current page number.
+ * @property {number} limit - The total number of record to retrieve.
+ * @property {number} offset   - The current page number.
 */
 
 /**
@@ -55,7 +57,8 @@ const jsonApiQueryParser = new JsonApiQueryParserClass()
  * @returns {RequestData}
  */
 export const requestParser = (url) => {
-  const requestData = jsonApiQueryParser.parseRequest(url)
+  // const requestData = jsonApiQueryParser.parseRequest(url)
+  const requestData = parseRequest(url)
 
   const relationshipType = haveRelationships(
     requestData.queryData.include,

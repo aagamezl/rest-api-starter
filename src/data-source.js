@@ -1,11 +1,21 @@
+// @ts-check
+
 import { PrismaClient } from '@prisma/client'
+
+/**
+ * @typedef {import('./utils/index.js').Query} Query
+ */
+
+/**
+ * @typedef {Object.<string, unknown>} Palyload
+ */
 
 /**
  * Represent the Request Data for an JSON API URL
  *
- * @typedef FindAllResponse
+ * @typedef FindAndCountAll
  * @type {object}
- * @property {number} count                   - Indicates the total amount of record for the resource.
+ * @property {number} count - Indicates the total amount of record for the resource.
  * @property {Object.<string, unknown>[]} items - Indicates items returned according the the request data.
  */
 
@@ -13,13 +23,13 @@ import { PrismaClient } from '@prisma/client'
  * A set of methods for interacting with a database.
  *
  * @typedef {Object} DatabaseManager
- * @property {(payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>} create - Creates a new record in the database for the given model name and payload.
- * @property {(id: string) => Promise.<Object.<string, unknown>>} deleteById - Deletes a record from the database with the given id and model name.
- * @property {(query: import('./utils/index.js').Query) => Promise.<FindAllResponse>} findAll - Finds all records from the database for the given model name and query.
- * @property {(query: import('./utils/index.js').Query) => Promise.<Object.<string, unknown>>} findAndCountAll - Finds and counts all records from the database for the given model name and query.
- * @property {(query: import('./utils/index.js').Query) => Promise.<Object.<string, unknown>>} findOne - Finds a single record from the database for the given model name and query.
- * @property {(query: import('./utils/index.js').Query) => Promise.<Object.<string, unknown>>} findUnique - Finds a unique record from the database for the given model name and query.
- * @property {(id: string, payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>} update - Updates a record in the database with the given id and payload for the given model name.
+ * @property {(payload: Palyload) => Promise.<Object.<string, unknown>>} create - Creates a new record in the database for the given model name and payload.
+ * @property {(query: Query) => Promise.<Object.<string, unknown>>} delete - Deletes a record from the database with the given id and model name.
+ * @property {(query: Query) => Promise.<Object.<string, unknown>>} findAll - Finds all records from the database for the given model name and query.
+ * @property {(query: Query) => Promise.<FindAndCountAll>} findAndCountAll - Finds and counts all records from the database for the given model name and query.
+ * @property {(query: Query) => Promise.<Object.<string, unknown>>} findOne - Finds a single record from the database for the given model name and query.
+ * @property {(query: Query) => Promise.<Object.<string, unknown>>} findUnique - Finds a unique record from the database for the given model name and query.
+ * @property {(id: string, payload: Palyload) => Promise.<Object.<string, unknown>>} update - Updates a record in the database with the given id and payload for the given model name.
  */
 
 /**
@@ -27,7 +37,7 @@ import { PrismaClient } from '@prisma/client'
  *
  * @typedef {Object} DataSource
  * @property {() => PrismaClient} getInstance - Returns a new instance of Prisma Client
- * @property {DatabaseManager} manager - Returns a new database manager
+ * @property {(modelName: string) => DatabaseManager} manager - Returns a new database manager
  */
 
 /**
@@ -50,11 +60,11 @@ export const dataSource = {
   manager: (modelName) => {
     const dbInstance = dataSource.getInstance()
 
-    return {
+    const manager = {
       /**
        *
-       * @param {Object.<string, unknown>} payload
-       * @returns
+       * @param {Palyload} payload
+       * @returns {Promise.<Object.<string, unknown>>}
        */
       create: (payload) => {
         return dbInstance[modelName].create({
@@ -66,7 +76,7 @@ export const dataSource = {
 
       /**
        *
-       * @param {string} id
+       * @param {Query} query
        * @returns {Promise<Object.<string, unknown>>}
        */
       delete: (query) => {
@@ -79,33 +89,32 @@ export const dataSource = {
 
       /**
        *
-       * @param {import('./utils/index.js').Query} query
-       * @returns {Promise.<FindAllResponse>}
+       * @param {Query} query
+       * @returns {Promise.<Object.<string, unknown>>}
        */
-      findAll: async (query) => {
+      findAll: (query) => {
         return dbInstance[modelName].findMany(query)
       },
 
       /**
        *
-       * @param {import('./utils/index.js').Query} query
-       * @returns {Promise.<Object.<string, unknown>}
+       * @param {Query} query
+       * @returns {Promise.<FindAndCountAll>}
        */
       findAndCountAll: async (query) => {
-        const entity = dbInstance[modelName]
-
-        const [count, items] = await dbInstance.$transaction([
-          entity.count(),
-          entity.findMany(query)
+        const [/** @type {number} */count, /** @type {<Object.<string, unknown>[]} */items] = await dbInstance.$transaction([
+          dbInstance[modelName].count(),
+          manager.findAll(query)
         ])
 
+        /** @type {FindAndCountAll} */
         return { count, items }
       },
 
       /**
        *
-       * @param {import('./utils/index.js').Query} query
-       * @returns {Promise.<Object.<string, unknown>}
+       * @param {Query} query
+       * @returns {Promise.<Object.<string, unknown>>}
        */
       findOne: (query) => {
         return dbInstance[modelName].findFirst({
@@ -117,8 +126,8 @@ export const dataSource = {
 
       /**
        *
-       * @param {import('./utils/index.js').Query} query
-       * @returns {Promise.<Object.<string, unknown>}
+       * @param {Query} query
+       * @returns {Promise.<Object.<string, unknown>>}
        */
       findUnique: (query) => {
         return dbInstance[modelName].findUnique(query)
@@ -127,8 +136,8 @@ export const dataSource = {
       /**
        *
        * @param {string} id
-       * @param {Object.<string, unknown>} payload
-       * @returns
+       * @param {Palyload} payload
+       * @returns {Promise.<Object.<string, unknown>>}
        */
       update: (id, payload) => {
         return dbInstance[modelName].update({
@@ -141,5 +150,7 @@ export const dataSource = {
         })
       }
     }
+
+    return manager
   }
 }

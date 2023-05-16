@@ -8,9 +8,9 @@ const cpuAverage = () => {
   const cpus = os.cpus()
 
   // Loop through CPU cores
-  for (let i = 0, length = cpus.length; i < length; i++) {
+  for (let index = 0, length = cpus.length; index < length; index++) {
     // Select CPU core
-    const cpu = cpus[i]
+    const cpu = cpus[index]
 
     // Total up the time in the cores tick
     for (const type in cpu.times) {
@@ -39,12 +39,12 @@ export const getCpuLoad = (avgTime = 1000, delay = 100) => {
     const n = ~~(avgTime / delay)
 
     if (n <= 1) {
-      reject(new Error('Error: interval to small'))
+      reject(new Error('Interval is too small'))
     }
 
     let index = 0
     const samples = []
-    const avg1 = cpuAverage()
+    const initialAvg = cpuAverage()
 
     const interval = setInterval(() => {
       if (index >= n) {
@@ -52,9 +52,9 @@ export const getCpuLoad = (avgTime = 1000, delay = 100) => {
         return resolve(~~((arrAvg(samples) * 100)))
       }
 
-      const avg2 = cpuAverage()
-      const totalDiff = avg2.total - avg1.total
-      const idleDiff = avg2.idle - avg1.idle
+      const finalAvg = cpuAverage()
+      const totalDiff = finalAvg.total - initialAvg.total
+      const idleDiff = finalAvg.idle - initialAvg.idle
 
       samples[index] = (1 - idleDiff / totalDiff)
 

@@ -38,7 +38,7 @@ const create = async (payload) => {
 /**
  *
  * @param {import('../../utils/index.js').RequestData} requestData
- * @returns {Promise<import('../../data-source.js').FindAllResponse>}
+ * @returns {Promise<import('../../data-source.js').FindAndCountAll>}
  */
 const getAll = (requestData) => {
   const query = queryBuilder(requestData, ['password'])

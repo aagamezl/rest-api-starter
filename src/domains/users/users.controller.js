@@ -4,8 +4,8 @@ import { model } from './users.model.js'
 import {
   CONTENT_TYPE,
   baseController,
-  getError,
-  logger
+  errorHandler,
+  getError
 } from '../../utils/index.js'
 
 const login = async (req, res) => {
@@ -20,7 +20,7 @@ const login = async (req, res) => {
 
     return res.set('Content-Type', CONTENT_TYPE).json({ token, username, email })
   } catch (error) {
-    logger.error(error)
+    errorHandler.handle(error)
 
     const returnError = getError(error)
 
@@ -32,9 +32,9 @@ const logout = async (req, res) => {
   try {
     await model.logout(req.headers.authorization)
 
-    res.send(StatusCodes.NO_CONTENT)
+    res.sendStatus(StatusCodes.NO_CONTENT)
   } catch (error) {
-    logger.error(error)
+    errorHandler.handle(error)
 
     const returnError = getError(error)
 

@@ -85,9 +85,9 @@ test('should create an user using endpoint', async t => {
   t.is(headers['content-type'], CONTENT_TYPE)
   t.is(body.firstname, user.firstname)
   t.is(body.email, user.email)
-  t.true(body.password === undefined)
-  t.true(body.createdAt !== undefined)
-  t.true(body.updatedAt !== undefined)
+  t.is(body.password, undefined)
+  t.not(body.createdAt, undefined)
+  t.not(body.updatedAt, undefined)
 })
 
 test('should fails create an user using endpoint', async t => {
@@ -350,7 +350,7 @@ test('should get an user by id', async t => {
   t.deepEqual(body, user)
 })
 
-test('should returns not found when get a unexisting user by id', async t => {
+test('should returns not found when getting an unexisting user by id', async t => {
   const managerMock = createManagerStub()
 
   const query = {
@@ -400,7 +400,7 @@ test('should returns not found when get a unexisting user by id', async t => {
   t.is(headers['content-type'], CONTENT_TYPE)
 })
 
-test('should fails get an user by id', async t => {
+test('should fails to get an user by id', async t => {
   const managerMock = createManagerStub()
 
   const query = {

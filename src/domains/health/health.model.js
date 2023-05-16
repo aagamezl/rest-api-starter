@@ -3,7 +3,6 @@ import os from 'node:os'
 
 import { dataSource } from '../../data-source.js'
 
-import { config } from '../../../config/index.js'
 import { formatBytes } from '../../utils/formatBytes.js'
 import { getCpuLoad } from '../../utils/getCpuLoad.js'
 import { COMPONENT_TYPES } from './componentTypes.js'
@@ -20,7 +19,7 @@ const THRESHOLDS = {
   memory: 1024 * 1024
 }
 
-const base = () => {
+const base = (config) => {
   return {
     status: 'pass',
     version: config.server.version.split('.')[0],
@@ -32,11 +31,11 @@ const base = () => {
   }
 }
 
-const check = async () => {
+const check = async (config) => {
   return {
-    ...base(),
+    ...base(config),
     checks: {
-      ...await server(),
+      ...await server(config),
       ...await database()
     },
     links: {
@@ -46,8 +45,8 @@ const check = async () => {
 }
 
 const database = async () => {
-  let status = 'pass'
   const dbInstance = dataSource.getInstance()
+  let status = 'pass'
   let connectionTime = Date.now()
 
   try {
@@ -72,9 +71,9 @@ const database = async () => {
   }
 }
 
-// TODO: Get the CPU utilization of each core
-const getCpuUtilization = async () => {
-  const cpuAverage = await getCpuLoad(1000, 100)
+// TODO: Get the CPU utilization of each core and not totalized
+const getCpuUtilization = async (config) => {
+  const cpuAverage = await getCpuLoad(config.health.avgTime, config.health.delay)
 
   return {
     'cpu:utilization': [{
@@ -93,7 +92,7 @@ const getMemoryUtilization = () => {
   const freemem = os.freemem()
 
   const status = (os.totalmem() - freemem) < THRESHOLDS.memory ? 'warn' : 'pass'
-  const { value, unit } = formatBytes(os.freemem())
+  const { value, unit } = formatBytes(freemem)
 
   return {
     'memory:utilization': [{
@@ -108,7 +107,7 @@ const getMemoryUtilization = () => {
   }
 }
 
-const server = async () => {
+const server = async (config) => {
   return {
     uptime: [{
       componentId: SERVICE_IDS.server,
@@ -118,7 +117,7 @@ const server = async () => {
       status: 'pass',
       time: new Date()
     }],
-    ...await getCpuUtilization(),
+    ...await getCpuUtilization(config),
     ...getMemoryUtilization()
   }
 }

@@ -1,9 +1,11 @@
+// @ts-check
+
 /**
  * Exclude keys from user
  *
- * @param {Record<string, unknown>} entity
+ * @param {Object.<string, unknown>} entity
  * @param {string[]} keys
- * @returns {Record<string, unknown>}
+ * @returns {Object.<string, boolean>}
  */
 export const excludeFields = (entity, keys) => {
   return Object.keys(entity).reduce((result, key) => {
