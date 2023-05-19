@@ -27,6 +27,30 @@ const post = {
   updatedAt
 }
 
+const requestData = {
+  resourceType: 'posts',
+  identifier: id,
+  relationships: false,
+  relationshipType: null,
+  queryData: {
+    include: [],
+    fields: {},
+    sort: [],
+    page: {
+      limit: 0,
+      offset: 0
+    },
+    filter: {
+      like: {},
+      not: {},
+      lt: {},
+      lte: {},
+      gt: {},
+      gte: {}
+    }
+  }
+}
+
 test.beforeEach(() => {
   sandbox = sinon.createSandbox()
   dataSourceMock = sandbox.mock(dataSource)
@@ -86,7 +110,17 @@ test('should find all posts', async t => {
 
   sandbox.mock(prismaStub.post).expects('count').once().resolves(countResult)
 
+  const select = Object.keys(post).reduce((select, key) => {
+    select[key] = true
+
+    return select
+  }, {})
+
   sandbox.mock(prismaStub.post).expects('findMany').once().withArgs({
+    select,
+    where: {
+      id
+    }
   }).resolves(findResult)
 
   sandbox.mock(prismaStub).expects('$transaction').once().withArgs([
@@ -97,7 +131,7 @@ test('should find all posts', async t => {
     items
   ])
 
-  const result = await model.getAll()
+  const result = await model.getAll(requestData)
 
   t.deepEqual(result, expected)
 })

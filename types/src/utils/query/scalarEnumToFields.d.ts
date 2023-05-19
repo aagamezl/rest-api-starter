@@ -1,1 +1,5 @@
-export function scalarEnumToFields(type: Record<string, string>): Record<string, boolean>;
+export function scalarEnumToFields(type: {
+    [x: string]: string;
+}): {
+    [x: string]: boolean;
+};

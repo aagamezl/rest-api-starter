@@ -5,7 +5,7 @@
  *
  * @param {Object.<string, unknown>} entity
  * @param {string[]} keys
- * @returns {Object.<string, boolean>}
+ * @returns {import("./queryBuilder").Select}
  */
 export const excludeFields = (entity, keys) => {
   return Object.keys(entity).reduce((result, key) => {

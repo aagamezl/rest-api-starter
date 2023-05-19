@@ -6,29 +6,29 @@ export type DatabaseUrl = {
     /**
      * - Indicates the database provider [postgres|mysql|oracle].
      */
-    provider: string;
+    provider?: string;
     /**
      * - Indicates the database user.
      */
-    username: string;
+    username?: string;
     /**
      * - Indicates the database password.
      */
-    password: string;
+    password?: string;
     /**
      * - Indicates the database host.
      */
-    host: string;
+    host?: string;
     /**
      * - Indicates the database port.
      */
-    port: number;
+    port?: number;
     /**
      * - Indicates the database name.
      */
-    name: string;
+    name?: string;
     /**
      * - Indicates the database schema.
      */
-    schema: string;
+    schema?: string;
 };

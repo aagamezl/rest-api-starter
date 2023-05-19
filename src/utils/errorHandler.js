@@ -13,12 +13,8 @@ const errorHandlerProd = {
 }
 
 const errorHandlerTest = {
-
-  /**
-   * Handle regular error in the app and send it to the logger
-   * @param {Error} error
-   */
-  handle: () => { }
+  handle: () => {
+  }
 }
 
 // For test environment we don't want to log errors

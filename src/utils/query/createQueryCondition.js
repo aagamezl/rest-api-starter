@@ -7,6 +7,7 @@
  * @returns {import('./queryBuilder').Query}
  */
 export const createQueryCondition = (entity, requestData) => {
+  /** @type import('./queryBuilder').Query */
   const queryCondition = {}
 
   if (haveData(requestData.queryData.fields)) {
@@ -32,11 +33,13 @@ export const createQueryCondition = (entity, requestData) => {
  * @returns {import('./queryBuilder.js').Select}
  */
 const getFieldsQuery = (fields) => {
-  return fields.reduce((result, field) => {
+  const select = fields.reduce((result, field) => {
     result[field] = true
 
     return result
   }, { id: true })
+
+  return select
 }
 
 /**

@@ -1,4 +1,5 @@
-export function formatBytes(bytes: any, decimals?: number): 0 | {
+export function formatBytes(bytes: number, decimals?: number): FormatBytes;
+export type FormatBytes = {
     value: number;
     unit: string;
 };

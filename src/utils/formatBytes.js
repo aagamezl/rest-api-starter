@@ -1,6 +1,19 @@
+/**
+ * @typedef {object} FormatBytes
+ *
+ * @property {number} value
+ * @property {string} unit
+ */
+
+/**
+ *
+ * @param {number} bytes
+ * @param {number} decimals
+ * @returns {FormatBytes}
+ */
 export const formatBytes = (bytes, decimals = 2) => {
   if (!Number(bytes)) {
-    return 0
+    return
   }
 
   const kilobyte = 1024

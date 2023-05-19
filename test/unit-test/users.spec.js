@@ -19,6 +19,7 @@ const updatedAt = new Date()
 const payload = {
   firstname: 'Jane',
   lastname: 'Doe',
+  age: 34,
   email: 'jane@email.com',
   password: 'abcd1234'
 }
@@ -35,9 +36,34 @@ const userWithoutPassword = {
   id,
   firstname: payload.firstname,
   lastname: payload.lastname,
+  age: payload.age,
   email: payload.email,
   createdAt,
   updatedAt
+}
+
+const requestData = {
+  resourceType: 'users',
+  identifier: id,
+  relationships: false,
+  relationshipType: null,
+  queryData: {
+    include: [],
+    fields: {},
+    sort: [],
+    page: {
+      limit: 0,
+      offset: 0
+    },
+    filter: {
+      like: {},
+      not: {},
+      lt: {},
+      lte: {},
+      gt: {},
+      gte: {}
+    }
+  }
 }
 
 test.beforeEach(() => {
@@ -107,7 +133,17 @@ test('should find all users', async t => {
 
   sandbox.mock(prismaStub.user).expects('count').once().resolves(countResult)
 
+  const select = Object.keys(userWithoutPassword).reduce((select, key) => {
+    select[key] = true
+
+    return select
+  }, {})
+
   sandbox.mock(prismaStub.user).expects('findMany').once().withArgs({
+    select,
+    where: {
+      id
+    }
   }).resolves(findResult)
 
   sandbox.mock(prismaStub).expects('$transaction').once().withArgs([
@@ -118,7 +154,7 @@ test('should find all users', async t => {
     items
   ])
 
-  const result = await model.getAll()
+  const result = await model.getAll(requestData)
 
   t.deepEqual(result, expected)
 })
@@ -126,16 +162,6 @@ test('should find all users', async t => {
 test('should get an user by id', async t => {
   const prismaStub = createPrismaStub()
   dataSourceMock.expects('getInstance').once().returns(prismaStub)
-
-  const requestData = {
-    resourceType: 'users',
-    identifier: id,
-    queryData: {
-      fields: {},
-      sort: [],
-      page: {}
-    }
-  }
 
   const query = {
     select: {

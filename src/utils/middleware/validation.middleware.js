@@ -2,6 +2,22 @@ import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 
 import { SEGMENTS } from '../segments.js'
 
+/**
+ * Represent the Request Data for an JSON API URL
+ *
+ * @typedef {{
+ * [validation: string]: import('joi').ObjectSchema
+ * }} ValidationSchema
+ */
+
+/**
+ * Represents an extended request object.
+ *
+ * @typedef {import('express').Request & {
+ *  files: Object.<string, string>
+ * }} RequestExtended
+ */
+
 const VALIDATE_OPTIONS = {
   abortEarly: false // include all errors
 }
@@ -9,7 +25,7 @@ const VALIDATE_OPTIONS = {
 /**
  * Give format to the Joi error object
  *
- * @param {ValidationError} error
+ * @param {import('joi').ValidationError} error
  * @param {string} source
  * @returns {object}
  */
@@ -35,9 +51,14 @@ const formatError = (error, source) => {
 /**
  *
  * @param {ValidationSchema} schema Joi schema
- * @returns {Function} The validation middleware
+ * @returns {import('express').RequestHandler} The validation middleware
  */
 export const validate = (schema) => {
+  /**
+   * @param {RequestExtended} req
+   * @param {import('express').Response} res
+   * @param {import('express').NextFunction} next
+   */
   return async (req, res, next) => {
     if (schema[SEGMENTS.PARAMS] !== undefined) {
       const { error } = await schema[SEGMENTS.PARAMS]
@@ -80,7 +101,7 @@ export const validate = (schema) => {
 
     if (schema[SEGMENTS.FILES] !== undefined) {
       const { error } = await schema[SEGMENTS.FILES]
-        .validateAsync((req).files, VALIDATE_OPTIONS)
+        .validateAsync(req.files, VALIDATE_OPTIONS)
         .catch((error) => {
           return { error }
         })

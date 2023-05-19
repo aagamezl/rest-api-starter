@@ -23,6 +23,19 @@ import { scalarEnumToFields } from './scalarEnumToFields.js'
  */
 
 /**
+ * @typedef {Object.<string, boolean | NestedSelect>} BasicSelect
+*/
+
+/**
+ * @typedef {Object} NestedSelect
+ * @property {BasicSelect} [select] - The nested select criteria.
+*/
+
+/**
+ * @typedef {BasicSelect & NestedSelect} Select
+*/
+
+/**
  * Represents the input for a "where" condition.
  *
  * @typedef {Object} WhereInput
@@ -36,23 +49,25 @@ import { scalarEnumToFields } from './scalarEnumToFields.js'
  */
 
 /**
- * @typedef {Object.<string, boolean>} Select
+ * @typedef {Object.<string, Prisma.SortOrder>[]} OrderBy
  */
 
 /**
- * @typedef {Object.<string, Prisma.SortOrder>[]} OrderBy
+ * @typedef {Select} Include
  */
 
 /**
  * Represent the Request Data for an JSON API URL
  *
- * @typedef Query
- * @type {object}
- * @property {Select} [select] - Indicates the total amount of record for the resource.
- * @property {WhereInput} [where] - Indicates the total amount of record for the resource.
- * @property {number} [skip] - Indicates the total amount of records to skip.
- * @property {number} [take] - Indicates the total amount of records to take.
- * @property {OrderBy} [orderBy] - Indicates the total amount of records to take.
+ * @typedef {Object.<string, unknown> & {
+ * select?: Select
+ * where?: WhereInput
+ * skip?: number
+ * take?: number
+ * orderBy?: OrderBy
+ * include?: BasicSelect & Include
+ * distinct?: Object.<string, unknown>
+ * }} Query
  */
 
 /**
@@ -63,7 +78,7 @@ import { scalarEnumToFields } from './scalarEnumToFields.js'
  */
 export const queryBuilder = (requestData, excludedFields = []) => {
   if (!requestData) {
-    return {}
+    return
   }
 
   const modelName = singular(requestData.resourceType)

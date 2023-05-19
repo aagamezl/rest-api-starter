@@ -1,7 +1,7 @@
 /**
  *
- * @param {ObjectSchema} schema
- * @returns {ObjectSchema}
+ * @param {import('joi').ObjectSchema} schema
+ * @returns {import('joi').ObjectSchema}
  */
 export const makeSchemaOptional = (schema) => {
   const keys = Object.keys(schema.describe().keys)

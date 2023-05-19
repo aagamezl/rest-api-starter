@@ -21,7 +21,7 @@ export const healthCheck = {
           }
         }
       },
-      [internalServerError.httpCode]: internalServerError.description
+      ...internalServerError()
     }
   }
 }

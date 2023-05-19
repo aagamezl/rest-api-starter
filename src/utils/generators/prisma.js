@@ -24,7 +24,12 @@ export const seed = () => {
 
   return code.join('\n')
 }
-
+/**
+ *
+ * @param {Prisma.DMMF.Datamodel} schema
+ * @param {string[]} schemaFields
+ * @returns
+ */
 export const createValidations = (schema = Prisma.dmmf.datamodel, schemaFields = []) => {
   const validations = generateSchema(schema, schemaFields)
 
@@ -92,12 +97,11 @@ export const createValidations = (schema = Prisma.dmmf.datamodel, schemaFields =
 
 /**
  *
- * @param {string} model
+ * @param {Prisma.DMMF.Datamodel} schema
+ * @param {string[]} schemaFields
  * @returns {object}
  */
 export const generateSchema = (schema, schemaFields = []) => {
-  console.log(schemaFields)
-
   const models = schema.models.reduce((validation, model) => {
     const schema = parseModel(model)
 
@@ -323,7 +327,7 @@ const parseString = (value) => `'${value}'`
  * and the always skipped isUpdatedAt field.
  *
  * @param {object} field
- * @param {string} [skippedFields=['created']]
+ * @param {string[]} [skippedFields=['created']]
  * @return {boolean}
  */
 const shouldParseField = (field, skippedFields = [/* 'created' */]) => {

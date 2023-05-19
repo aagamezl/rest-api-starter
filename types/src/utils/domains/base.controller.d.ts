@@ -1,14 +1,12 @@
 export const CONTENT_TYPE: "application/vnd.api+json; charset=utf-8";
-export function baseController(model: import('./base.model.js').Model, methods?: {
-    [x: string]: Function;
-}): BaseController;
+export function baseController<T, M>(model: import("./base.model.js").Model<T>, methods?: M): BaseController<M>;
 /**
- * BaseController
+ * <M>
  */
-export type BaseController = {
-    create: (req: Request, res: Response) => void;
-    deleteById: (req: Request, res: Response) => void;
-    getAll: (req: Request, res: Response) => void;
-    getById: (req: Request, res: Response) => void;
-    update: (req: Request, res: Response) => void;
+export type BaseController<M> = M & {
+    create: (req: import('express').Request, res: import('express').Response) => Promise<void>;
+    delete: (req: import('express').Request, res: import('express').Response) => Promise<void>;
+    getAll: (req: import('express').Request, res: import('express').Response) => Promise<void>;
+    getById: (req: import('express').Request, res: import('express').Response) => Promise<void>;
+    update: (req: import('express').Request, res: import('express').Response) => Promise<void>;
 };

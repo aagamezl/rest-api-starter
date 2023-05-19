@@ -9,7 +9,7 @@
  *
  * @typedef FindAndCountAll
  * @type {object}
- * @property {number} count                   - Indicates the total amount of record for the resource.
+ * @property {number} count - Indicates the total amount of record for the resource.
  * @property {Object.<string, unknown>[]} items - Indicates items returned according the the request data.
  */
 /**
@@ -18,9 +18,9 @@
  * @typedef {Object} DatabaseManager
  * @property {(payload: Palyload) => Promise.<Object.<string, unknown>>} create - Creates a new record in the database for the given model name and payload.
  * @property {(query: Query) => Promise.<Object.<string, unknown>>} delete - Deletes a record from the database with the given id and model name.
- * @property {(query: Query) => Promise.<Object.<string, unknown>>} findAll - Finds all records from the database for the given model name and query.
+ * @property {(query: Query) => Promise.<Object.<string, unknown>[]>} findAll - Finds all records from the database for the given model name and query.
  * @property {(query: Query) => Promise.<FindAndCountAll>} findAndCountAll - Finds and counts all records from the database for the given model name and query.
- * @property {(query: Query) => Promise.<Object.<string, unknown>>} findOne - Finds a single record from the database for the given model name and query.
+ * @property {(query: Query) => Promise.<Object.<string, any>>} findOne - Finds a single record from the database for the given model name and query.
  * @property {(query: Query) => Promise.<Object.<string, unknown>>} findUnique - Finds a unique record from the database for the given model name and query.
  * @property {(id: string, payload: Palyload) => Promise.<Object.<string, unknown>>} update - Updates a record in the database with the given id and payload for the given model name.
  */
@@ -75,7 +75,7 @@ export type DatabaseManager = {
      */
     findAll: (query: Query) => Promise<{
         [x: string]: unknown;
-    }>;
+    }[]>;
     /**
      * - Finds and counts all records from the database for the given model name and query.
      */
@@ -84,7 +84,7 @@ export type DatabaseManager = {
      * - Finds a single record from the database for the given model name and query.
      */
     findOne: (query: Query) => Promise<{
-        [x: string]: unknown;
+        [x: string]: any;
     }>;
     /**
      * - Finds a unique record from the database for the given model name and query.

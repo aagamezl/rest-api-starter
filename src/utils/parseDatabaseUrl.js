@@ -2,14 +2,15 @@
  * The complete OpenAPI Operation.
  *
  * @typedef DatabaseUrl
- * @type {object}
  * @property {string} provider - Indicates the database provider [postgres|mysql|oracle].
- * @property {string} username - Indicates the database user.
- * @property {string} password - Indicates the database password.
- * @property {string} host     - Indicates the database host.
- * @property {number} port     - Indicates the database port.
- * @property {string} name     - Indicates the database name.
- * @property {string} schema   - Indicates the database schema.
+ * @type {object}
+ * @property {string} [provider] - Indicates the database provider.
+ * @property {string} [username] - Indicates the database user.
+ * @property {string} [password] - Indicates the database password.
+ * @property {string} [host]     - Indicates the database host.
+ * @property {number} [port]     - Indicates the database port.
+ * @property {string} [name]     - Indicates the database name.
+ * @property {string} [schema]   - Indicates the database schema.
  */
 
 /**

@@ -1,7 +1,7 @@
 /**
  *
- * @param {Record<string, string>} type
- * @returns {Record<string, boolean>}
+ * @param {Object.<string, string>} type
+ * @returns {Object.<string, boolean>}
  */
 export const scalarEnumToFields = (type) => {
   return Object.keys(type).reduce((result, key) => {

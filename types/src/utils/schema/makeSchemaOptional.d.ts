@@ -1,1 +1,1 @@
-export function makeSchemaOptional(schema: ObjectSchema): ObjectSchema;
+export function makeSchemaOptional(schema: import('joi').ObjectSchema): import('joi').ObjectSchema;

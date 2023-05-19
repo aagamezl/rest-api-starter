@@ -1,1 +1,1 @@
-export function generateToken(email: any, tokenSecret: any, expiresIn: any): Promise<any>;
+export function generateToken(email: string, tokenSecret: string, expiresIn?: string | number): Promise<string>;

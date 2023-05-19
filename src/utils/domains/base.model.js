@@ -4,23 +4,23 @@ import { queryBuilder } from '../query/queryBuilder.js'
 /**
  * Base Model
  *
- * @typedef Model
- * @type {object}
- *
- * @property {(payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>} create
- * @property {(id: string) => Promise.<Object.<string, unknown>>} deleteById
- * @property {(requestData: import('../query/requestParser.js').RequestData) => Promise.<GetAllResponse>} getAll
- * @property {(id: string, requestData: import('../query/requestParser.js').RequestData) => Promise.<Object.<string, unknown>>} getById
- * @property {(id: string, payload: UpdatePayload.<TEntity>) => Promise.<Object.<string, unknown>>} update
+ * @template T
+ * @typedef {T & {
+ * create: (payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>
+ * delete: (query: import('../../data-source.js').Query) => Promise.<Object.<string, unknown>>
+ * getAll: (requestData: import('../query/requestParser.js').RequestData) => Promise.<Object.<string, unknown>>
+ * getById: (requestData: import('../query/requestParser.js').RequestData) => Promise.<Object.<string, unknown>>
+ * update: (id: string, payload: Object.<string, unknown>) => Promise.<Object.<string, unknown>>
+ * }} Model<T>
  */
 
 /**
- *
+ * @template T
  * @param {string} modelName
- * @param {Object.<string, Function>} methods
- * @return {Model}
+ * @param {T} [methods]
+ * @returns {Model<T>}
  */
-export const baseModel = (modelName, methods = {}) => {
+export const baseModel = (modelName, methods) => {
   return {
     /**
      *
@@ -33,7 +33,7 @@ export const baseModel = (modelName, methods = {}) => {
 
     /**
      *
-     * @param {string} id
+     * @param {import('../../data-source.js').Query} query
      * @returns {Promise<Object.<string, unknown>>}
      */
     delete (query) {
@@ -43,7 +43,7 @@ export const baseModel = (modelName, methods = {}) => {
     /**
      *
      * @param {import('../../utils/index.js').RequestData} requestData
-     * @returns {Promise<import('../../data-source.js').FindAllResponse>}
+     * @returns {Promise<import('../../data-source.js').FindAndCountAll>}
      */
     getAll (requestData) {
       const query = queryBuilder(requestData)
@@ -54,7 +54,7 @@ export const baseModel = (modelName, methods = {}) => {
     /**
      *
      * @param {import('../../utils/index.js').RequestData} requestData
-     * @returns {Promise.<Object.<string, unknown>}
+     * @returns {Promise.<Object.<string, unknown>>}
      */
     getById (requestData) {
       const query = queryBuilder(requestData)
@@ -66,7 +66,7 @@ export const baseModel = (modelName, methods = {}) => {
      *
      * @param {string} id
      * @param {Object.<string, unknown>} payload
-     * @returns {Promise.<Object.<string, unknown>}
+     * @returns {Promise.<Object.<string, unknown>>}
      */
     update (id, payload) {
       return dataSource.manager(modelName).update(id, payload)

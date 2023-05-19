@@ -1,23 +1,25 @@
-export function baseModel(modelName: string, methods?: {
-    [x: string]: Function;
-}): Model;
+export function baseModel<T>(modelName: string, methods?: T): Model<T>;
 /**
- * Base Model
+ * <T>
  */
-export type Model = {
+export type Model<T> = T & {
     create: (payload: {
         [x: string]: unknown;
     }) => Promise<{
         [x: string]: unknown;
     }>;
-    deleteById: (id: string) => Promise<{
+    delete: (query: import('../../data-source.js').Query) => Promise<{
         [x: string]: unknown;
     }>;
-    getAll: (requestData: import('../query/requestParser.js').RequestData) => Promise<GetAllResponse>;
-    getById: (id: string, requestData: import('../query/requestParser.js').RequestData) => Promise<{
+    getAll: (requestData: import('../query/requestParser.js').RequestData) => Promise<{
         [x: string]: unknown;
     }>;
-    update: (id: string, payload: UpdatePayload<TEntity>) => Promise<{
+    getById: (requestData: import('../query/requestParser.js').RequestData) => Promise<{
+        [x: string]: unknown;
+    }>;
+    update: (id: string, payload: {
+        [x: string]: unknown;
+    }) => Promise<{
         [x: string]: unknown;
     }>;
 };

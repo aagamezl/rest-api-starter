@@ -103,18 +103,6 @@ const PARSE_FUNCTIONS = {
   parseSort: (query) => parseSort(query)
 }
 
-// const delegateToParser = (query) => {
-//   // NOTE: 'this' points to requestObject!
-//   let _requestDataSubset = this
-//   let functionName
-
-//   for (functionName in PARSE_PARAM) {
-//     if (PARSE_PARAM[functionName].test(query)) {
-//       _requestDataSubset = JsonApiQueryParser[functionName](query, _requestDataSubset)
-//     }
-//   }
-// }
-
 /**
  * Cuts up the endpoint path to define the requested resource, identifier and
  * relationships.

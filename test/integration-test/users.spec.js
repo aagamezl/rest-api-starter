@@ -10,9 +10,9 @@ import { createHashValue } from '../../src/utils/authentication/index.js'
 import { createManagerStub } from '../stubs/index.js'
 import { CONTENT_TYPE } from '../../src/utils/index.js'
 
-sinon.config = {
-  useFakeTimers: false
-}
+// sinon.config = {
+//   useFakeTimers: false
+// }
 
 let sandbox
 let dataSourceMock

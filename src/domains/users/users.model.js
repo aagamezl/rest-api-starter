@@ -1,3 +1,5 @@
+// @ts-check
+
 import { config } from '../../../config/index.js'
 import { dataSource } from '../../data-source.js'
 import { createHashValue, generateToken, getToken } from '../../utils/authentication/index.js'
@@ -6,14 +8,27 @@ import { baseModel } from '../../utils/domains/base.model.js'
 import { queryBuilder } from '../../utils/index.js'
 
 /**
- * UserData
- *
- * @typedef UserData
- * @type {object}
- *
- * @property {string} token
- * @property {string} username
- * @property {string} email
+ * @typedef {Object} UserModelMethods
+ * @property {(payload: LoginPayload) => Promise<UserData>} login - The login
+ * @property {(authorization: string) => Promise<Object.<string, unknown>>} logout -  logout function.
+ */
+
+/**
+ * Represents a user model.
+ * @typedef {import('../../utils/index.js').Model<UserModelMethods>} UserModel
+ */
+
+/**
+ * @typedef {Object} LoginPayload
+ * @property {string} email - The user's email.
+ * @property {string} password - The user's password.
+ */
+
+/**
+ * @typedef {Object} UserData
+ * @property {string} token - The user's authentication token.
+ * @property {string} username - The user's username.
+ * @property {string} email - The user's email.
  */
 
 /**
@@ -49,7 +64,7 @@ const getAll = (requestData) => {
 /**
  *
  * @param {import('../../utils/index.js').RequestData} requestData
- * @returns {Promise.<Object.<string, unknown>}
+ * @returns {Promise.<Object.<string, unknown>>}
  */
 const getById = (requestData) => {
   const query = queryBuilder(requestData, ['password'])
@@ -59,7 +74,7 @@ const getById = (requestData) => {
 
 /**
  *
- * @param {Object.<string, string>} payload
+ * @param {LoginPayload} payload
  * @returns {Promise.<UserData>}
  */
 const login = async ({ email, password }) => {

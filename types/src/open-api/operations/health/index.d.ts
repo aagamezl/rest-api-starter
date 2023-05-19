@@ -9,7 +9,9 @@ export namespace healthOperations {
                     bearerAuth: any[];
                 }[];
                 responses: {
-                    [x: number]: any;
+                    500: {
+                        description: import("http-status-codes").ReasonPhrases;
+                    };
                     200: {
                         description: string;
                         content: {

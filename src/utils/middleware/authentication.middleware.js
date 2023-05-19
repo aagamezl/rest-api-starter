@@ -5,9 +5,9 @@ import { CONTENT_TYPE } from '../domains/base.controller.js'
 
 /**
  *
- * @param {Request} req
- * @param {Response} res
- * @param {NextFunction} next
+ * @param {import('express').Request} req
+ * @param {import('express').Response} res
+ * @param {import('express').NextFunction} next
  * @returns
  */
 export const authenticate = async (req, res, next) => {

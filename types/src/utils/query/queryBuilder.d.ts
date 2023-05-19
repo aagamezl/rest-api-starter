@@ -42,6 +42,16 @@ export type NestedFilter = {
      */
     not?: Prisma.DateTimeFilter | Date | string;
 };
+export type BasicSelect = {
+    [x: string]: boolean | NestedSelect;
+};
+export type NestedSelect = {
+    /**
+     * - The nested select criteria.
+     */
+    select?: BasicSelect;
+};
+export type Select = BasicSelect & NestedSelect;
 /**
  * Represents the input for a "where" condition.
  */
@@ -77,35 +87,26 @@ export type WhereInput = {
      */
     updatedAt?: Date | string;
 };
-export type Select = {
-    [x: string]: boolean;
-};
 export type OrderBy = {
     [x: string]: Prisma.SortOrder;
 }[];
+export type Include = Select;
 /**
  * Represent the Request Data for an JSON API URL
  */
 export type Query = {
-    /**
-     * - Indicates the total amount of record for the resource.
-     */
+    [x: string]: unknown;
+} & {
     select?: Select;
-    /**
-     * - Indicates the total amount of record for the resource.
-     */
     where?: WhereInput;
-    /**
-     * - Indicates the total amount of records to skip.
-     */
     skip?: number;
-    /**
-     * - Indicates the total amount of records to take.
-     */
     take?: number;
-    /**
-     * - Indicates the total amount of records to take.
-     */
-    orderBy?: OrderBy;
+    orderBy?: {
+        [x: string]: Prisma.SortOrder;
+    }[];
+    include?: BasicSelect & Include;
+    distinct?: {
+        [x: string]: unknown;
+    };
 };
 import { Prisma } from ".prisma/client";

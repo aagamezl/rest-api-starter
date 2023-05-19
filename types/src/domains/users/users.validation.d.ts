@@ -13,6 +13,6 @@ export namespace validations {
         [x: string]: import("joi").ObjectSchema<any>;
     };
     export const update: {
-        [x: string]: any;
+        [x: string]: import("joi").ObjectSchema<any>;
     };
 }

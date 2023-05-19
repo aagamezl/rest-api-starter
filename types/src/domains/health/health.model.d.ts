@@ -15,8 +15,8 @@ declare function check(config: any): Promise<{
             componentId: string;
             componentType: string;
             node: number;
-            observedValue: any;
-            observedUnit: any;
+            observedValue: number;
+            observedUnit: string;
             status: string;
             time: Date;
         }[];
