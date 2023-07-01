@@ -33,10 +33,27 @@ export const config = {
     provider,
     pagination: {
       limit: 20
+    },
+    generator: {
+      seed: {
+        filename: 'seed2.js',
+        path: 'prisma'
+      },
+      validations: {
+        filename: '[DOMAIN].schema.js',
+        path: 'src/domains'
+      }
     }
   },
   schema: {
-    user: ['createdAt', 'updatedAt'],
-    post: ['createdAt', 'updatedAt']
+    authtoken: {
+      skip: true // This model is skiped and no validations are generated
+    },
+    user: {
+      fields: ['createdAt'] // Fields to be added to the schema but not the input
+    },
+    post: {
+      fields: ['createdAt'] // Fields to be added to the schema but not the input
+    }
   }
 }

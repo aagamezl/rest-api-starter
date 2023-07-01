@@ -156,7 +156,7 @@ test('should get an user by id', async t => {
 
   const result = await model.getById(requestData)
 
-  t.deepEqual(result, userWithoutPassword)
+  t.deepEqual(result, user)
 })
 
 test('should update an user by id', async t => {

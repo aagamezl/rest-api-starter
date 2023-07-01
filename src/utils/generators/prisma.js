@@ -2,10 +2,10 @@
 // import { copyFileSync, writeFileSync } from 'node:fs'
 // import { join, dirname } from 'node:path'
 
-import { Prisma } from '@prisma/client'
+// import { Prisma } from '@prisma/client'
 // import { plural } from '@devnetic/utils'
 
-export const seed = () => {
+export const generateSeed = () => {
   const code = [
     'import { PrismaClient } from \'@prisma/client\'\n',
     'const prisma = new PrismaClient()\n',
@@ -25,20 +25,37 @@ export const seed = () => {
   return code.join('\n')
 }
 
-export const createValidations = (schema = Prisma.dmmf.datamodel, schemaFields = []) => {
+export const generateValidations = (schema, schemaFields = []) => {
   const validations = generateSchema(schema, schemaFields)
 
+  // console.log(`joi.object({\n${indentCode(validations.User.schema)}\n})`)
+
   return Object.entries(validations).reduce((result, [name, validation]) => {
+    // @TODO This validation needs to be improved, is skipping necessary models
+    // when no createdAt, updatedAt fields for example, the login in generateSchema
+    // have to be fixed
+    // if (!validation.schema) {
+    //   return result
+    // }
+
     const modelName = name.toLowerCase()
+    const modelId = validation.related ? `.id('${name}')` : ''
 
     const data = [
-      'import joi from \'joi\'',
+      'import Joi from \'joi\'',
       'import joiToSwagger from \'joi-to-swagger\'\n',
       'import { getBaseResponse } from \'../../utils/docs/getBaseResponse.js\'\n',
       `export const ${modelName}Id = ${validation.id}\n`,
-      `export const ${modelName} = ${validation.input}\n`,
+      // `export const ${modelName} = ${validation.input}\n`,
+      // `export const ${modelName}Schema = joiToSwagger(${modelName}Id.concat(${modelName})).swagger`,
+      // `export const ${modelName}Input = joiToSwagger(${modelName}).swagger`,
+      // `export const responseAll = getBaseResponse(${modelName}Schema)`,
+      `export const input = Joi.object({\n${indentCode(validation.input)}\n}).unknown(false)${modelId}\n`,
+      // `export const ${modelName} = Joi.object({\n${indentCode([...validation.input, ...validation.schema])}\n}).unknown(false)\n`,
+      // `export const ${modelName} = input.concat(Joi.object({\n${indentCode([...validation.schema])}\n})).unknown(false)\n`,
+      `export const ${modelName} = ${validation.schema ? `input.concat(Joi.object({\n${indentCode([...validation.schema])}\n})).unknown(false)` : 'input'}\n`,
       `export const ${modelName}Schema = joiToSwagger(${modelName}Id.concat(${modelName})).swagger`,
-      `export const ${modelName}Input = joiToSwagger(${modelName}).swagger`,
+      `export const ${modelName}Input = joiToSwagger(input).swagger`,
       `export const responseAll = getBaseResponse(${modelName}Schema)`,
       '' // for StandardJS
     ]
@@ -93,21 +110,34 @@ export const createValidations = (schema = Prisma.dmmf.datamodel, schemaFields =
 /**
  *
  * @param {string} model
+ * @param {Object.<string, Object.<string, any>>} [schemaFields={}]
  * @returns {object}
  */
-export const generateSchema = (schema, schemaFields = []) => {
-  console.log(schemaFields)
-
+export const generateSchema = (schema, schemaFields = {}) => {
   const models = schema.models.reduce((validation, model) => {
+    if (schemaFields[model.name.toLowerCase()]?.skip) {
+      return validation
+    }
+
     const schema = parseModel(model)
 
     // const modelSchema = schema.input.map(field => field.code)
     // const input = modelSchema
     //   .filter(item => !schemaFields[model.name.toLowerCase()].includes(item.field))
-    const modelSchema = schema.input.reduce((result, item) => {
-      (result.schema ??= []).push(item.code)
+    const modelSchema = schema.input.reduce((result, item, index) => {
+      // (result.schema ??= []).push(item.code)
 
-      if (!(schemaFields[model.name.toLowerCase()] ?? []).includes(item.field)) {
+      // if (!(schemaFields[model.name.toLowerCase()] ?? []).includes(item.field)) {
+      //   (result.input ??= []).push(item.code)
+      // }
+
+      // Only fields in the schema fields are added to the schema, after that
+      // they are concatenated to the input fields.
+      if ((schemaFields[model.name.toLowerCase()]?.fields ?? []).includes(item.field) ||
+        item.isUpdatedAt
+      ) {
+        (result.schema ??= []).push(item.code)
+      } else {
         (result.input ??= []).push(item.code)
       }
 
@@ -129,6 +159,7 @@ export const generateSchema = (schema, schemaFields = []) => {
     return result
   }, {})
 
+  // return models
   return parseRelatedTypes(models, enums)
 }
 
@@ -146,6 +177,14 @@ const getType = (field) => {
   }
 
   return validator[field.type.toLowerCase()] ?? validator[field.kind.toLowerCase()]
+}
+
+/**
+ *
+ * @param {string[]} code
+ */
+const indentCode = (code, padLength = 2) => {
+  return code.map(field => field.padStart(field.length + padLength, ' ')).join(',\n')
 }
 
 const parseDefault = (value, type) => {
@@ -173,7 +212,7 @@ const parseDate = (value) => 'new Date()'
 const parseEnum = (field) => {
   const { subtype } = getType(field)
 
-  const code = [`joi.string().valid([Enum:${subtype}])`]
+  const code = [`Joi.string().valid([Enum:${subtype}])`]
 
   if (field.hasDefaultValue) {
     code.push(`default(${parseDefault(field.default, 'string')})`)
@@ -209,12 +248,12 @@ const parseId = (field) => {
   // }
 
   // return `joi.object({\n  id: ${code.join('.')}\n})`
-  return `joi.object({\n  id: ${code}\n})`
+  return `Joi.object({\n  id: ${code}\n})`
 }
 
 const parseIdCode = (field) => {
   const { type } = getType(field)
-  const code = [`joi.${type}()`]
+  const code = [`Joi.${type}()`]
 
   if (type === 'string') {
     code.push('guid({ version: \'uuidv4\' })')
@@ -234,10 +273,11 @@ const parseModel = (model) => {
       if (field.isId) {
         result.id = schema
 
-        result.input.push({
-          field: field.name,
-          code: `${field.name}: ${parseIdCode(field)}`
-        })
+        // result.input.push({
+        //   field: field.name,
+        //   code: `${field.name}: ${parseIdCode(field)}`
+        // })
+
         return result
       }
 
@@ -249,7 +289,8 @@ const parseModel = (model) => {
       // result.input.push(`${field.name}: ${schema}`)
       result.input.push({
         field: field.name,
-        code: `${field.name}: ${schema}`
+        code: `${field.name}: ${schema}`,
+        isUpdatedAt: field.isUpdatedAt
       })
 
       return result
@@ -258,30 +299,36 @@ const parseModel = (model) => {
 
 const parseObject = (field) => {
   if (field.isList) {
-    return `joi.array().items([Object:${field.type}])`
+    return `Joi.array().items([Object:${field.type}])`
+    // return `joi.array().items(joi.object([Object:${field.type}])).unknown(false)`
   }
 
-  return `joi.object([Object:${field.type}])`
+  // return `joi.object([Object:${field.type}]).unknown(false)`
+  return `[Object:${field.type}]`
 }
 
 const parseRelatedTypes = (models, enums) => {
-  const enumRegex = /\[Enum:(\w+)\]/gm
-  const objectRegex = /\[Object:(\w+)\]/gm
+  // const enumRegex = /\[Enum:(\w+)\]/gm
+  // const objectRegex = /\[Object:(\w+)\]/gm
 
   return Object.entries(models).reduce((result, [model, { id, input, schema }]) => {
     // Array.from(input.matchAll(enumRegex)).forEach(([, name]) => {
-    Array.from(input.join('\n').matchAll(enumRegex)).forEach(([, name]) => {
-      input = input.replaceAll(`[Enum:${name}]`, enums[name].map(parseString).join(', '))
-    })
+    // Search for Enum in the input to replace them for the correct value
+    // Array.from(input.join('\n').matchAll(enumRegex)).forEach(([match, name]) => {
+    //   input = input.replaceAll(`[Enum:${name}]`, enums[name].map(parseString).join(', '))
+    // })
 
-    // Array.from(input.matchAll(objectRegex)).forEach(([, name]) => {
-    Array.from(input.join('\n').matchAll(objectRegex)).forEach(([, name]) => {
-      input = input.replaceAll(`[Object:${name}]`, models[name].input.replaceAll(/ {2}(\w+)/gm, '    $1').replace('})', '  })'))
-    })
+    // // Array.from(input.matchAll(objectRegex)).forEach(([, name]) => {
+    // // Search for object in the input to replace them for the correct value
+    // Array.from(input.join('\n').matchAll(objectRegex)).forEach(([match, name]) => {
+    //   input = input.replaceAll(`[Object:${name}]`, models[name].input.replaceAll(/ {2}(\w+)/gm, '    $1').replace('})', '  })'))
+    // })
 
     result[model] = {
       id,
-      input
+      input: replaceRelatedField(input, models, enums),
+      related: Boolean(models[model].related),
+      schema
     }
 
     return result
@@ -295,15 +342,15 @@ const parseScalar = (field) => {
 
   const { type } = getType(field)
 
-  const scalar = [`joi.${type}()`]
+  const scalar = [`Joi.${type}()`]
 
   if (field.hasDefaultValue) {
     scalar.push(`default(${parseDefault(field.default, type)})`)
 
     if (field.isList) {
-      const code = [`joi.${type}()`]
+      const code = [`Joi.${type}()`]
 
-      scalar[0] = `joi.array().items(${code.join('.')})`
+      scalar[0] = `Joi.array().items(${code.join('.')})`
     }
   }
 
@@ -317,6 +364,38 @@ const parseScalar = (field) => {
 }
 
 const parseString = (value) => `'${value}'`
+
+const replaceRelatedField = (input, models, enums) => {
+  const enumRegex = /\[Enum:(\w+)\]/gm
+  const objectRegex = /\[Object:(\w+)\]/gm
+  // const matches = Array.from(input.join('\n').matchAll(objectRegex))
+
+  return input.map(field => {
+    // const objectMatch = objectRegex.exec(field)
+    // const enumMatch = enumRegex.exec(field)
+    const objectMatch = [...field.matchAll(objectRegex)][0]
+    const enumMatch = [...field.matchAll(enumRegex)][0]
+
+    if (objectMatch) {
+      models[objectMatch[1]].related = true
+
+      field = field.replace(objectMatch[0], `Joi.link('#${objectMatch[1]}')`)
+    }
+
+    if (enumMatch) {
+      field = field.replace(enumMatch[0], enums[enumMatch[1]].map(parseString).join(', '))
+    }
+
+    return field
+    // if (objectRegex.test(field)) {
+    //   matches.forEach(([match, name]) => {
+    //     field = field.replaceAll(match, `{\n${indentCode(models[name].input, 4)}\n  }`)
+    //   })
+    // }
+
+    // return field
+  })
+}
 
 /**
  * Check if the field should be parsed acording to the optional skipped fields
