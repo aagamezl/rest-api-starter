@@ -33,19 +33,19 @@ export const config = {
     provider,
     pagination: {
       limit: 20
-    },
+    }
+  },
+  schema: {
     generator: {
       seed: {
         filename: 'seed2.js',
         path: 'prisma'
       },
       validations: {
-        filename: '[DOMAIN].schema.js',
+        filename: '[DOMAIN].schema2.js',
         path: 'src/domains'
       }
-    }
-  },
-  schema: {
+    },
     authtoken: {
       skip: true // This model is skiped and no validations are generated
     },

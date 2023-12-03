@@ -18,10 +18,12 @@
     "test:watch": "ava --watch",
     "migrate:create": "prisma migrate dev --create-only",
     "migrate:generate": "prisma migrate dev",
-    "migrate:seed": "node -e 'import(\"./src/utils/generators/prisma.js\").then(module => console.log(module.seed()))' > prisma/seed.js",
+    "migrate:seed": "node bin/schema/seed.js",
     "migrate:seed:run": "npm run prima:generate && prisma db seed",
     "migrate:run": "prisma migrate dev",
-    "migrate:reset": "npx prisma migrate reset"
+    "migrate:reset": "npx prisma migrate reset",
+    "generate:schema": "node bin/schema/generate.js",
+    "generate:openapi": "node bin/schema/openApi.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

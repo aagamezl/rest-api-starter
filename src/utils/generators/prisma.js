@@ -16,10 +16,10 @@ export const generateSeed = () => {
     '    await prisma.$disconnect()',
     '  })',
     '  .catch(async (error) => {',
-    '    console.error(error)',
-    '    await prisma.$disconnect()',
+    '    console.error(error)\n',
+    '    await prisma.$disconnect()\n',
     '    process.exit(1)',
-    '  })'
+    '  })\n'
   ]
 
   return code.join('\n')
