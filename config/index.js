@@ -1,16 +1,16 @@
 import { randomBytes } from 'node:crypto'
 
-import { parseDatabaseUrl } from '../src/utils/parseDatabaseUrl.js'
+// import { parseDatabaseUrl } from '../src/utils/parseDatabaseUrl.js'
 
-const {
-  provider,
-  username,
-  password,
-  host,
-  port,
-  name,
-  schema
-} = parseDatabaseUrl(process.env.DATABASE_URL)
+// const {
+//   provider,
+//   username,
+//   password,
+//   host,
+//   port,
+//   name,
+//   schema
+// } = parseDatabaseUrl(process.env.DATABASE_URL)
 
 export const config = {
   authentication: {
@@ -23,28 +23,28 @@ export const config = {
     environment: process.env.NODE_ENV ?? 'development',
     version: '1.0.0'
   },
-  database: {
-    username,
-    password,
-    name,
-    schema,
-    port,
-    host,
-    provider,
-    pagination: {
-      limit: 20
-    },
-    generator: {
-      seed: {
-        filename: 'seed2.js',
-        path: 'prisma'
-      },
-      validations: {
-        filename: '[DOMAIN].schema.js',
-        path: 'src/domains'
-      }
-    }
-  },
+  // database: {
+  //   username,
+  //   password,
+  //   name,
+  //   schema,
+  //   port,
+  //   host,
+  //   provider,
+  //   pagination: {
+  //     limit: 20
+  //   },
+  //   generator: {
+  //     seed: {
+  //       filename: 'seed2.js',
+  //       path: 'prisma'
+  //     },
+  //     validations: {
+  //       filename: '[DOMAIN].schema.js',
+  //       path: 'src/domains'
+  //     }
+  //   }
+  // },
   schema: {
     authtoken: {
       skip: true // This model is skiped and no validations are generated
