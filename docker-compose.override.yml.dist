@@ -1,7 +1,7 @@
 version: "3.9"
 services:
   postgres:
-    image: "postgres:15.1-alpine3.17"
+    image: "postgres:16.1-alpine3.18"
     container_name: rest-api-starter-database
     restart: on-failure
     ports:
@@ -11,7 +11,7 @@ services:
     environment:
       POSTGRES_DB: rest-api-starter
       POSTGRES_USER: rest-api-starter
-      POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje
+      POSTGRES_PASSWORD: XXXXXXXXXXXXXXXXXXX
 
   rest-api:
     build:
@@ -25,7 +25,7 @@ services:
     environment:
       NODE_ENV: development
       DATABASE_URL: "PROVIDER://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA"
-      TOKEN_SECRET: ERN7kna-hqa2xdu4bva
+      TOKEN_SECRET: XXXXXXXXXXXXXXXXXXX
       EXPIRES_IN: 3600
     links:
       - postgres

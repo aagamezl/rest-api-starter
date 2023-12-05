@@ -50,31 +50,31 @@ In the code you will find a `docker-compose.override.yml.dist` file, you should 
 ## Database Container Variables
 
 ```yaml
-POSTGRES_DB: rest-api-starter           # Database name
-POSTGRES_USER: rest-api-starter         # Database username
+POSTGRES_DB: rest-api                   # Database name
+POSTGRES_USER: rest-api                 # Database username
 POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje  # Database password
 ```
 
 ## API Container Variables
 
 ```yaml
-NODE_ENV: development                   # Node.js environment
+NODE_ENV: development | production                                         # Node.js environment
+DATABASE_URL: "PROVIDER://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA"  # Database URL
+TOKEN_SECRET: XXXXXXXXXXXXXXXXXXX                                          # Secret for JWT token generation
+EXPIRES_IN: 3600                                                           # JWT token expiration time
 
-DATABASE_TYPE: postgres                 # Database engine
-DATABASE_HOST: postgres                 # Database hostname
-DATABASE_PORT: 5432                     # Database port
-DATABASE_NAME: rest-api-starter         # Database name
-DATABASE_USERNAME: rest-api-starter     # Database username
-DATABASE_PASSWORD: ujt9ack5gbn_TGD4mje  # Database password
-
-TOKEN_SECRET: ERN7kna-hqa2xdu4bva       # Secret for JWT token generation
-EXPIRES_IN: 3600 # 1 hour               # JWT token expiration time
 ```
 
 To run the API and database you need to use the next command in your terminal:
 
 ```shell
 $ sudo docker-compose up -d
+```
+
+To connect to the a container, run the next command:
+
+```shell
+$ sudo docker exec -it rest-api sh
 ```
 
 # Database Configuration And Administration
@@ -85,33 +85,24 @@ $ sudo docker-compose up -d
 
 Database migrations are a controlled set of changes that modify and evolve the structure of your database schema. Migrations help you transition your database schema from one state to another. For example, within a migration you can create or remove tables and columns, split fields in a table, or add types and constraints to your database.
 
+## Generating Migrations
+
+After creating or modifying an entity, it is time to generate the corresponding migration; the project has a script to execute this task:
+
+```shell
+npm run migrate:generate
+or
+sudo docker exec -it rest-api npm run migrate:generate
+```
+
 ## Running Migrations
 
-After creating or modifying an entity, and creating the corresponding migration, it is time to run the migration to create or modify the table associated with the entity.
+After creating the corresponding migration, it is time to run the migration to create or modify the table associated with the entity.
 
 To run the migrations we will use the next command:
 
 ```shell
 $ npm run migrate:run
+or
+sudo docker exec -it rest-api npm run migrate:run
 ```
-
-## Reset The Development Database
-
-You can also reset the database yourself to undo manual changes or db push experiments by running:
-
-```shell
-$ npm run migrate:reset
-```
-
-# TODO
-
-## Objetives
-
-My main goal is to add support for a wider range of libraries, ORMs, and other relevant technologies.
-
-Initially I will do this by creating separate branches for each implementation, and in the future I will create a CLI that allows the starter to be created based on the available options.
-
-* [ ] Add support for TypeScript.
-* [ ] Add support for other `Relational Database Engines` (providing different `docker-compose.override.yml` files).
-* [ ] Add Support for `NoSQL Database Engines` (providing different `docker-compose.override.yml` files and different `ORMs`).
-* [ ] CLI to config the starter.
