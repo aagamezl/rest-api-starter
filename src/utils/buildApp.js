@@ -1,6 +1,9 @@
 import fastify from 'fastify'
 
 const buildApp = (opts = {}) => {
+  /**
+   * @type {import('fastify').FastifyInstance} Instance of Fastify
+   */
   const app = fastify(opts)
 
   app.get('/', async function (request, reply) {
