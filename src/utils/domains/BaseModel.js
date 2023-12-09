@@ -66,7 +66,7 @@ export default class BaseModel {
   getAll (requestData) {
     const query = queryBuilder(this.model, requestData, this.options.excludedFields)
 
-    return db.query[this.tableName].findMany(query).finally(() => { connection.close() })
+    return db.query[this.tableName].findMany(query).execute()
   }
 
   /**

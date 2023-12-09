@@ -16,7 +16,7 @@ export default class UsersController extends BaseController {
       const user = await this.model.login(request.body)
 
       if (!user) {
-        return reply.set('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).end()
+        return reply.set('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).send()
       }
 
       const { token, username, email } = user

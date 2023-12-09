@@ -7,21 +7,19 @@
 export const createQueryCondition = (entity, requestData) => {
   const queryCondition = {}
 
-  if (haveData(requestData.queryData.fields)) {
-    queryCondition.columns = {}
-
-    Object.entries(requestData.queryData.fields).reduce((query, [relation, fields]) => {
-      if (entity === relation) {
-        query.columns = getFieldsQuery(fields)
-      } else {
-        query.columns.with = {
-          [relation]: { columns: getFieldsQuery(fields) }
-        }
+  requestData.queryData.include.reduce((query, relation) => {
+    if (requestData.queryData.fields[relation]) {
+      query.with = {
+        [relation]: { columns: getFieldsQuery(requestData.queryData.fields[relation]) }
       }
+    } else {
+      query.with = {
+        [relation]: true
+      }
+    }
 
-      return query
-    }, queryCondition)
-  }
+    return query
+  }, queryCondition)
 
   return queryCondition
 }
@@ -33,5 +31,3 @@ export const getFieldsQuery = (fields) => {
     return result
   }, { id: true })
 }
-
-const haveData = (target) => Object.keys(target).length > 0

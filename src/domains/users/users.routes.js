@@ -1,7 +1,7 @@
 import authenticate from '../../utils/hooks/authenticate.js'
 import UsersController from './UsersController.js'
 import UsersModel from './UsersModel.js'
-import users from './users.schema.js'
+import { users, validations } from './index.js'
 
 /**
  * @param {import('fastify').FastifyInstance} app
@@ -12,11 +12,11 @@ export default async (app) => {
   })
   const controller = new UsersController(model)
 
-  app.post('/users', { preParsing: authenticate }, async (request, reply) => {
+  app.post('/users', { schema: validations.create }, async (request, reply) => {
     return controller.create(request, reply)
   })
 
-  app.post('/users/login', async (request, reply) => {
+  app.post('/users/login', { schema: validations.login }, async (request, reply) => {
     return controller.login(request, reply)
   })
 
@@ -28,7 +28,10 @@ export default async (app) => {
     return controller.getAll(request, reply)
   })
 
-  app.get('/users/:id', { preParsing: authenticate }, async (request, reply) => {
+  app.get('/users/:id', {
+    preParsing: authenticate,
+    schema: { params: validations.getById }
+  }, async (request, reply) => {
     return controller.getById(request, reply)
   })
 
@@ -36,7 +39,10 @@ export default async (app) => {
     return controller.delete(request, reply)
   })
 
-  app.patch('/users/:id', { preParsing: authenticate }, async (request, reply) => {
+  app.patch('/users/:id', {
+    preParsing: authenticate,
+    schema: validations.update
+  }, async (request, reply) => {
     return controller.update(request, reply)
   })
 }

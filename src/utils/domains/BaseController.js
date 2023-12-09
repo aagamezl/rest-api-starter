@@ -112,7 +112,7 @@ export class BaseController {
       const record = await this.model.getById(requestData)
 
       if (!record) {
-        return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).end()
+        return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).send()
       }
 
       reply.header('Content-Type', CONTENT_TYPE).send(record)

@@ -1,0 +1,5 @@
+export { default as PostsController } from './PostsController.js'
+export { default as PostsModel } from './PostsModel.js'
+export { default as routes } from './posts.routes.js'
+export * from './posts.schema.js'
+export { default as validations } from './posts.validation.js'
