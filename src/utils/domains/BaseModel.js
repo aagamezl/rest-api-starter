@@ -1,4 +1,4 @@
-import { eq, getTableName } from 'drizzle-orm'
+import { eq, getTableName, sql } from 'drizzle-orm'
 
 import excludeFields from '../query/excludeFields.js'
 import queryBuilder from '../query/queryBuilder.js'
@@ -87,6 +87,8 @@ export default class BaseModel {
    * @returns {Promise.<Object.<string, unknown>}
    */
   update (id, payload) {
+    payload.updated_at = sql`now()`
+
     return db.update(this.model)
       .set(payload)
       .where(eq(this.model.id, id))

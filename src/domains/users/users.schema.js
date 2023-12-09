@@ -7,8 +7,8 @@ const users = pgTable('users', {
   password: varchar('password', { length: 256 }),
   email: varchar('email', { length: 256 }).notNull(),
   age: smallint('age', { length: 256 }),
-  createdAt: timestamp('createdAt').defaultNow(),
-  updatedAt: timestamp('updatedAt').defaultNow()
+  created_at: timestamp('created_at').defaultNow(),
+  updated_at: timestamp('updated_at').defaultNow()
 }, (users) => {
   return {
     emailIndex: uniqueIndex('email_idx').on(users.email)

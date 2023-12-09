@@ -2,7 +2,7 @@ import { StatusCodes } from 'http-status-codes'
 
 import { errorHandler } from '../index.js'
 import { requestParser } from '../query/index.js'
-import { getError } from './getError.js'
+import getError from './getError.js'
 
 export const CONTENT_TYPE = 'application/vnd.api+json; charset=utf-8'
 
@@ -18,7 +18,7 @@ export const CONTENT_TYPE = 'application/vnd.api+json; charset=utf-8'
  * @property {(req: Request, res: Response) => void} update
  */
 
-export default class BaseController {
+export class BaseController {
   /**
    * @constructor
    * @param {import('./BaseModel.js').BaseModel} model
@@ -34,9 +34,9 @@ export default class BaseController {
    */
   async create (request, reply) {
     try {
-      const entity = await this.model.create(request.body)
+      const [record] = await this.model.create(request.body)
 
-      reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).send(entity)
+      reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).send(record)
     } catch (error) {
       errorHandler.handle(error)
 
@@ -132,7 +132,7 @@ export default class BaseController {
    */
   async update (request, reply) {
     try {
-      const record = await this.model.update(request.params.id, request.body)
+      const [record] = await this.model.update(request.params.id, request.body)
 
       reply.header('Content-Type', CONTENT_TYPE).send(record)
     } catch (error) {

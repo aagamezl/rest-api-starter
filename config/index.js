@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 
-export const config = {
+const config = {
   authentication: {
     secret: process.env.TOKEN_SECRET ?? randomBytes(20).toString('hex'),
     expiresIn: Number(process.env.EXPIRES_IN ?? 3600)
@@ -17,3 +17,5 @@ export const config = {
     }
   }
 }
+
+export default config

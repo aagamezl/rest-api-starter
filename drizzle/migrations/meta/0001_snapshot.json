@@ -1,9 +1,47 @@
 {
-  "id": "d0cf21b0-f475-49c1-8ef9-aae030b75599",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "ca9a5379-5e0b-4f7b-b9a8-110ac75e7d92",
+  "prevId": "d0cf21b0-f475-49c1-8ef9-aae030b75599",
   "version": "5",
   "dialect": "pg",
   "tables": {
+    "auth_token": {
+      "name": "auth_token",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "token": {
+          "name": "token",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "token_idx": {
+          "name": "token_idx",
+          "columns": [
+            "token"
+          ],
+          "isUnique": true
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {}
+    },
     "users": {
       "name": "users",
       "schema": "",
