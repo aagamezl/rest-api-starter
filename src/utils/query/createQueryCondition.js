@@ -21,6 +21,14 @@ export const createQueryCondition = (entity, requestData) => {
     return query
   }, queryCondition)
 
+  Object.keys(requestData.queryData.fields).reduce((query, relation) => {
+    if (!requestData.queryData.include.includes(relation)) {
+      query[relation] = { columns: getFieldsQuery(requestData.queryData.fields[relation]) }
+    }
+
+    return query
+  }, queryCondition)
+
   return queryCondition
 }
 
