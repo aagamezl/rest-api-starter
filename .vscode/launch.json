@@ -13,7 +13,6 @@
       ],
       "type": "node"
     },
-
     {
       "name": "Docker: Attach to Node",
       "type": "node",
