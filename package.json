@@ -16,12 +16,8 @@
     "start:dev": "nodemon --inspect=0.0.0.0:9229 bin/www/index.js",
     "test": "ava",
     "test:watch": "ava --watch",
-    "migrate:create": "prisma migrate dev --create-only",
-    "migrate:generate": "prisma migrate dev",
-    "migrate:seed": "node -e 'import(\"./src/utils/generators/prisma.js\").then(module => console.log(module.seed()))' > prisma/seed.js",
-    "migrate:seed:run": "npm run prima:generate && prisma db seed",
-    "migrate:run": "prisma migrate dev",
-    "migrate:reset": "npx prisma migrate reset"
+    "migrate:generate": "npx drizzle-kit generate:pg",
+    "migrate:run": "node src/migrate.js"
   },
   "prisma": {
     "seed": "node prisma/seed.js"

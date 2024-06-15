@@ -6,8 +6,6 @@ services:
     restart: on-failure
     ports:
       - "5432:5432"
-    volumes:
-      - "./temp/postgres/data:/var/lib/postgresql/data"
     environment:
       POSTGRES_DB: rest-api-starter
       POSTGRES_USER: rest-api-starter
