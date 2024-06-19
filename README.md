@@ -17,6 +17,9 @@ This is a list of the main technologies included in this Starter:
 
 * [Fastify](https://fastify.dev/) Fast and low overhead web framework, for Node.js.
 * [Drizzle ORM](https://orm.drizzle.team/) Drizzle ORM is a headless TypeScript ORM with a head.
+* [TypeBox](https://github.com/sinclairzx81/typebox) Json Schema Type Builder.
+* [Pino](https://getpino.io/) Very low overhead Node.js logger.
+* [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
 * [Postgres](https://www.postgresql.org/) the World's Most Advanced Open Source Relational Database.
 * [Docker](https://www.docker.com/) An open source containerization platform
 * [Docker Compose](https://docs.docker.com/compose/) tool for defining and running multi-container Docker applications
@@ -29,10 +32,6 @@ This is a list of the main technologies included in this Starter:
 * [Commitizen](https://commitizen-tools.github.io/commitizen/) Define a standard way of committing rules and communicating it.
 * [Husky](https://typicode.github.io/husky/) Git hooks made easy woof!.
 * [c8](https://github.com/bcoe/c8) Code-coverage using [Node.js' built in functionality](https://nodejs.org/dist/latest-v10.x/docs/api/cli.html#cli_node_v8_coverage_dir) that's compatible with [Istanbul's reporters](https://istanbul.js.org/docs/advanced/alternative-reporters/).
-* [Pino](https://getpino.io/) Very low overhead Node.js logger.
-* [Standard](https://standardjs.com/) JavaScript Style Guide, with linter & automatic code fixer.
-* [Zod](https://zod.dev/) Zod is a TypeScript-first schema declaration and validation library.
-* [Thunder Client](https://www.thunderclient.com/) Lightweight Rest API Client for VS Code.
 
 # Usage
 
