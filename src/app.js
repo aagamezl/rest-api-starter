@@ -1,3 +1,5 @@
+import Swagger from '@fastify/swagger'
+import SwaggerUI from '@fastify/swagger-ui'
 import cors from '@fastify/cors'
 import csrfProtection from '@fastify/csrf-protection'
 import fastify from 'fastify'
@@ -8,7 +10,7 @@ import { StatusCodes } from 'http-status-codes'
 import config from '../config/index.js'
 
 // import postsRoutes from './domains/posts/posts.routes.js'
-// import usersRoutes from './domains/users/users.routes.js'
+import usersRoutes from './domains/users/users.routes.js'
 
 const app = fastify({
   logger: config.logger[process.env.NODE_ENV]
@@ -30,12 +32,28 @@ app.setNotFoundHandler((request, reply) => {
   reply.code(StatusCodes.NOT_FOUND).send()
 })
 
+app.register(Swagger, {
+  openapi: {
+    openapi: '3.1.0',
+    info: {
+      title: 'Rest API Starter',
+      description: 'Rest API Starter',
+      version: '0.1.0'
+    },
+    tags: [
+      { name: 'Users', description: 'Users related end-points' }
+      // {
+      //   name: 'Posts',
+      //   description: 'Posts related end-points'
+      // }
+    ]
+  }
+})
+
+app.register(SwaggerUI)
+
 // Domains Routes
 // app.register(postsRoutes)
-// app.register(usersRoutes)
-
-app.ready().then(() => {
-  // app.swagger()
-})
+app.register(usersRoutes)
 
 export default app
