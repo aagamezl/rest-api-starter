@@ -1,5 +1,4 @@
 // import { relations } from 'drizzle-orm'
-import { ReasonPhrases } from 'http-status-codes'
 import { Type } from '@sinclair/typebox'
 import { createSelectSchema } from 'drizzle-typebox'
 import {
@@ -11,10 +10,12 @@ import {
   varchar
 } from 'drizzle-orm/pg-core'
 
+import { registerSchema } from '../../utils/domains/schemas/schema-registry.js'
+
 // import { BaseErrorResponse, createResponseSchema } from '../../utils/index.js'
-import { BaseByIdErrorResponse, BaseErrorResponse } from '../../utils/domains/error.schema.js'
-import createResponseSchema from '../../utils/domains/createResponseSchema.js'
-import NoContentSchema from '../../utils/domains/no-content.schema.js'
+// import { BaseByIdErrorResponse, BaseErrorResponse } from '../../utils/domains/schemas/error-schema.js'
+// import createResponseSchema from '../../utils/domains/createResponseSchema.js'
+// import NoContentSchema from '../../utils/domains/no-content.schema.js'
 
 // import { posts } from '../schemas.js'
 
@@ -42,7 +43,7 @@ export const users = pgTable('users', {
 // }))
 
 // Schema for selecting a user - can be used to validate API responses
-export const selectUserSchema = createSelectSchema(users, {
+export const UserSelectSchema = createSelectSchema(users, {
   id: Type.String({ format: 'uuid' }),
   age: Type.Integer({
     minimum: 0
@@ -52,43 +53,19 @@ export const selectUserSchema = createSelectSchema(users, {
 })
 
 // Schema for inserting a user - can be used to validate API requests
-export const createUserSchema = Type.Omit(selectUserSchema, [
+export const CreateUserSchema = Type.Omit(UserSelectSchema, [
   'id',
+  'password',
   'createdAt',
   'updatedAt'
 ])
 
-export const idUserSchema = Type.Pick(createUserSchema, ['id'])
+const UserSchema = Type.Omit(UserSelectSchema, ['password'])
 
-// export const createUserSchema = Type.Omit(insertSchema, [
-//   'id',
-//   'createdAt',
-//   'updatedAt'
-// ])
+export const IdUserSchema = Type.Pick(CreateUserSchema, ['id'])
 
-export const updateUserSchema = Type.Partial(createUserSchema)
+export const UpdateUserSchema = Type.Partial(CreateUserSchema)
 
-export const loginUserSchema = Type.Pick(createUserSchema, ['email', 'password'])
+registerSchema('users', 'User', UserSchema)
 
-export const usersCreateResponseSchema = {
-  201: createResponseSchema(createUserSchema, ReasonPhrases.CREATED),
-  ...BaseErrorResponse
-}
-
-export const usersDeleteResponseSchema = {
-  204: NoContentSchema,
-  ...BaseByIdErrorResponse
-}
-
-export const usersGetAllResponseSchema = {
-  200: createResponseSchema(
-    Type.Array(selectUserSchema),
-    ReasonPhrases.OK
-  ),
-  ...BaseErrorResponse
-}
-
-export const usersGetByIdResponseSchema = {
-  200: createResponseSchema(selectUserSchema, ReasonPhrases.OK),
-  ...BaseByIdErrorResponse
-}
+// export const loginUserSchema = Type.Pick(createUserSchema, ['email', 'password'])

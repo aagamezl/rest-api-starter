@@ -4,8 +4,8 @@
  * @param {string} description
  * @returns {}
  */
-const createResponseSchema = (schema, description) => {
+const createSchema = (schema, description) => {
   return Object.assign({}, schema, { description })
 }
 
-export default createResponseSchema
+export default createSchema

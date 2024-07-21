@@ -1,7 +1,11 @@
 import { randomBytes } from 'node:crypto'
 
 const config = {
-  appName: 'rest-api-starter',
+  application: {
+    name: 'Rest API Starter',
+    description: 'Rest API Starter',
+    version: '1.3.0'
+  },
   authentication: {
     secret: process.env.TOKEN_SECRET ?? randomBytes(20).toString('hex'),
     expiresIn: Number(process.env.EXPIRES_IN ?? 3600)

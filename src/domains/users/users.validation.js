@@ -1,43 +1,40 @@
+import DeleteByIdSchema from '../../utils/domains/schemas/response/schemas/delete-by-id-response.schema.js'
+import getByIdResponseSchema from '../../utils/domains/schemas/response/get-by-id-response.schema.js'
+import responseSchemaForCreate from '../../utils/domains/schemas/response/create-response.schema.js'
+import responseSchemaForGetAll from '../../utils/domains/schemas/response/get-all-response.schema.js'
 import { REQUEST_SEGMENTS } from '../../utils/index.js'
 import {
-  createUserSchema,
-  idUserSchema,
-  updateUserSchema,
-  loginUserSchema,
-  usersCreateResponseSchema,
-  usersGetByIdResponseSchema,
-  usersDeleteResponseSchema
+  CreateUserSchema,
+  IdUserSchema,
+  UpdateUserSchema
+  // loginUserSchema,
 } from './index.js'
 
 const validations = {
   // POST /users
   create: {
-    [REQUEST_SEGMENTS.BODY]: createUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: usersCreateResponseSchema
+    [REQUEST_SEGMENTS.BODY]: CreateUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: responseSchemaForCreate({ $ref: 'User' })
   },
   // DELETE /users/:id
   delete: {
-    [REQUEST_SEGMENTS.PARAMS]: idUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: usersDeleteResponseSchema
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: DeleteByIdSchema
   },
-  // DELETE /users/:id
+  // GET /users
   getAll: {
-    [REQUEST_SEGMENTS.RESPONSE]: usersDeleteResponseSchema
+    [REQUEST_SEGMENTS.RESPONSE]: responseSchemaForGetAll({ $ref: 'User' })
   },
   // GET /users/:id
   getById: {
-    [REQUEST_SEGMENTS.PARAMS]: idUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: usersGetByIdResponseSchema
-  },
-  // GET /users/login
-  login: {
-    [REQUEST_SEGMENTS.BODY]: loginUserSchema
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: getByIdResponseSchema({ $ref: 'User' })
   },
   // PATCH /users/:id
-  update: {
-    [REQUEST_SEGMENTS.PARAMS]: idUserSchema,
-    [REQUEST_SEGMENTS.BODY]: updateUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: usersGetByIdResponseSchema
+  patch: {
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.BODY]: UpdateUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: getByIdResponseSchema({ $ref: 'User' })
   }
 }
 
