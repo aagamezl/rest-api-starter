@@ -80,17 +80,17 @@ const create = async (request, reply) => {
  * @param {import('fastify').FastifyReply} reply
  */
 const deleteById = async (request, reply) => {
-  // try {
-  //   await model.delete({ identifier: request.params.id })
+  try {
+    await model.deleteById({ identifier: request.params.id })
 
-  //   return reply.status(StatusCodes.NO_CONTENT).send()
-  // } catch (error) {
-  //   loggerHandler.error(error)
+    return reply.status(StatusCodes.NO_CONTENT).send()
+  } catch (error) {
+    loggerHandler.error(error)
 
-  //   const returnError = getError(error)
+    const returnError = getError(error)
 
-  //   return reply.header('Content-Type', CONTENT_TYPE).status(returnError.status).send(returnError)
-  // }
+    return reply.header('Content-Type', CONTENT_TYPE).status(returnError.status).send(returnError)
+  }
 }
 
 /**
