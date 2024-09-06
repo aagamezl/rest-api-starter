@@ -25,7 +25,7 @@ const query = Object.keys(schema).reduce((queries, entity) => {
   return queries
 }, {})
 
-const drizzleStub = {
+const createDrizzleFixture = () => ({
   insert: sinon.stub().returnsThis(),
   values: sinon.stub().returnsThis(),
   select: sinon.stub().returnsThis(),
@@ -33,14 +33,12 @@ const drizzleStub = {
   delete: sinon.stub().returnsThis(),
   set: sinon.stub().returnsThis(),
   from: sinon.stub().returnsThis(),
-  where: sinon.stub().returnsThis(),
-  execute: sinon.stub().returnsThis(),
-  // query: { users: { findMany: sinon.stub() } },
+  where: () => { },
+  returning: () => { },
   query,
-  returning: sinon.stub(),
   limit: sinon.stub(),
   offset: sinon.stub()
-}
+})
 
 // const drizzleStub = {
 //   insert () { return this },
@@ -59,4 +57,4 @@ const drizzleStub = {
 //   offset () { return this }
 // }
 
-export default drizzleStub
+export default createDrizzleFixture

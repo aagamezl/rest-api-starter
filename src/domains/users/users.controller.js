@@ -62,10 +62,14 @@ import { CONTENT_TYPE, PROBLEM_CONTENT_TYPE } from '../../utils/domains/constant
  */
 const create = async (request, reply) => {
   try {
-    const record = await model.create(request.body)
+    const record = await model.create(request.body, ['password'])
+
+    // console.log(record)
 
     return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).send(record)
   } catch (error) {
+    console.log(error)
+
     loggerHandler.error(error)
 
     const returnError = getError(error)
@@ -106,6 +110,8 @@ const getAll = async (request, reply) => {
 
     return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.OK).send(records)
   } catch (error) {
+    console.log(error)
+
     loggerHandler.error(error)
 
     const returnError = getError(error)
@@ -146,17 +152,19 @@ const getById = async (request, reply) => {
  * @param {import('fastify').FastifyReply} reply
  */
 const patch = async (request, reply) => {
-  // try {
-  //   const [record] = await model.patch(request.params.id, request.body)
+  try {
+    const [record] = await model.patch(request.params.id, request.body)
 
-  //   return reply.header('Content-Type', CONTENT_TYPE).send(record)
-  // } catch (error) {
-  //   loggerHandler.error(error)
+    return reply.header('Content-Type', CONTENT_TYPE).send(record)
+  } catch (error) {
+    console.log(error)
 
-  //   const returnError = getError(error)
+    loggerHandler.error(error)
 
-  //   return reply.header('Content-Type', CONTENT_TYPE).status(returnError.status).send(returnError)
-  // }
+    const returnError = getError(error)
+
+    return reply.header('Content-Type', CONTENT_TYPE).status(returnError.status).send(returnError)
+  }
 }
 
 export default {

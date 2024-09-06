@@ -53,10 +53,13 @@ export const getById = (requestData, excludedFields = []) => {
  * @returns {Promise<import('../../data-source.js').SingleResponse}
  */
 export const patch = (id, payload, excludedFields = []) => {
-  payload.updatedAt = sql`now()`
-
-  return dataSource.getInstance().update(users)
-    .set(payload)
+  return dataSource
+    .getInstance()
+    .update(users)
+    .set({
+      ...payload,
+      updatedAt: sql`now()`
+    })
     .where(eq(users.id, id))
     .returning(generateReturning(excludedFields))
 }
