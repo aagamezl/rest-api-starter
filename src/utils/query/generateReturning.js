@@ -5,7 +5,7 @@
  * @param {string[]} [excludedFields=[]]
  * @returns {Record<string, unknown>}
  */
-const generateReturning = (entity, excludedFields = []) => {
+export const generateReturning = (entity, excludedFields = []) => {
   // if (excludedFields.length === 0) {
   //   return entity
   // }
@@ -18,5 +18,3 @@ const generateReturning = (entity, excludedFields = []) => {
     return result
   }, {})
 }
-
-export default generateReturning

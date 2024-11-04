@@ -1,11 +1,11 @@
-import controller from './users.controller.js'
+import { controller } from './users.controller.js'
 import { validations } from './index.js'
-import { addSchemas } from '../../utils/domains/schemas/schema-registry.js'
+import { addSchemas } from '../../utils/index.js'
 
 /**
  * @param {import('fastify').FastifyInstance} app
  */
-export default async (app) => {
+export const routes = async (app) => {
   addSchemas(app, 'users')
 
   app.post(

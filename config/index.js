@@ -1,6 +1,6 @@
 import { randomBytes } from 'node:crypto'
 
-const config = {
+export const config = {
   application: {
     name: 'Rest API Starter',
     description: 'Rest API Starter',
@@ -37,5 +37,3 @@ const config = {
     // test: false
   }
 }
-
-export default config

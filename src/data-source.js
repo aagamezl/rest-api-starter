@@ -10,7 +10,7 @@ const connection = postgres(process.env.DATABASE_URL)
 
 const db = drizzle(connection, { schema })
 
-const dataSource = {
+export const dataSource = {
   getConnection: () => {
     return connection
   },
@@ -18,5 +18,3 @@ const dataSource = {
     return db
   }
 }
-
-export default dataSource

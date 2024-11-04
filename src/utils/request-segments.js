@@ -1,4 +1,4 @@
-const REQUEST_SEGMENTS = {
+export const REQUEST_SEGMENTS = {
   BODY: 'body',
   COOKIES: 'cookies',
   FILES: 'files',
@@ -8,5 +8,3 @@ const REQUEST_SEGMENTS = {
   RESPONSE: 'response',
   SIGNEDCOOKIES: 'signedCookies'
 }
-
-export default REQUEST_SEGMENTS

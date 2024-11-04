@@ -1,6 +1,6 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 
-const getError = (error) => {
+export const getError = (error) => {
   return {
     type: 'about:blank',
     status: StatusCodes.INTERNAL_SERVER_ERROR,
@@ -8,5 +8,3 @@ const getError = (error) => {
     details: error.message
   }
 }
-
-export default getError

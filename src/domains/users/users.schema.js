@@ -62,7 +62,7 @@ export const CreateUserSchema = Type.Omit(UserSelectSchema, [
 
 const UserSchema = Type.Omit(UserSelectSchema, ['password'])
 
-export const IdUserSchema = Type.Pick(CreateUserSchema, ['id'])
+export const IdUserSchema = Type.Pick(UserSelectSchema, ['id'])
 
 export const UpdateUserSchema = Type.Partial(CreateUserSchema)
 

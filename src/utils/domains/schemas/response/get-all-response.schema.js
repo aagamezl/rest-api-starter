@@ -1,17 +1,16 @@
 import { ReasonPhrases, StatusCodes } from 'http-status-codes'
 import { Type } from '@sinclair/typebox'
 
-import createResponseSchema from '../create-schema.js'
-import ErrorResponseSchema from './schemas/error-response.schema.js'
+import { createSchema, ErrorResponseSchema } from '../index.js'
 
 /**
  *
  * @param {import('@sinclair/typebox').TObject} schema
  * @returns
  */
-const getAllResponseSchema = (schema) => {
+export const getAllResponseSchema = (schema) => {
   return {
-    [StatusCodes.OK]: createResponseSchema(
+    [StatusCodes.OK]: createSchema(
       Type.Object({
         data: Type.Array(schema)
       }),
@@ -20,5 +19,3 @@ const getAllResponseSchema = (schema) => {
     ...ErrorResponseSchema
   }
 }
-
-export default getAllResponseSchema

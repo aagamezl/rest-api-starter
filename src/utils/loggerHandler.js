@@ -1,7 +1,7 @@
-import logger from './logger.js'
+import { logger } from './logger.js'
 
 // centralized error handler encapsulates error - handling related logic
-const loggerHandler = {
+export const loggerHandler = {
   /**
    * Handle regular error in the app and send it to the logger
    * @param {Error} error
@@ -18,5 +18,3 @@ const loggerHandler = {
     logger.info(message)
   }
 }
-
-export default loggerHandler

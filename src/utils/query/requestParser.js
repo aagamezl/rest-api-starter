@@ -49,14 +49,13 @@
  * @property {string} resourceType     - Indicates the resource type.
  */
 
+// const haveRelationships = (a, b) => a.filter(x => b.includes(x))
+
 /**
  *
  * @param {string} url
  * @returns {RequestData}
  */
-const requestParser = (url) => {
+export const requestParser = (url) => {
+
 }
-
-// const haveRelationships = (a, b) => a.filter(x => b.includes(x))
-
-export default requestParser

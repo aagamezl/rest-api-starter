@@ -1,6 +1,6 @@
 import sinon from 'sinon'
 
-const mock = () => {
+export const mock = () => {
   const mocks = []
   const stubs = []
 
@@ -45,5 +45,3 @@ const mock = () => {
     }
   }
 }
-
-export default mock

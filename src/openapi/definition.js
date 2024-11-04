@@ -1,6 +1,6 @@
-import config from '../../config/index.js'
+import { config } from '../../config/index.js'
 
-const definition = {
+export const definition = {
   openapi: {
     openapi: '3.1.0',
     info: {
@@ -22,5 +22,3 @@ const definition = {
     ]
   }
 }
-
-export default definition

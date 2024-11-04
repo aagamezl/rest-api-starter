@@ -79,7 +79,7 @@ const transport = pino.transport({
   ]
 })
 
-const logger = pino(transport)
+export const logger = pino(transport)
 
 // // Create a stream where the logs will be written
 // const logThrough = new stream.PassThrough()
@@ -104,5 +104,3 @@ const logger = pino(transport)
 //   const prettyStream = pretty()
 //   logThrough.pipe(prettyStream)
 // }
-
-export default logger

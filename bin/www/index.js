@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-import app from '../../src/app.js'
-import config from '../../config/index.js'
+import { app } from '../../src/app.js'
+import { config } from '../../config/index.js'
 import { loggerHandler } from '../../src/utils/index.js'
 
 /**

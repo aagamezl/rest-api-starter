@@ -1,7 +1,7 @@
 import { defineConfig } from 'drizzle-kit'
 
 /** @type {import('drizzle-kit').Config} */
-export default defineConfig({
+export const drizzleConfig = defineConfig({
   dialect: 'postgresql',
   // driver: 'pg',
   schema: './src/**/*.schema.js',

@@ -1,5 +1,5 @@
 export * from './domains/index.js'
+export * from './logger.js'
+export * from './loggerHandler.js'
 export * from './query/index.js'
-export { default as REQUEST_SEGMENTS } from './request-segments.js'
-export { default as logger } from './logger.js'
-export { default as loggerHandler } from './loggerHandler.js'
+export * from './request-segments.js'

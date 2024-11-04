@@ -1,6 +1,6 @@
 import { eq, sql } from 'drizzle-orm'
 
-import dataSource from '../../data-source.js'
+import { dataSource } from '../../data-source.js'
 import { generateReturning, queryBuilder } from '../../utils/index.js'
 import { users } from './users.schema.js'
 
@@ -62,12 +62,4 @@ export const patch = (id, payload, excludedFields = []) => {
     })
     .where(eq(users.id, id))
     .returning(generateReturning(excludedFields))
-}
-
-export default {
-  create,
-  deleteById,
-  getAll,
-  getById,
-  patch
 }
