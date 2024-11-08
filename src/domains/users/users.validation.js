@@ -1,10 +1,10 @@
 import {
-  DeleteByIdSchema,
   REQUEST_SEGMENTS,
-  getByIdResponseSchema,
-  createResponseSchema,
-  getAllResponseSchema
-} from '../../utils/index.js'
+  createAllResponseSchema,
+  createDeleteByIdResponseSchema,
+  createGetByIdResponseSchema,
+  createResponseSchema
+} from '../../common/index.js'
 import {
   CreateUserSchema,
   IdUserSchema,
@@ -20,21 +20,21 @@ export const validations = {
   // DELETE /users/:id
   delete: {
     [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: DeleteByIdSchema
+    [REQUEST_SEGMENTS.RESPONSE]: createDeleteByIdResponseSchema()
   },
   // GET /users
   getAll: {
-    [REQUEST_SEGMENTS.RESPONSE]: getAllResponseSchema({ $ref: 'User' })
+    [REQUEST_SEGMENTS.RESPONSE]: createAllResponseSchema({ $ref: 'User' })
   },
   // GET /users/:id
   getById: {
     [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: getByIdResponseSchema({ $ref: 'User' })
+    [REQUEST_SEGMENTS.RESPONSE]: createGetByIdResponseSchema({ $ref: 'User' })
   },
   // PATCH /users/:id
   patch: {
     [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
     [REQUEST_SEGMENTS.BODY]: UpdateUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: getByIdResponseSchema({ $ref: 'User' })
+    [REQUEST_SEGMENTS.RESPONSE]: createGetByIdResponseSchema({ $ref: 'User' })
   }
 }

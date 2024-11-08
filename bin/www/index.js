@@ -2,7 +2,7 @@
 
 import { app } from '../../src/app.js'
 import { config } from '../../config/index.js'
-import { loggerHandler } from '../../src/utils/index.js'
+import { loggerHandler } from '../../src/common/index.js'
 
 /**
  * Normalize a port into a number, string, or undefined.

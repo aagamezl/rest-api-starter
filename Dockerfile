@@ -21,6 +21,9 @@ RUN npm i
 
 USER node
 
+# Run Drizzle migrations
+RUN node src/migrate.js
+
 # Run start development command
 CMD ["npm", "run", "start:dev"]
 # ----------------------- END DEVELOPMENT CONFIGURATION ------------------------

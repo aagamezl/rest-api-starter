@@ -8,10 +8,9 @@ import helmet from '@fastify/helmet'
 import { StatusCodes } from 'http-status-codes'
 
 import { config } from '../config/index.js'
-import { definition } from './openapi/definition.js'
-// // import postsRoutes from './domains/posts/posts.routes.js'
+import { creteDefinition } from './openapi/createDefinition.js'
 import { routes as usersRoutes } from './domains/users/users.routes.js'
-import { PROBLEM_CONTENT_TYPE } from './utils/index.js'
+import { addSchemas, PROBLEM_CONTENT_TYPE } from './common/index.js'
 
 export const app = fastify({
   logger: config.logger[process.env.NODE_ENV]
@@ -43,10 +42,11 @@ await app.register(csrfProtection)
 await app.register(helmet)
 await app.register(cors)
 
-app.register(Swagger, definition)
+const tags = addSchemas(app)
+
+app.register(Swagger, creteDefinition(tags, config))
 
 app.register(SwaggerUI)
 
-// // Domains Routes
-// // app.register(postsRoutes)
+// Domains Routes
 app.register(usersRoutes)

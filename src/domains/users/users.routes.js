@@ -1,13 +1,7 @@
 import { controller } from './users.controller.js'
-import { validations } from './index.js'
-import { addSchemas } from '../../utils/index.js'
+import { validations } from './users.validation.js'
 
-/**
- * @param {import('fastify').FastifyInstance} app
- */
 export const routes = async (app) => {
-  addSchemas(app, 'users')
-
   app.post(
     '/users',
     { schema: { ...validations.create, tags: ['Users'] } },

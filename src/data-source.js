@@ -6,9 +6,9 @@ import * as schema from './domains/schemas.js'
 /** @typedef {Promise<Record<string, unknown>>} SingleResponse */
 /** @typedef {UnwrapPromise<SingleResponse>[]} GetAllResponse */
 
-const connection = postgres(process.env.DATABASE_URL)
+export const connection = postgres(process.env.DATABASE_URL)
 
-const db = drizzle(connection, { schema })
+export const db = drizzle(connection, { schema })
 
 export const dataSource = {
   getConnection: () => {
