@@ -11,19 +11,19 @@ export const createAllResponseSchema = (schema) => {
   return {
     [StatusCodes.OK]: createSchema(
       {
-        title: 'Get Products Response',
+        title: 'Get All Response',
         type: 'object',
         required: ['data', 'total'],
         properties: {
           data: {
             type: 'array',
             items: schema,
-            description: 'Array of product objects'
+            description: 'Array of record objects'
           },
           total: {
             type: 'integer',
             minimum: 0,
-            description: 'Total number of products available'
+            description: 'Total number of records available'
           }
         },
         additionalProperties: false

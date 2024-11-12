@@ -21,9 +21,6 @@ RUN npm i
 
 USER node
 
-# Run Drizzle migrations
-RUN node src/migrate.js
-
 # Run start development command
 CMD ["npm", "run", "start:dev"]
 # ----------------------- END DEVELOPMENT CONFIGURATION ------------------------
@@ -39,6 +36,9 @@ COPY --chown=node:node . .
 RUN npm ci --only=production
 
 USER node
+
+# Run Drizzle migrations
+RUN node src/migrate.js
 
 # Run start production command
 CMD ["node", "bin/www/index.js"]

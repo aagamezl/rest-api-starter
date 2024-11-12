@@ -1,14 +1,14 @@
 version: "3.9"
 services:
   postgres:
-    image: "postgres:16.3-alpine3.20"
+    image: "postgres:17.0-alpine3.20"
     container_name: rest-api-starter-database
     restart: unless-stopped
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_DB: rest-api-starter
-      POSTGRES_USER: rest-api-starter
+      POSTGRES_DB: rest-api-starter-db
+      POSTGRES_USER: rest-api-starter-user
       POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje
 
   rest-api:
@@ -20,6 +20,8 @@ services:
       - /usr/src/app/node_modules/
     ports:
       - "9229:9229"
+    depends_on:
+    - postgres
     environment:
       NODE_ENV: development
       DATABASE_URL: "PROVIDER://USER:PASSWORD@HOST:PORT/DATABASE?schema=SCHEMA"

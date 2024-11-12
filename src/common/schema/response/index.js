@@ -1,6 +1,6 @@
 export * from './createAllResponseSchema.js'
 export * from './createDeleteByIdResponseSchema.js'
-export * from './createGetByIdResponseSchema.js'
+export * from './createByIdResponseSchema.js'
 export * from './createNoContentSchema.js'
 export * from './createProblemResponseSchema.js'
 export * from './createResponseSchema.js'

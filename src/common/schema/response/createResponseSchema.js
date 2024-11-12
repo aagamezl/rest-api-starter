@@ -9,7 +9,7 @@ import { createProblemSchema, createSchema } from '../../index.js'
  */
 export const createResponseSchema = (schema) => {
   return {
-    [StatusCodes.CREATED]: createSchema(schema, ReasonPhrases.CREATED),
+    [StatusCodes.CREATED]: createSchema(schema, ReasonPhrases.CREATED), // TODO: improve description using the schema name
     [StatusCodes.BAD_REQUEST]: createProblemSchema(ReasonPhrases.BAD_REQUEST),
     [StatusCodes.INTERNAL_SERVER_ERROR]: createProblemSchema(
       ReasonPhrases.INTERNAL_SERVER_ERROR

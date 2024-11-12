@@ -7,7 +7,7 @@ import { createProblemSchema, createSchema } from '../index.js'
  * @param {object} schema // TODO: create correct type
  * @returns {object} // TODO: create correct type
  */
-export const createGetByIdResponseSchema = (schema) => {
+export const createByIdResponseSchema = (schema) => {
   return {
     [StatusCodes.OK]: createSchema(schema, ReasonPhrases.OK),
     [StatusCodes.NOT_FOUND]: createProblemSchema(ReasonPhrases.NOT_FOUND),

@@ -4,6 +4,68 @@
  * according to the JSON:API 1.1 specification and returns structured output.
  */
 
+/**
+ * @typedef {Object} JsonApiQuery
+ * @property {string} resourceType - The type of the resource (e.g., 'article').
+ * @property {string|null} identifier - The identifier of the resource (e.g., '5'), or null if absent.
+ * @property {boolean} relationships - Whether relationships are included in the URL.
+ * @property {string|null} relationshipType - The type of the relationship (if any), or null.
+ * @property {QueryData} queryData - The query parameters and associated data (e.g., includes, filters, etc.).
+ */
+
+/**
+ * @typedef {Object} QueryData
+ * @property {Array<string>} include - Relationships to include.
+ * @property {Object.<string, Array<string>>} fields - Sparse fieldsets.
+ * @property {Array<string>} sort - Sorting criteria.
+ * @property {Object.<string, number>} page - Pagination info.
+ * @property {FilterData} filter - Filter criteria with operators.
+ */
+
+/**
+ * @typedef {Object} BaseFilterData
+ * @property {Object.<string, string>} like - 'Like' filter criteria.
+ * @property {Object.<string, string>} not - 'Not' filter criteria.
+ * @property {Object.<string, string>} lt - 'Less than' filter criteria.
+ * @property {Object.<string, string>} lte - 'Less than or equal to' filter criteria.
+ * @property {Object.<string, string>} gt - 'Greater than' filter criteria.
+ * @property {Object.<string, string>} gte - 'Greater than or equal to' filter criteria.
+ */
+
+/**
+ * @typedef {import("../domains").Prettify<BaseFilterData> &  Object.<string, unknown>} FilterData
+ * @property {Object.<string, string>} like - 'Like' filter criteria.
+ * @property {Object.<string, string>} not - 'Not' filter criteria.
+ * @property {Object.<string, string>} lt - 'Less than' filter criteria.
+ * @property {Object.<string, string>} lte - 'Less than or equal to' filter criteria.
+ * @property {Object.<string, string>} gt - 'Greater than' filter criteria.
+ * @property {Object.<string, string>} gte - 'Greater than or equal to' filter criteria.
+ */
+
+/**
+ * Parses a JSON:API URL to extract the resource type, identifier, relationships,
+ * relationship type, and query parameters.
+ *
+ * @param {string} url - The URL to parse.
+ * @returns {JsonApiQuery} The parsed query data object.
+ *
+ * @example
+ * const result = parseJsonApiUrl('/article/5/?include=user&fields[article]=title&sort=-createdon');
+ * console.log(result);
+ * // {
+ * //   resourceType: 'article',
+ * //   identifier: '5',
+ * //   relationships: false,
+ * //   relationshipType: null,
+ * //   queryData: {
+ * //     include: ['user'],
+ * //     fields: { article: ['title'] },
+ * //     sort: ['-createdon'],
+ * //     page: {},
+ * //     filter: { like: {}, not: {}, lt: {}, lte: {}, gt: {}, gte: {} }
+ * //   }
+ * // }
+ */
 export const jsonApiQueryParser = (url) => {
   const urlObj = new URL(url, 'http://example.com') // Base needed for relative URLs
   const pathSegments = urlObj.pathname.split('/').filter(Boolean)
@@ -31,25 +93,6 @@ const parseQuery = (searchParams) => ({
   page: parsePage(searchParams),
   filter: parseFilter(searchParams)
 })
-
-/**
- * @typedef {Object} QueryData
- * @property {Array<string>} include - Relationships to include.
- * @property {Object.<string, Array<string>>} fields - Sparse fieldsets.
- * @property {Array<string>} sort - Sorting criteria.
- * @property {Object.<string, number>} page - Pagination info.
- * @property {FilterData} filter - Filter criteria with operators.
- */
-
-/**
- * @typedef {Object} FilterData
- * @property {Object.<string, string>} like - 'Like' filter criteria.
- * @property {Object.<string, string>} not - 'Not' filter criteria.
- * @property {Object.<string, string>} lt - 'Less than' filter criteria.
- * @property {Object.<string, string>} lte - 'Less than or equal to' filter criteria.
- * @property {Object.<string, string>} gt - 'Greater than' filter criteria.
- * @property {Object.<string, string>} gte - 'Greater than or equal to' filter criteria.
- */
 
 /**
  * Parses the `include` parameter into an array of relationships.

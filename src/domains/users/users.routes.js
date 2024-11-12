@@ -31,4 +31,10 @@ export const routes = async (app) => {
     { schema: { ...validations.patch, tags: ['Users'] } },
     controller.patch
   )
+
+  app.put(
+    '/users/:id',
+    { schema: { ...validations.put, tags: ['Users'] } },
+    controller.put
+  )
 }
