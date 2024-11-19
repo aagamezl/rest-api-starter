@@ -18,7 +18,6 @@ export const app = fastify({
 
 app.setErrorHandler(function (error, request, reply) {
   if (error.validation) {
-    // localize.ru(error.validation)
     reply.header('Content-Type', PROBLEM_CONTENT_TYPE).status(400).send(error.validation)
     return
   }
@@ -46,7 +45,12 @@ const tags = addSchemas(app)
 
 app.register(Swagger, creteDefinition(tags, config))
 
-app.register(SwaggerUI)
+app.register(SwaggerUI, {
+  uiConfig: {
+    docExpansion: 'list',
+    deepLinking: false
+  }
+})
 
 // Domains Routes
 app.register(usersRoutes)

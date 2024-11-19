@@ -3,7 +3,8 @@ import {
   createAllResponseSchema,
   createDeleteByIdResponseSchema,
   createByIdResponseSchema,
-  createResponseSchema
+  createResponseSchema,
+  createJsonApiQuerySchema
 } from '../../common/index.js'
 import {
   CreateUserSchema,
@@ -25,12 +26,12 @@ export const validations = {
   },
   // GET /users
   getAll: {
+    [REQUEST_SEGMENTS.QUERY]: createJsonApiQuerySchema(),
     [REQUEST_SEGMENTS.RESPONSE]: createAllResponseSchema(UserSelectSchema, 'Users')
   },
   // GET /users/:id
   getById: {
     [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
-    // [REQUEST_SEGMENTS.QUERY]: IdUserSchema,
     [REQUEST_SEGMENTS.RESPONSE]: createByIdResponseSchema({ $ref: 'User' })
   },
   // PATCH /users/:id
@@ -39,7 +40,7 @@ export const validations = {
     [REQUEST_SEGMENTS.BODY]: UpdateUserSchema,
     [REQUEST_SEGMENTS.RESPONSE]: createByIdResponseSchema({ $ref: 'User' })
   },
-  // PUIT /users/:id
+  // PUT /users/:id
   put: {
     [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
     [REQUEST_SEGMENTS.BODY]: CreateUserSchema,

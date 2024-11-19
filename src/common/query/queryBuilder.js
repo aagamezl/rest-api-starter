@@ -1,45 +1,15 @@
-import { asc, desc } from 'drizzle-orm'
+import { asc, desc, getTableColumns } from 'drizzle-orm'
 
 /**
- * JSON:API Page
- *
- * @typedef QueryDataPage
- * @type {object}
- * @property {string} limit
- * @property {string} offet
+ * @typedef {Array<Function>} OrderByClause
  */
 
 /**
- * Page
- *
- * @typedef Page
- * @type {object}
- * @property {number} limit
- * @property {number} offet
+ * @typedef {Object} Query
+ * @property {number} [offset] - The offset for pagination, determined by the `offset` from pagination settings.
+ * @property {number} [limit] - The limit for pagination, determined by `limit` or `paginationlimit`.
+ * @property {OrderByClause} [orderBy] - Array of order-by clauses for sorting, based on `sort` parameters.
  */
-
-const haveData = (target) => Object.keys(target).length > 0
-
-const getFieldsQuery = (fields) => {
-  return fields.reduce((result, field) => {
-    result[field] = true
-
-    return result
-  }, { /* id: true */ })
-}
-
-/**
- *
- * @param {Record<string, string>} type
- * @returns {Record<string, boolean>}
- */
-export const scalarEnumToFields = (type) => {
-  return Object.keys(type).reduce((result, key) => {
-    result[key] = true
-
-    return result
-  }, {})
-}
 
 /**
  * Exclude keys from user
@@ -48,10 +18,10 @@ export const scalarEnumToFields = (type) => {
  * @param {string[]} keys
  * @returns {Record<string, unknown>}
  */
-export const excludeFields = (entity, keys) => {
-  return Object.keys(entity).reduce((result, key) => {
+export const excludeFields = (entityColumns, keys) => {
+  return entityColumns.reduce((result, key) => {
     if (!keys.includes(key)) {
-      result[key] = entity[key]
+      result[key] = true
     }
 
     return result
@@ -60,94 +30,34 @@ export const excludeFields = (entity, keys) => {
 
 /**
  *
- * @param {QueryDataPage} page
- * @returns {Page}
+ * @param {import('../domains/index.js').Schema} schema
+ * @param {import('../domains/index.js').RequestData} requestData
+ * @param {string[]} excludedFields
+ * @param {number} paginationlimit
+ * @returns {Query}
  */
-export const getPagination = (page, paginationlimit) => {
-  const { offset, limit } = page
-
-  return {
-    offset: Number(offset ?? 0),
-    limit: Number(limit ?? paginationlimit)
-  }
-}
-
-/**
- *
- * @param {string} entity
- * @param {object} requestData
- * @returns
- */
-export const createQueryCondition = (entity, requestData) => {
-  const queryCondition = {}
-
-  if (haveData(requestData.queryData.fields)) {
-    queryCondition.columns = {}
-
-    Object.entries(requestData.queryData.fields).reduce((query, [relation, fields]) => {
-      if (entity === relation) {
-        query.columns = getFieldsQuery(fields)
-      } else {
-        query.columns[relation] = {
-          columns: getFieldsQuery(fields)
-        }
-      }
-
-      return query
-    }, queryCondition)
-  }
-
-  return queryCondition
-}
-
-export const parseRelations = (include) => {
-  return include.reduce((relations, relation) => {
-    const currentRelation = relation.split('.')
-
-    if (currentRelation.length > 1) {
-      relations[currentRelation[0]] = { with: parseRelations(currentRelation.slice(1)) }
-    } else {
-      relations[relation] = true
-    }
-
-    return relations
-  }, {})
-}
-
-export const queryBuilder = (schema, requestData, excludedFields = [], paginationlimit) => {
+export const queryBuilder = (schema, requestData, excludedFields = [], paginationLimit) => {
   if (!requestData) {
     return {}
   }
 
-  const modelName = requestData.resourceType
-  const query = createQueryCondition(modelName, requestData)
-  const { offset, limit } = getPagination(requestData.queryData.page, paginationlimit)
-
-  query.columns = excludeFields(query.columns, excludedFields)
-
-  if (requestData.identifier) {
-    query.where = { id: schema.id }
-  } else {
-    query.skip = offset
-    query.take = limit
+  const query = {
+    limit: requestData.limit ?? paginationLimit,
+    offset: requestData.offset
   }
 
-  if (requestData.queryData.sort.length > 0) {
-    query.orderBy = requestData.queryData.sort.reduce((orderBy, field) => {
+  query.columns = excludeFields(Object.keys(getTableColumns(schema)), excludedFields)
+
+  if (requestData.sort.length > 0) {
+    query.orderBy = requestData.sort.reduce((orderBy, field) => {
       if (field.startsWith('-')) {
-        orderBy.push(desc(schema[field.slice(1)].id))
+        orderBy.push(desc(schema[field.slice(1)]))
       } else {
-        orderBy.push({
-          [field]: asc(schema[field].id)
-        })
+        orderBy.push(asc(schema[field]))
       }
 
       return orderBy
     }, [])
-  }
-
-  if (requestData.queryData.include.length > 0) {
-    query.with = query.with = parseRelations(requestData.queryData.include)
   }
 
   return query

@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { CONTENT_TYPE, PROBLEM_CONTENT_TYPE } from './constant.js'
-import { createProblemResponse, loggerHandler, requestParser } from '../index.js'
+import { createProblemResponse, loggerHandler, parseQueryParams } from '../index.js'
 
 /**
  * @typedef {import('fastify').FastifyRequest} FastifyRequest
@@ -94,9 +94,9 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const getAll = async (request, reply) => {
     try {
-      const requestData = requestParser(request.url)
+      const requestData = parseQueryParams(request.url)
 
-      const records = await model.getAll(requestData)
+      const records = await model.getAll(requestData, ['password', 'deleted_at'])
 
       return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.OK).send(records)
     } catch (error) {
@@ -116,8 +116,8 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const getById = async (request, reply) => {
     try {
-      const requestData = requestParser(request.url)
-      const record = await model.getById(requestData)
+      // const record = await model.getById(requestData)
+      const record = await model.getById(request.params.id)
 
       if (!record) {
         return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).send()
@@ -141,7 +141,10 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const patch = async (request, reply) => {
     try {
+      // const requestData = requestParser(request.url)
+
       const [record] = await model.patch(request.params.id, request.body)
+      // const record = await model.patch(requestData, request.body)
 
       return reply.header('Content-Type', CONTENT_TYPE).send(record)
     } catch (error) {

@@ -1,7 +1,8 @@
-import { count, eq, getTableName, sql } from 'drizzle-orm'
+import { and, count, eq, getTableName, isNull, sql } from 'drizzle-orm'
 
 import { dataSource } from '../../data-source.js'
 import { generateReturning, queryBuilder } from '../../common/index.js'
+import { config } from '../../../config/index.js'
 
 /**
  * A utility type that flattens and simplifies complex types to make them more readable.
@@ -91,6 +92,19 @@ import { generateReturning, queryBuilder } from '../../common/index.js'
  */
 
 /**
+ *
+ * @param {Schema} schema
+ * @param {import('../query/jsonApiQueryParser.js').JsonApiQuery} query
+ * @returns
+ */
+const withoutDeleted = (schema, query) => {
+  // return and(where, isNull(schema.deleted_at))
+  query.where = and(query.where, isNull(schema.deleted_at))
+
+  return query
+}
+
+/**
  * Base model function that provides common CRUD operations.
  *
  * @param {Schema} schema - The database table schema.
@@ -127,11 +141,18 @@ export const baseModel = (schema, extraMethods = {}) => {
    * @param {RequestData} requestData - The request data containing filters, if any.
    * @returns {Promise<GetAllResult>} The data and total record count.
    */
-  const getAll = async (requestData) => {
+  const getAll = async (requestData, excludedFields = []) => {
+    const query = queryBuilder(
+      schema,
+      requestData,
+      excludedFields,
+      config.database.pagination.limit
+    )
+
     const dbInstance = dataSource.getInstance()
 
     const [data, total] = await Promise.all([
-      dbInstance.query[tableName].findMany(),
+      dbInstance.query[tableName].findMany(withoutDeleted(schema, query)),
       dbInstance.select({ count: count() }).from(schema).then(result => result[0].count)
     ])
 
@@ -145,10 +166,13 @@ export const baseModel = (schema, extraMethods = {}) => {
    * @param {string[]} [excludedFields=[]] - Fields to exclude from the query result.
    * @returns {Promise<Entity>} The record data.
    */
-  const getById = (requestData, excludedFields = []) => {
-    const query = queryBuilder(schema, requestData, excludedFields)
-
-    return dataSource.getInstance().query[tableName].findFirst(query)
+  const getById = (id, excludedFields = []) => {
+    return dataSource.getInstance().query[tableName].findFirst({
+      where: withoutDeleted(schema, eq(schema.id, id))
+    })
+    // return dataSource.getInstance().query[tableName].findFirst(
+    //   withoutDeleted(schema, query)
+    // )
   }
 
   /**
@@ -167,7 +191,7 @@ export const baseModel = (schema, extraMethods = {}) => {
         ...payload,
         updated_at: sql`now()`
       })
-      .where(eq(schema.id, id))
+      .where(withoutDeleted(schema, eq(schema.id, id)))
       .returning()
   }
 
