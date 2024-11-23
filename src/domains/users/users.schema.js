@@ -29,28 +29,24 @@ export const users = pgTable('users', {
     .notNull(),
   updated_at: timestamp('updated_at', { precision: 6, withTimezone: true })
     .defaultNow()
-    .notNull(),
-  deleted_at: timestamp('deleted_at', { precision: 6, withTimezone: true })
+    .notNull()
 })
 
-export const UserSelectSchema = omit(
+export const UserSelectSchema = partial(omit(
   createSelectSchema(users),
-  ['password', 'deleted_at']
-)
+  ['password']
+))
 
 export const CreateUserSchema = omit(UserSelectSchema, [
   'id',
   'created_at',
-  'updated_at',
-  'deleted_at'
+  'updated_at'
 ])
 
 const UserSchema = omit(UserSelectSchema, [
-  'id',
   'password',
   'created_at',
-  'updated_at',
-  'deleted_at'
+  'updated_at'
 ])
 
 export const IdUserSchema = pick(UserSelectSchema, ['id'])

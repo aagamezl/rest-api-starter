@@ -4,25 +4,54 @@ export const createJsonApiQuerySchema = () => {
     title: 'JsonApiQuery',
     type: 'object',
     properties: {
-      queryData: {
+      include: {
+        type: 'string',
+        description: 'Sorting criteria.',
+        examples: [
+          'user,ratings',
+          'user,comment.author'
+        ]
+      },
+      fields: {
         type: 'object',
-        properties: {
-          sort: {
-            type: 'string',
-            description: 'Sorting criteria.',
-            examples: [
-              'first_name, -last_name'
-            ]
-          },
-          limit: {
-            type: 'number',
-            description: 'Pagination limit.'
-          },
-          offset: {
-            type: 'number',
-            description: 'Pagination offset.'
-          }
-        }
+        additionalProperties: {
+          type: 'string'
+        },
+        examples: [
+          'fields[articles]=user,ratings',
+          'fields[articles]=user,comment.author'
+        ]
+      },
+      sort: {
+        type: 'object',
+        additionalProperties: {
+          type: 'string'
+        },
+        examples: [
+          'sort=first_name',
+          'sort=-created_at'
+        ]
+      },
+      filter: {
+        type: 'object',
+        additionalProperties: {
+          type: 'string'
+        },
+        examples: [
+          'filter[name]=john',
+          'filter[age][lt]=15',
+          'filter[not][name]=jack'
+        ]
+      },
+      page: {
+        type: 'object',
+        additionalProperties: {
+          type: 'number'
+        },
+        examples: [
+          '[page][number]=1',
+          'page[size]=50'
+        ]
       }
     }
   }

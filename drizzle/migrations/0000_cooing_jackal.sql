@@ -9,6 +9,5 @@ CREATE TABLE IF NOT EXISTS "users" (
 	"phone_number" varchar(20) NOT NULL,
 	"type" "type" NOT NULL,
 	"created_at" timestamp (6) with time zone DEFAULT now() NOT NULL,
-	"updated_at" timestamp (6) with time zone DEFAULT now() NOT NULL,
-	"deleted_at" timestamp (6) with time zone
+	"updated_at" timestamp (6) with time zone DEFAULT now() NOT NULL
 );

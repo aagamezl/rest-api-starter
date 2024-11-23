@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { CONTENT_TYPE, PROBLEM_CONTENT_TYPE } from './constant.js'
-import { createProblemResponse, loggerHandler, parseQueryParams } from '../index.js'
+import { createProblemResponse, loggerHandler, jsonApiQueryParser } from '../index.js'
 
 /**
  * @typedef {import('fastify').FastifyRequest} FastifyRequest
@@ -12,7 +12,7 @@ import { createProblemResponse, loggerHandler, parseQueryParams } from '../index
  */
 
 /**
- * @typedef {import('./base.model.js').BaseModel} BaseModel
+ * @typedef {import('./base.model.js').Model} Model
  */
 
 /**
@@ -41,7 +41,7 @@ import { createProblemResponse, loggerHandler, parseQueryParams } from '../index
 /**
  * Base controller function that provides basic CRUD operations.
  *
- * @param {BaseModel} model - The model object providing CRUD operations.
+ * @param {Model} model - The model object providing CRUD operations.
  * @param {Object.<string, function>} [extraMethods={}] - Optional additional methods to extend the base controller.
  * @returns {Controller & ExtraMethods} An object containing controller methods for the specified model.
  */
@@ -74,7 +74,11 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const deleteById = async (request, reply) => {
     try {
-      await model.deleteById({ identifier: request.params.id })
+      const record = await model.deleteById({ identifier: request.params.id })
+
+      if (record.count === 0) {
+        return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).send()
+      }
 
       return reply.status(StatusCodes.NO_CONTENT).send()
     } catch (error) {
@@ -94,9 +98,9 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const getAll = async (request, reply) => {
     try {
-      const requestData = parseQueryParams(request.url)
+      const requestData = jsonApiQueryParser(request.url)
 
-      const records = await model.getAll(requestData, ['password', 'deleted_at'])
+      const records = await model.getAll(requestData, ['password'])
 
       return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.OK).send(records)
     } catch (error) {
@@ -143,8 +147,12 @@ export const baseController = (model, extraMethods = {}) => {
     try {
       // const requestData = requestParser(request.url)
 
-      const [record] = await model.patch(request.params.id, request.body)
+      const [record] = await model.patch(request.params.id, request.body, ['id', 'first_name'])
       // const record = await model.patch(requestData, request.body)
+
+      if (!record) {
+        return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.NOT_FOUND).send()
+      }
 
       return reply.header('Content-Type', CONTENT_TYPE).send(record)
     } catch (error) {

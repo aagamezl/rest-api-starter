@@ -1,7 +1,7 @@
-import { and, count, eq, getTableName, isNull, sql } from 'drizzle-orm'
+import { count, eq/* , getTableColumns */, getTableName, sql } from 'drizzle-orm'
 
 import { dataSource } from '../../data-source.js'
-import { generateReturning, queryBuilder } from '../../common/index.js'
+import { /* excludeFields,  */generateReturning, queryBuilder } from '../../common/index.js'
 import { config } from '../../../config/index.js'
 
 /**
@@ -92,19 +92,6 @@ import { config } from '../../../config/index.js'
  */
 
 /**
- *
- * @param {Schema} schema
- * @param {import('../query/jsonApiQueryParser.js').JsonApiQuery} query
- * @returns
- */
-const withoutDeleted = (schema, query) => {
-  // return and(where, isNull(schema.deleted_at))
-  query.where = and(query.where, isNull(schema.deleted_at))
-
-  return query
-}
-
-/**
  * Base model function that provides common CRUD operations.
  *
  * @param {Schema} schema - The database table schema.
@@ -152,7 +139,7 @@ export const baseModel = (schema, extraMethods = {}) => {
     const dbInstance = dataSource.getInstance()
 
     const [data, total] = await Promise.all([
-      dbInstance.query[tableName].findMany(withoutDeleted(schema, query)),
+      dbInstance.query[tableName].findMany(query),
       dbInstance.select({ count: count() }).from(schema).then(result => result[0].count)
     ])
 
@@ -166,13 +153,21 @@ export const baseModel = (schema, extraMethods = {}) => {
    * @param {string[]} [excludedFields=[]] - Fields to exclude from the query result.
    * @returns {Promise<Entity>} The record data.
    */
-  const getById = (id, excludedFields = []) => {
-    return dataSource.getInstance().query[tableName].findFirst({
-      where: withoutDeleted(schema, eq(schema.id, id))
-    })
-    // return dataSource.getInstance().query[tableName].findFirst(
-    //   withoutDeleted(schema, query)
-    // )
+  // const getById = (id, excludedFields = []) => {
+  const getById = (requestData, excludedFields = []) => {
+    const query = queryBuilder(
+      schema,
+      requestData,
+      excludedFields,
+      config.database.pagination.limit
+    )
+
+    // return dataSource.getInstance().query[tableName].findFirst({
+    //   where: withoutDeleted(schema, eq(schema.id, id))
+    // })
+    return dataSource.getInstance().query[tableName].findFirst(
+      query
+    )
   }
 
   /**
@@ -183,7 +178,15 @@ export const baseModel = (schema, extraMethods = {}) => {
    * @param {string[]} [excludedFields=[]] - Fields to exclude from the returning result.
    * @returns {Promise<Entity>} The updated record data.
    */
-  const patch = (id, payload, excludedFields = []) => {
+  const patch = (id, payload/* , excludedFields = [] */) => {
+    // const returning = Object.keys(getTableColumns(schema)).reduce((columns, column) => {
+    //   if (!excludedFields.includes(column)) {
+    //     columns[column] = schema[column]
+    //   }
+
+    //   return columns
+    // }, {})
+
     return dataSource
       .getInstance()
       .update(schema)
@@ -191,8 +194,8 @@ export const baseModel = (schema, extraMethods = {}) => {
         ...payload,
         updated_at: sql`now()`
       })
-      .where(withoutDeleted(schema, eq(schema.id, id)))
-      .returning()
+      .where(eq(schema.id, id))
+      .returning(/* returning */)
   }
 
   /**
