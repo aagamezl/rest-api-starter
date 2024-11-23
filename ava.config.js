@@ -7,7 +7,9 @@ export default {
   files: [
     'test/**/*.spec.js'
   ],
-  ignoredByWatcher: [
-    'temp'
-  ]
+  watchMode: {
+    ignoreChanges: [
+      'temp'
+    ]
+  }
 }

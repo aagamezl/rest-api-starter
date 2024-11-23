@@ -1,11 +1,8 @@
 #!/usr/bin/env node
 
-import http from 'http'
-
 import { app } from '../../src/app.js'
 import { config } from '../../config/index.js'
-import { errorHandler } from '../../src/utils/errorHandler.js'
-import { logger } from '../../src/utils/logger.js'
+import { loggerHandler } from '../../src/common/index.js'
 
 /**
  * Normalize a port into a number, string, or undefined.
@@ -46,15 +43,17 @@ const onError = (error) => {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      errorHandler.handle(new Error(`${bind} requires elevated privileges`))
+      loggerHandler.error(new Error(`${bind} requires elevated privileges`))
 
       process.exit(1)
 
+      break
     case 'EADDRINUSE':
-      errorHandler.handle(new Error(`${bind} is already in use`))
+      loggerHandler.error(new Error(`${bind} is already in use`))
 
       process.exit(1)
 
+      break
     default:
       throw error
   }
@@ -63,21 +62,22 @@ const onError = (error) => {
 /**
  * Event listener for HTTP server 'listening' event.
  */
-const onListening = () => {
-  const addr = server.address()
-  const bind = typeof addr === 'string'
-    ? `pipe ${addr}`
-    : `port ${addr.port}`
+const onListening = (error, address) => {
+  if (error) {
+    onError(error)
+  }
 
-  logger.info(`Listening on ${addr.address} ${bind}`)
+  loggerHandler.info(`Listening on ${address}`)
 }
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  logger.info('SIGTERM signal received: closing HTTP server')
+  loggerHandler.error(new Error('SIGTERM signal received: closing HTTP server'))
 
-  server.close(() => {
-    logger.info('HTTP server closed')
+  app.close(() => {
+    loggerHandler.info('HTTP server closed')
+
+    process.exit(0)
   })
 })
 
@@ -85,8 +85,8 @@ process.on('unhandledRejection', (reason) => {
   throw reason
 })
 
-process.on('uncaughtException', error => {
-  errorHandler.handle(error)
+process.on('uncaughtException', (error) => {
+  loggerHandler.error(error)
 
   setImmediate(() => {
     process.exit(1)
@@ -95,11 +95,6 @@ process.on('uncaughtException', error => {
 
 // Get port from environment and store in Express.
 const port = normalizePort(config.server.port)
-const hostname = config.server.hostname
+const host = config.server.hostname
 
-// Create HTTP server.
-const server = http.createServer(app)
-
-server.listen(port, hostname)
-server.on('error', onError)
-server.on('listening', onListening)
+app.listen({ port, host }, onListening)

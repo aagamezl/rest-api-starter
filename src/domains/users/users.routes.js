@@ -1,24 +1,40 @@
-import express from 'express'
-
-import { authenticate, validate } from '../../utils/index.js'
-
 import { controller } from './users.controller.js'
 import { validations } from './users.validation.js'
 
-export const router = express.Router({
-  strict: true
-})
+export const routes = async (app) => {
+  app.post(
+    '/users',
+    { schema: { ...validations.create, tags: ['Users'] } },
+    controller.create
+  )
 
-router.post('/users', validate(validations.create), controller.create)
+  app.get(
+    '/users',
+    { schema: { ...validations.getAll, tags: ['Users'] } },
+    controller.getAll
+  )
 
-router.post('/users/login', validate(validations.login), controller.login)
+  app.get(
+    '/users/:id',
+    { schema: { ...validations.getById, tags: ['Users'] } },
+    controller.getById
+  )
 
-router.post('/users/logout', authenticate, controller.logout)
+  app.delete(
+    '/users/:id',
+    { schema: { ...validations.delete, tags: ['Users'] } },
+    controller.deleteById
+  )
 
-router.get('/users', authenticate, controller.getAll)
+  app.patch(
+    '/users/:id',
+    { schema: { ...validations.patch, tags: ['Users'] } },
+    controller.patch
+  )
 
-router.get('/users/:id', [authenticate, validate(validations.getById)], controller.getById)
-
-router.delete('/users/:id', [authenticate, validate(validations.delete)], controller.deleteById)
-
-router.patch('/users/:id', [authenticate, validate(validations.update)], controller.update)
+  app.put(
+    '/users/:id',
+    { schema: { ...validations.put, tags: ['Users'] } },
+    controller.put
+  )
+}

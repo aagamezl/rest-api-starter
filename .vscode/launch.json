@@ -6,12 +6,13 @@
   "configurations": [
     {
       "name": "Attach by Process ID",
+      "type": "node",
       "processId": "${command:PickProcess}",
       "request": "attach",
       "skipFiles": [
         "<node_internals>/**"
       ],
-      "type": "node"
+      "restart": true
     },
 
     {

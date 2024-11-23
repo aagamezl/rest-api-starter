@@ -1,4 +1,4 @@
-FROM node:18.13.0-alpine3.17 as base
+FROM node:20.14.0-alpine3.19 as base
 
 # Create Directory for the Container
 WORKDIR /usr/src/app
@@ -36,6 +36,9 @@ COPY --chown=node:node . .
 RUN npm ci --only=production
 
 USER node
+
+# Run Drizzle migrations
+RUN node src/migrate.js
 
 # Run start production command
 CMD ["node", "bin/www/index.js"]

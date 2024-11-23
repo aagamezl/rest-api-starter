@@ -1,26 +1,49 @@
-import { makeSchemaOptional, SEGMENTS } from '../../utils/index.js'
-import { userId, input, userLogin } from './index.js'
+import {
+  REQUEST_SEGMENTS,
+  createAllResponseSchema,
+  createDeleteByIdResponseSchema,
+  createByIdResponseSchema,
+  createResponseSchema,
+  createJsonApiQuerySchema
+} from '../../common/index.js'
+import {
+  CreateUserSchema,
+  IdUserSchema,
+  UpdateUserSchema,
+  UserSelectSchema
+} from './index.js'
 
 export const validations = {
   // POST /users
   create: {
-    [SEGMENTS.BODY]: input
+    [REQUEST_SEGMENTS.BODY]: CreateUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: createResponseSchema({ $ref: 'User' }, 'User')
   },
   // DELETE /users/:id
   delete: {
-    [SEGMENTS.PARAMS]: userId
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: createDeleteByIdResponseSchema()
+  },
+  // GET /users
+  getAll: {
+    [REQUEST_SEGMENTS.QUERY]: createJsonApiQuerySchema(),
+    [REQUEST_SEGMENTS.RESPONSE]: createAllResponseSchema(UserSelectSchema, 'Users')
   },
   // GET /users/:id
   getById: {
-    [SEGMENTS.PARAMS]: userId
-  },
-  // GET /users/login
-  login: {
-    [SEGMENTS.BODY]: userLogin
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: createByIdResponseSchema({ $ref: 'User' })
   },
   // PATCH /users/:id
-  update: {
-    [SEGMENTS.PARAMS]: userId,
-    [SEGMENTS.BODY]: makeSchemaOptional(input)
+  patch: {
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.BODY]: UpdateUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: createByIdResponseSchema({ $ref: 'User' })
+  },
+  // PUT /users/:id
+  put: {
+    [REQUEST_SEGMENTS.PARAMS]: IdUserSchema,
+    [REQUEST_SEGMENTS.BODY]: CreateUserSchema,
+    [REQUEST_SEGMENTS.RESPONSE]: createByIdResponseSchema({ $ref: 'User' })
   }
 }

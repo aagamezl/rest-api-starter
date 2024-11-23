@@ -1,18 +1,11 @@
 import { randomBytes } from 'node:crypto'
 
-import { parseDatabaseUrl } from '../src/utils/parseDatabaseUrl.js'
-
-const {
-  provider,
-  username,
-  password,
-  host,
-  port,
-  name,
-  schema
-} = parseDatabaseUrl(process.env.DATABASE_URL)
-
 export const config = {
+  application: {
+    name: 'Rest API Starter',
+    description: 'Rest API Starter',
+    version: '1.3.0'
+  },
   authentication: {
     secret: process.env.TOKEN_SECRET ?? randomBytes(20).toString('hex'),
     expiresIn: Number(process.env.EXPIRES_IN ?? 3600)
@@ -24,19 +17,23 @@ export const config = {
     version: '1.0.0'
   },
   database: {
-    username,
-    password,
-    name,
-    schema,
-    port,
-    host,
-    provider,
     pagination: {
-      limit: 20
+      limit: 50
     }
   },
-  schema: {
-    user: ['createdAt', 'updatedAt'],
-    post: ['createdAt', 'updatedAt']
+  logger: {
+    path: './logs'
+    // development: {
+    //   // transport: {
+    //   //   target: 'pino-pretty',
+    //   //   options: {
+    //   //     translateTime: 'HH:MM:ss Z',
+    //   //     ignore: 'pid,hostname'
+    //   //   }
+    //   // },
+    //   level: 'info',
+    // },
+    // production: true,
+    // test: false
   }
 }
