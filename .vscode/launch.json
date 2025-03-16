@@ -36,18 +36,18 @@
       "type": "node"
     },
     {
+      "name": "Debug Jest Tests",
       "type": "node",
       "request": "launch",
-      "name": "Debug AVA test file",
-      "program": "${workspaceFolder}/node_modules/ava/entrypoints/cli.mjs",
-      "args": [
-        "${file}"
+      "runtimeArgs": [
+        "--inspect-brk",
+        "--experimental-vm-modules",
+        "${workspaceRoot}/node_modules/.bin/jest",
+        "--runInBand",
+        "--detectOpenHandles",
       ],
-      "outputCapture": "std",
-      // "console": "integratedTerminal", // optional
-      "skipFiles": [
-        "<node_internals>/**/*.js"
-      ]
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }

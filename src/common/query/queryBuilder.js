@@ -1,4 +1,4 @@
-import { asc, desc, eq } from 'drizzle-orm'
+import { eq, getTableColumns } from 'drizzle-orm'
 
 /**
  * @typedef {Array<Function>} OrderByClause
@@ -132,45 +132,33 @@ export const parseRelations = (include) => {
  * @param {import('../domains/index.js').Schema} schema
  * @param {import('../domains/index.js').RequestData} requestData
  * @param {string[]} excludedFields
- * @param {number} paginationlimit
+ * @param {number} paginationLimit
  * @returns {Query}
  */
-export const queryBuilder = (schema, requestData, excludedFields = [], paginationlimit) => {
+export const queryBuilder = (schema, requestData, excludedFields = [], paginationLimit) => {
   if (!requestData) {
     return {}
   }
 
-  const modelName = requestData.resourceType
-  const query = createQueryCondition(modelName, requestData)
-  const { offset, limit } = getPagination(requestData.queryData.page, paginationlimit)
+  const query = {}
 
-  if (query.columns) {
-    query.columns = excludeFields(query.columns, excludedFields)
+  query.columns = Object.keys(getTableColumns(schema)).reduce((columns, column) => {
+    if (!excludedFields.includes(column)) {
+      columns[column] = true
+    }
+
+    return columns
+  }, {})
+
+  if (requestData.pagination) {
+    const { limit, offset } = getPagination(requestData.pagination, paginationLimit)
+
+    query.limit = limit
+    query.offset = offset
   }
 
   if (requestData.identifier) {
     query.where = eq(schema.id, requestData.identifier)
-  } else {
-    query.offet = offset
-    query.limit = limit
-  }
-
-  if (requestData.queryData.sort.length > 0) {
-    query.orderBy = requestData.queryData.sort.reduce((orderBy, field) => {
-      if (field.startsWith('-')) {
-        orderBy.push(desc(schema[field.slice(1)]))
-      } else {
-        orderBy.push({
-          [field]: asc(schema[field].id)
-        })
-      }
-
-      return orderBy
-    }, [])
-  }
-
-  if (requestData.queryData.include.length > 0) {
-    query.with = query.with = parseRelations(requestData.queryData.include)
   }
 
   return query

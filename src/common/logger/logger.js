@@ -20,7 +20,8 @@ mkdirSync(logPath, { recursive: true })
 
 // Create a stream where the logs will be written
 const logThrough = new stream.PassThrough()
-export const logger = pino({
+
+const pinoLogger = pino({
   name: config.application.name,
   timestamp: pino.stdTimeFunctions.isoTime
 }, logThrough)
@@ -40,4 +41,52 @@ logThrough.pipe(child.stdin)
 if (!process.env.NODE_ENV || process.env.NODE_ENV === 'DEVELOPMENT') {
   const prettyStream = pretty()
   logThrough.pipe(prettyStream)
+}
+
+// centralized error handler encapsulates error - handling related logic
+export const logger = {
+  /**
+   *
+   * @param {string} message
+   * @param {Object.<string, unknown} [context]
+   */
+  debug (message, context = {}) {
+    pinoLogger.debug(context, message)
+  },
+
+  /**
+   *
+   * @param {string} message
+   * @param {Object.<string, unknown} [context]
+   */
+  error (message, context = {}) {
+    pinoLogger.error(context, message)
+  },
+
+  /**
+   *
+   * @param {string} message
+   * @param {Object.<string, unknown} [context]
+   */
+  fatal (message, context = {}) {
+    pinoLogger.fatal(context, message)
+  },
+
+  /**
+   *
+   * @param {string} message
+   * @param {Object.<string, unknown} [context]
+   */
+  info (message, context = {}) {
+    pinoLogger.info(context, message)
+  },
+
+  /**
+   *
+   * @param {string} message
+   * @param {Object.<string, unknown} [context]
+   */
+  warning (message, context = {}) {
+    pinoLogger.warn(context, message)
+  }
 }

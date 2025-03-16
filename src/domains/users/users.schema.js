@@ -44,9 +44,7 @@ export const CreateUserSchema = omit(UserSelectSchema, [
 ])
 
 const UserSchema = omit(UserSelectSchema, [
-  'password',
-  'created_at',
-  'updated_at'
+  'password'
 ])
 
 export const IdUserSchema = pick(UserSelectSchema, ['id'])

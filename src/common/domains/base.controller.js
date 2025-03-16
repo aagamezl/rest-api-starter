@@ -1,7 +1,7 @@
 import { StatusCodes } from 'http-status-codes'
 
 import { CONTENT_TYPE, PROBLEM_CONTENT_TYPE } from './constant.js'
-import { createProblemResponse, loggerHandler, jsonApiQueryParser } from '../index.js'
+import { createProblemResponse, logger, jsonApiQueryParser } from '../index.js'
 
 /**
  * @typedef {import('fastify').FastifyRequest} FastifyRequest
@@ -54,11 +54,11 @@ export const baseController = (model, extraMethods = {}) => {
    */
   const create = async (request, reply) => {
     try {
-      const record = await model.create(request.body, ['password'])
+      const [record] = await model.create(request.body, ['password'])
 
-      return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).send(record[0])
+      return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.CREATED).send(record)
     } catch (error) {
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 
@@ -82,7 +82,7 @@ export const baseController = (model, extraMethods = {}) => {
 
       return reply.status(StatusCodes.NO_CONTENT).send()
     } catch (error) {
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 
@@ -104,7 +104,7 @@ export const baseController = (model, extraMethods = {}) => {
 
       return reply.header('Content-Type', CONTENT_TYPE).status(StatusCodes.OK).send(records)
     } catch (error) {
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 
@@ -129,7 +129,7 @@ export const baseController = (model, extraMethods = {}) => {
 
       return reply.header('Content-Type', CONTENT_TYPE).send(record)
     } catch (error) {
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 
@@ -158,7 +158,7 @@ export const baseController = (model, extraMethods = {}) => {
     } catch (error) {
       console.log(error)
 
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 
@@ -180,7 +180,7 @@ export const baseController = (model, extraMethods = {}) => {
     } catch (error) {
       console.log(error)
 
-      loggerHandler.error(error)
+      logger.error(error)
 
       const returnError = createProblemResponse(error)
 

@@ -9,7 +9,7 @@ services:
     environment:
       POSTGRES_DB: rest-api-starter-db
       POSTGRES_USER: rest-api-starter-user
-      POSTGRES_PASSWORD: ujt9ack5gbn_TGD4mje
+      POSTGRES_PASSWORD: *******************
 
   rest-api:
     build:

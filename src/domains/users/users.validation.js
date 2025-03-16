@@ -17,7 +17,7 @@ export const validations = {
   // POST /users
   create: {
     [REQUEST_SEGMENTS.BODY]: CreateUserSchema,
-    [REQUEST_SEGMENTS.RESPONSE]: createResponseSchema({ $ref: 'User' }, 'User')
+    [REQUEST_SEGMENTS.RESPONSE]: createResponseSchema({ $ref: 'User' })
   },
   // DELETE /users/:id
   delete: {

@@ -12,7 +12,7 @@ export const config = {
   },
   server: {
     hostname: '::',
-    port: process.env.PORT ?? 3000,
+    port: process.env.PORT ?? 3001,
     environment: process.env.NODE_ENV ?? 'development',
     version: '1.0.0'
   },

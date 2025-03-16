@@ -2,7 +2,7 @@
 
 import { app } from '../../src/app.js'
 import { config } from '../../config/index.js'
-import { loggerHandler } from '../../src/common/index.js'
+import { logger } from '../../src/common/index.js'
 
 /**
  * Normalize a port into a number, string, or undefined.
@@ -43,13 +43,13 @@ const onError = (error) => {
   // handle specific listen errors with friendly messages
   switch (error.code) {
     case 'EACCES':
-      loggerHandler.error(new Error(`${bind} requires elevated privileges`))
+      logger.error(new Error(`${bind} requires elevated privileges`))
 
       process.exit(1)
 
       break
     case 'EADDRINUSE':
-      loggerHandler.error(new Error(`${bind} is already in use`))
+      logger.error(new Error(`${bind} is already in use`))
 
       process.exit(1)
 
@@ -67,15 +67,15 @@ const onListening = (error, address) => {
     onError(error)
   }
 
-  loggerHandler.info(`Listening on ${address}`)
+  logger.info(`Listening on ${address}`)
 }
 
 // Graceful shutdown
 process.on('SIGTERM', () => {
-  loggerHandler.error(new Error('SIGTERM signal received: closing HTTP server'))
+  logger.error(new Error('SIGTERM signal received: closing HTTP server'))
 
   app.close(() => {
-    loggerHandler.info('HTTP server closed')
+    logger.info('HTTP server closed')
 
     process.exit(0)
   })
@@ -86,7 +86,7 @@ process.on('unhandledRejection', (reason) => {
 })
 
 process.on('uncaughtException', (error) => {
-  loggerHandler.error(error)
+  logger.error(error)
 
   setImmediate(() => {
     process.exit(1)

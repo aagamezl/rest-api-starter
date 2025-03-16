@@ -15,8 +15,8 @@
     "prepare": "husky install",
     "start": "node bin/www/index.js",
     "start:dev": "node --inspect=0.0.0.0:9229 --watch bin/www/index.js",
-    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "test:watch": "npm run test -- --watch"
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --detectOpenHandles --forceExit",
+    "test:watch": "npm run test --watch"
   },
   "prisma": {
     "seed": "node prisma/seed.js"
